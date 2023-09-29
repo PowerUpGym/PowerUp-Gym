@@ -1,0 +1,40 @@
+package com.example.PowerUpGym.entity.classesGym;
+
+
+import com.example.PowerUpGym.entity.users.TrainerEntity;
+import lombok.*;
+
+import javax.persistence.*;
+import java.time.LocalDate;
+import java.util.List;
+
+@Entity
+@Setter
+@Getter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@Table(name = "mst_class")
+public class ClassesEntity {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", nullable = false)
+    private Long id;
+
+    @Column(name = "schedule", nullable = false)
+    private LocalDate schedule;
+
+
+    @Column(name = "description", nullable = false)
+    private String description;
+
+    @Column(name = "class_name", nullable = false)
+    private String className;
+
+    @ManyToOne
+    @JoinColumn(name = "trainer_id")
+    private TrainerEntity trainer;
+
+
+}
