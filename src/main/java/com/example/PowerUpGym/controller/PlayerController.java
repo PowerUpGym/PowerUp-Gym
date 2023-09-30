@@ -31,9 +31,6 @@ public class PlayerController {
    PlayerService playerService;
 
     @Autowired
-    PlayerEntityRepository playerEntityRepository;
-
-    @Autowired
     UserEntityRepositories userEntityRepositories;
     @Autowired
     private HttpServletRequest request;
@@ -41,11 +38,6 @@ public class PlayerController {
     @Autowired
     PasswordEncoder passwordEncoder;
 
-    @Autowired
-    private AuthenticationManager authenticationManager;
-
-    @Autowired
-    private UserDetailsService userDetailsService;
 
     @GetMapping("/login")
     public String getLoginPage() {
@@ -102,7 +94,7 @@ public class PlayerController {
 
         // If the user account is successfully created, redirect to the home page
         // Otherwise, redirect to the signup page with an error message
-        return new RedirectView("/index");
+        return new RedirectView("/index/player");
     }
 
 
