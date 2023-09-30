@@ -1,17 +1,18 @@
 package com.example.PowerUpGym.entity.users;
 
 import com.example.PowerUpGym.enums.Role;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
 @Entity
-@Getter
-@Setter
-@ToString
-@EqualsAndHashCode
-@AllArgsConstructor
+@Data
+@Builder
 @NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "mst_roles")
 public class UserRoleEntity {
 
@@ -26,5 +27,4 @@ public class UserRoleEntity {
 
     @Column(name = "description")
     private String description;
-
 }
