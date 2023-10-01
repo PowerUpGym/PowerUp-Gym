@@ -27,8 +27,8 @@ import java.util.List;
 @Controller
 public class PlayerController {
 
-   @Autowired
-   PlayerService playerService;
+    @Autowired
+    PlayerService playerService;
 
     @Autowired
     UserEntityRepositories userEntityRepositories;
@@ -39,10 +39,10 @@ public class PlayerController {
     PasswordEncoder passwordEncoder;
 
 
-    @GetMapping("/login")
-    public String getLoginPage() {
-        return "login.html";
-    }
+//    @GetMapping("/login")
+//    public String getLoginPage() {
+//        return "login.html";
+//    }
 
     @GetMapping("/signup")
     public String getSignupPage() {

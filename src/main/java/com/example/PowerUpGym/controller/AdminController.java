@@ -1,9 +1,11 @@
 package com.example.PowerUpGym.controller;
 
+import com.example.PowerUpGym.entity.users.AdminEntity;
 import com.example.PowerUpGym.entity.users.TrainerEntity;
 import com.example.PowerUpGym.entity.users.UserEntity;
 import com.example.PowerUpGym.entity.users.UserRoleEntity;
-import com.example.PowerUpGym.services.TrainerService;
+import com.example.PowerUpGym.repositories.UserEntityRepositories;
+import com.example.PowerUpGym.services.AdminService;
 import com.example.PowerUpGym.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -16,31 +18,34 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 
 @Controller
-public class TrainerController {
-
+public class AdminController {
+    @Autowired
+    AdminService adminService;
+    @Autowired
+    UserEntityRepositories userEntityRepositories;
     @Autowired
     private HttpServletRequest request;
+
     @Autowired
     PasswordEncoder passwordEncoder;
-    @Autowired
-    TrainerService trainerService;
 
     @Autowired
     UserService userService;
-//    @GetMapping("/loginTrainer")
-//    public String getLoginTrainer(){
-//        return "loginTrainer.html";
-//    }
 
-    @GetMapping("/signupTrainer")
+
+    @GetMapping("/loginAdmin")
+    public String getLoginTrainer(){
+        return "loginAdmin.html";
+    }
+    @GetMapping("/signupAdmin")
     public String getSignupTrainer(){
-        return "signupTrainer.html";
+        return "signupAdmin.html";
     }
 
-    @PostMapping("/signupTrainer")
-    public RedirectView getSignupTrainer(String fullName, String username, String password, String email, String phoneNumber,int age , String experience){
+    @PostMapping("/signupAdmin")
+    public RedirectView getSignupTrainer(String fullName, String username, String password, String email, String phoneNumber){
 
-        TrainerEntity trainerEntity = new TrainerEntity();
+        AdminEntity admin = new AdminEntity();
 
         UserEntity user = new UserEntity();
         user.setFullName(fullName);
@@ -50,22 +55,17 @@ public class TrainerController {
         String encryptedPassword = passwordEncoder.encode(password);
         user.setPassword(encryptedPassword);
 
-        UserRoleEntity trainerRole = new UserRoleEntity();
-        trainerRole.setId(2L); // Set the ID of the "Trainer" role
-        user.setRole(trainerRole);
+        UserRoleEntity adminRole = new UserRoleEntity();
+        adminRole.setId(1L); // Set the ID of the "Trainer" role
+        user.setRole(adminRole);
 
         userService.signupUser(user);
 
-        trainerEntity.setAge(age);
-        trainerEntity.setExperience(experience);
-        trainerEntity.setUser(user);
-
-        trainerService.signupTrainer(trainerEntity);
+        adminService.signupAdmin(admin);
         authWithHttpServletRequest(username , password);
 
         return new RedirectView("/index");
     }
-
 
     public void authWithHttpServletRequest(String username, String password) {
         try {
@@ -74,5 +74,4 @@ public class TrainerController {
             e.printStackTrace();
         }
     }
-
 }
