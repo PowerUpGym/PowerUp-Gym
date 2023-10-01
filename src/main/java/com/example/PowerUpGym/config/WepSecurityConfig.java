@@ -44,7 +44,7 @@ public class WepSecurityConfig extends WebSecurityConfigurerAdapter {
                 .loginPage("/login")
                 .permitAll()
                 .loginProcessingUrl("/perform_login")
-                .defaultSuccessUrl("/index", true)
+                .defaultSuccessUrl("/playerInfo", true)
                 .failureUrl("/login?error=true")
                 .and()
                 .logout()

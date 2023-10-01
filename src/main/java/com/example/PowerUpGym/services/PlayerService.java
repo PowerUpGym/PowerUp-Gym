@@ -1,7 +1,9 @@
 package com.example.PowerUpGym.services;
 
 import com.example.PowerUpGym.entity.users.PlayersEntity;
+import com.example.PowerUpGym.entity.users.UserEntity;
 import com.example.PowerUpGym.repositories.PlayerEntityRepository;
+import com.example.PowerUpGym.repositories.UserEntityRepositories;
 import org.springframework.stereotype.Service;
 import java.util.List;
 
@@ -9,9 +11,14 @@ import java.util.List;
 public class PlayerService {
 
     private final PlayerEntityRepository playerRepository;
+    private final UserEntityRepositories userEntityRepositories;
+    public UserEntity findUserByUsername(String username) {
+        return userEntityRepositories.findByUsername(username);
+    }
 
-    public PlayerService(PlayerEntityRepository playerRepository) {
+    public PlayerService(PlayerEntityRepository playerRepository, UserEntityRepositories userEntityRepositories) {
         this.playerRepository = playerRepository;
+        this.userEntityRepositories = userEntityRepositories;
     }
 
     public List<PlayersEntity> getAllPlayers() {
@@ -22,4 +29,5 @@ public class PlayerService {
         playerRepository.save(player);
         return player;
     }
+
 }
