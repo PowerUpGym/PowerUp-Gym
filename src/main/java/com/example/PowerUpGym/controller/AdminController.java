@@ -32,9 +32,14 @@ public class AdminController {
     UserService userService;
 
 
-    @GetMapping("/loginAdmin")
-    public String getLoginTrainer(){
-        return "loginAdmin.html";
+//    @GetMapping("/loginAdmin")
+//    public String getLoginTrainer(){
+//        return "loginAdmin.html";
+//    }
+
+    @GetMapping("/adminPage")
+    public String getLoginPagePlayer() {
+        return "adminPage.html";
     }
     @GetMapping("/signupAdmin")
     public String getSignupTrainer(){
@@ -43,9 +48,10 @@ public class AdminController {
 
     @PostMapping("/signupAdmin")
     public RedirectView getSignupTrainer(String fullName, String username, String password, String email, String phoneNumber){
-
+        // Create a new Admin object
         AdminEntity admin = new AdminEntity();
 
+        // Create a new UserEntity object and set its properties
         UserEntity user = new UserEntity();
         user.setFullName(fullName);
         user.setUsername(username);
@@ -54,12 +60,15 @@ public class AdminController {
         String encryptedPassword = passwordEncoder.encode(password);
         user.setPassword(encryptedPassword);
 
+        // Set the user role to "ADMIN"
         UserRoleEntity adminRole = new UserRoleEntity();
-        adminRole.setId(1L); // Set the ID of the "ADMIN" role
+        adminRole.setId(2L); // Set the ID of the "ADMIN" role
         user.setRole(adminRole);
 
         userService.signupUser(user);
+
         admin.setUser(user);
+
         adminService.signupAdmin(admin);
         authWithHttpServletRequest(username , password);
 

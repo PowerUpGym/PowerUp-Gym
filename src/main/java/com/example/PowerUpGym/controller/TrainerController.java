@@ -10,6 +10,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.view.RedirectView;
 
 import javax.servlet.ServletException;
@@ -27,15 +28,17 @@ public class TrainerController {
 
     @Autowired
     UserService userService;
-//    @GetMapping("/loginTrainer")
-//    public String getLoginTrainer(){
-//        return "loginTrainer.html";
-//    }
 
     @GetMapping("/signupTrainer")
     public String getSignupTrainer(){
         return "signupTrainer.html";
     }
+
+    @GetMapping("/trainerPage")
+    public String getLoginPagePlayer() {
+        return "trainerPage.html";
+    }
+
 
     @PostMapping("/signupTrainer")
     public RedirectView getSignupTrainer(String fullName, String username, String password, String email, String phoneNumber,int age , String experience){
@@ -51,7 +54,7 @@ public class TrainerController {
         user.setPassword(encryptedPassword);
 
         UserRoleEntity trainerRole = new UserRoleEntity();
-        trainerRole.setId(2L); // Set the ID of the "Trainer" role
+        trainerRole.setId(3L); // Set the ID of the "Trainer" role
         user.setRole(trainerRole);
 
         userService.signupUser(user);

@@ -1,10 +1,11 @@
-package com.example.PowerUpGym.controller;
+package com.example.PowerUpGym.controller.aut;
 
 import com.example.PowerUpGym.entity.users.UserEntity;
 import com.example.PowerUpGym.entity.users.UserRoleEntity;
 import com.example.PowerUpGym.enums.Role;
 import com.example.PowerUpGym.repositories.UserEntityRepositories;
 import com.example.PowerUpGym.services.PlayerService;
+import com.example.PowerUpGym.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -21,7 +22,7 @@ import javax.servlet.http.HttpServletRequest;
 public class LoginController {
 
     @Autowired
-    private PlayerService playerService;
+    private UserService userService;
 
     @Autowired
     UserEntityRepositories userEntityRepositories;
@@ -32,12 +33,13 @@ public class LoginController {
         return "login.html";
     }
 
-    @GetMapping("/playerPage")
-    public String getLoginPagePlayer() {
-        return "playerPage.html";
+    @GetMapping("/logout")
+    public String getLogoutPage() {
+        return "login.html";
     }
 
-    //    @PostMapping("/login")
+
+//    @PostMapping("/login")
 //    public RedirectView login(HttpServletRequest request) {
 //        String username = request.getParameter("username");
 //        String password = request.getParameter("password");
@@ -70,7 +72,6 @@ public class LoginController {
     public RedirectView login(String username, String password) {
         // Authenticate the user
         authWithHttpServletRequest(username, password);
-
         // Check the role of the authenticated user
         UserEntity authenticatedUser = userEntityRepositories.findByUsername(username);
 
@@ -79,19 +80,22 @@ public class LoginController {
 
             // Check the role and redirect accordingly
             if (userRole.getRole() == Role.PLAYER) {
-                // Redirect to the player dashboard
+                // Redirect to the player page
                 return new RedirectView("/playerPage");
             } else if (userRole.getRole() == Role.TRAINER) {
-                // Redirect to the trainer dashboard
+                // Redirect to the trainer page
                 return new RedirectView("/trainerPage");
+            } else if (userRole.getRole() == Role.ADMIN) {
+                // Redirect to the trainer page
+                return new RedirectView("/adminPage");
             }
         }
 
         // If the role doesn't match the expected roles, show an error message
-        return new RedirectView("/login?error=Invalid role");
+        return new RedirectView("/login?error=Invalid Role");
     }
-    @Autowired
-    private HttpServletRequest request;
+@Autowired
+private HttpServletRequest request;
     public void authWithHttpServletRequest(String username, String password) {
         try {
             request.login(username, password);

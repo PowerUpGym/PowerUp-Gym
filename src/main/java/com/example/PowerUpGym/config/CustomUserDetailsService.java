@@ -14,11 +14,12 @@ public class CustomUserDetailsService implements UserDetailsService {
     UserEntityRepositories userEntityRepositories;
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        UserEntity user=userEntityRepositories.findByUsername(username);
+        UserEntity user = userEntityRepositories.findByUsername(username);
         if (user==null){
             throw new UsernameNotFoundException("user not found: "+username);
         }
         return user;
-
     }
+
+
 }
