@@ -37,7 +37,7 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 	implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity5'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
-	implementation 'org.flywaydb:flyway-core'
+    implementation 'org.flywaydb:flyway-core'
 }
 
 tasks.named('test') {
