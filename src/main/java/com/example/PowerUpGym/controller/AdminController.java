@@ -59,7 +59,7 @@ public class AdminController {
         user.setRole(adminRole);
 
         userService.signupUser(user);
-
+        admin.setUser(user);
         adminService.signupAdmin(admin);
         authWithHttpServletRequest(username , password);
 

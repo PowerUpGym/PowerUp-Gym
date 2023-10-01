@@ -45,6 +45,10 @@ public class UserEntity implements UserDetails {
     @JoinColumn(name = "role_id")
     private UserRoleEntity role;
 
+    @OneToOne(mappedBy = "user")
+    private PlayersEntity player;
+
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
 

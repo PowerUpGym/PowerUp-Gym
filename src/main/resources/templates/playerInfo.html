@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Player Information</title>
+</head>
+<body>
+<h1>Player Information</h1>
+
+<div th:if="${player != null}">
+    <h2>Player Details</h2>
+<!--    <p><strong>Player ID:</strong> <span th:text="${player.id}" hidden="hidden"></span></p>-->
+    <p><strong>Address:</strong> <span th:text="${player.address}"></span></p>
+    <p><strong>Age:</strong> <span th:text="${player.age}"></span></p>
+    <p><strong>Height:</strong> <span th:text="${player.height}"></span></p>
+    <p><strong>Weight:</strong> <span th:text="${player.weight}"></span></p>
+    <p><strong>Image:</strong> <span th:text="${player.image}"></span></p>
+    <p><strong>Start Date:</strong> <span th:text="${player.start_date}"></span></p>
+    <p><strong>End Date:</strong> <span th:text="${player.end_date}"></span></p>
+</div>
+
+<div th:if="${user != null}">
+    <p><strong>User ID:</strong> <span th:text="${user.id}" hidden="hidden"></span></p>
+    <p><strong>Full Name:</strong> <span th:text="${user.fullName}"></span></p>
+    <p><strong>Username:</strong> <span th:text="${user.username}"></span></p>
+    <p><strong>Email:</strong> <span th:text="${user.email}"></span></p>
+    <p><strong>Phone Number:</strong> <span th:text="${user.phoneNumber}"></span></p>
+</div>
+<!-- Add this section to your playerInfo.html template -->
+<div th:if="${enrollments != null and not #lists.isEmpty(enrollments)}">
+    <h2>Enrolled Classes</h2>
+    <ul>
+        <li th:each="enrollment : ${enrollments}">
+            <p><strong>Class Name:</strong> <span th:text="${enrollment.enrolledClass.className}"></span></p>
+            <p><strong>Schedule:</strong> <span th:text="${enrollment.enrolledClass.schedule}"></span></p>
+            <p><strong>Description:</strong> <span th:text="${enrollment.enrolledClass.description}"></span></p>
+            <!-- Add more class enrollment attributes here -->
+        </li>
+    </ul>
+</div>
+
+</body>
+</html>

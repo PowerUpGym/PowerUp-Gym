@@ -1,10 +1,12 @@
 package com.example.PowerUpGym.controller;
 
+import com.example.PowerUpGym.entity.classesGym.PlayerClassEnrollment;
 import com.example.PowerUpGym.entity.users.PlayersEntity;
 import com.example.PowerUpGym.entity.users.UserEntity;
 import com.example.PowerUpGym.entity.users.UserRoleEntity;
 import com.example.PowerUpGym.repositories.PlayerEntityRepository;
 import com.example.PowerUpGym.repositories.UserEntityRepositories;
+import com.example.PowerUpGym.services.ClassEnrollmentService;
 import com.example.PowerUpGym.services.PlayerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -21,6 +23,7 @@ import org.springframework.web.servlet.view.RedirectView;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
+import java.security.Principal;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -29,6 +32,7 @@ public class PlayerController {
 
     @Autowired
     PlayerService playerService;
+    @Autowired ClassEnrollmentService classEnrollmentService;
 
     @Autowired
     UserEntityRepositories userEntityRepositories;
@@ -94,7 +98,7 @@ public class PlayerController {
 
         // If the user account is successfully created, redirect to the home page
         // Otherwise, redirect to the signup page with an error message
-        return new RedirectView("/index/player");
+        return new RedirectView("/playerInfo");
     }
 
 
@@ -182,4 +186,25 @@ public class PlayerController {
 //        model.addAttribute("players", players);
 //        return "players";
 //    }
+    @GetMapping("/playerInfo")
+    public String getMyInfo(Principal principal, Model model) {
+        if (principal != null) {
+            String userName = principal.getName();
+            UserEntity userEntity = playerService.findUserByUsername(userName);
+//            && userEntity.getRole().getId() == 1
+            if (userEntity != null && userEntity.getRole() != null) {
+                model.addAttribute("user", userEntity);
+                PlayersEntity player = userEntity.getPlayer();
+                model.addAttribute("player", player);
+                List<PlayerClassEnrollment> enrollments = classEnrollmentService.findByPlayer(player);
+                model.addAttribute("enrollments", enrollments);
+                return "playerInfo.html";
+            }
+        }
+        return "index.html";
+    }
+
+
+
+
 }
