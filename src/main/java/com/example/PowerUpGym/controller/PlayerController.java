@@ -79,7 +79,7 @@ public class PlayerController {
 
         // Set the user role to "PLAYER"
         UserRoleEntity playerRole = new UserRoleEntity();
-        playerRole.setId(3L); // Set the ID of the "PLAYER" role
+        playerRole.setId(1L); // Set the ID of the "PLAYER" role
         user.setRole(playerRole);
 
         userEntityRepositories.save(user);
@@ -149,6 +149,10 @@ public class PlayerController {
 //        return new RedirectView("/players");
 //    }
 
+    @GetMapping("/playerPage")
+    public String getLoginPagePlayer() {
+        return "playerPage.html";
+    }
 
 
 
