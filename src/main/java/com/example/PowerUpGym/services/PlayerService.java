@@ -20,6 +20,9 @@ public class PlayerService {
         this.playerRepository = playerRepository;
         this.userEntityRepositories = userEntityRepositories;
     }
+    /////jj
+    /////jj
+    /////jj
 
     public List<PlayersEntity> getAllPlayers() {
         return playerRepository.findAll();
