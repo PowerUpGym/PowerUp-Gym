@@ -27,10 +27,10 @@ public class TrainerController {
 
     @Autowired
     UserService userService;
-    @GetMapping("/loginTrainer")
-    public String getLoginTrainer(){
-        return "loginTrainer.html";
-    }
+//    @GetMapping("/loginTrainer")
+//    public String getLoginTrainer(){
+//        return "loginTrainer.html";
+//    }
 
     @GetMapping("/signupTrainer")
     public String getSignupTrainer(){

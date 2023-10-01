@@ -1,7 +1,6 @@
 package com.example.PowerUpGym.controller;
 
 import com.example.PowerUpGym.entity.users.AdminEntity;
-import com.example.PowerUpGym.entity.users.TrainerEntity;
 import com.example.PowerUpGym.entity.users.UserEntity;
 import com.example.PowerUpGym.entity.users.UserRoleEntity;
 import com.example.PowerUpGym.repositories.UserEntityRepositories;
@@ -56,12 +55,12 @@ public class AdminController {
         user.setPassword(encryptedPassword);
 
         UserRoleEntity adminRole = new UserRoleEntity();
-        adminRole.setId(1L); // Set the ID of the "Trainer" role
+        adminRole.setId(1L); // Set the ID of the "ADMIN" role
         user.setRole(adminRole);
 
         userService.signupUser(user);
 
-       adminService.signupAdmin(admin);
+        adminService.signupAdmin(admin);
         authWithHttpServletRequest(username , password);
 
         return new RedirectView("/index");

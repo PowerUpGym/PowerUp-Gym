@@ -1,68 +1,97 @@
 package com.example.PowerUpGym.controller;
 
-
-import com.example.PowerUpGym.entity.users.PlayersEntity;
-import com.example.PowerUpGym.entity.users.UserEntity;
 import com.example.PowerUpGym.services.PlayerService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.view.RedirectView;
-import java.time.LocalDate;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
 
 @Controller
 public class LoginController {
 
-//    @Autowired
-//    private PlayerService playerService;
-//    @Autowired
-//    private UserEntity userEntity;
+    @Autowired
+    private PlayerService playerService;
 
 
-//    @GetMapping("/login")
-//    public String showLogin(Model model) {
-//        return "login.html";
-//    }
-//
+    @GetMapping("/login")
+    public String getLoginPage() {
+        return "login.html";
+    }
+
+    @GetMapping("/playerPage")
+    public String getLoginPagePlayer() {
+        return "playerPage.html";
+    }
+
+    @PostMapping("/login")
+    public RedirectView login(HttpServletRequest request) {
+        String username = request.getParameter("username");
+        String password = request.getParameter("password");
+
+        // Authenticate the user.
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication == null) {
+            // The user is not authenticated.
+            return new RedirectView("/login?error=true");
+        } else {
+            // The user is authenticated.
+
+            // Get the user's role.
+            String role = authentication.getAuthorities().stream().findFirst().map(GrantedAuthority::getAuthority).orElse("");
+
+            // Redirect the user to the appropriate page based on their role.
+            if (role.equals("ADMIN")) {
+                return new RedirectView("/adminPage");
+            } else if (role.equals("TRAINER")) {
+                return new RedirectView("/trainerPage");
+            } else if (role.equals("PLAYER")) {
+                return new RedirectView("/playerPage");
+            } else {
+                return new RedirectView("/login?error=true");
+            }
+        }
+    }
 //    @PostMapping("/login")
-//    public String login(Model model, String username, String password) {
+//    public RedirectView login(String username, String password) {
 //        // Authenticate the user
-//        // If the user is authenticated, redirect to the home page
-//        // Otherwise, redirect to the login page with an error message
-//        return "redirect:/home";
-//    }
+//        authWithHttpServletRequest(username, password);
 //
-//    @GetMapping("/signup")
-//    public String showSignup(Model model) {
-//        return "signup";
-//    }
-
-//    @PostMapping("/signup")
-//    public RedirectView signup(Model model, String fullName, String username, String password,   String email, String phoneNumber , String address , String age , int height , int weight , String image , LocalDate start_date, LocalDate end_date ) {
-//        // Create a new user account
-//        PlayersEntity player = new PlayersEntity();
-//        player.getUser().setFullName(fullName);
-//        player.getUser().setUsername(username);
-//        player.getUser().setEmail(email);
-//        player.getUser().setEmail(email);
-//        player.getUser().setPhoneNumber(phoneNumber);
-//        player.getUser().setPassword(password);
-////        String encryptedPassword = passwordEncoder.encode(password);
-//        player.setAddress(address);
-//        player.setAddress(age);
-//        player.setHeight(height);
-//        player.setWeight(weight);
-//        player.setEnd_date(end_date);
-//        player.setStart_date(start_date);
-//        player.setImage(image);
+//        // Check the role of the authenticated user
+//        UserEntity authenticatedUser = userEntityRepositories.findByUsername(username);
 //
-//        playerService.signupPlayer(player);
-//        // If the user account is successfully created, redirect to the home page
-//        // Otherwise, redirect to the signup page with an error message
-//        return new RedirectView("players");
+//        if (authenticatedUser != null) {
+//            UserRoleEntity userRole = authenticatedUser.getRole();
+//
+//            // Check the role and redirect accordingly
+//            if (userRole.getRole() == Role.PLAYER) {
+//                // Redirect to the player dashboard
+//                return new RedirectView("/playerPage");
+//            } else if (userRole.getRole() == Role.TRAINER) {
+//                // Redirect to the trainer dashboard
+//                return new RedirectView("/trainerPage");
+//            }
+//        }
+//
+//        // If the role doesn't match the expected roles, show an error message
+//        return new RedirectView("/login?error=Invalid role");
 //    }
+@Autowired
+private HttpServletRequest request;
+    public void authWithHttpServletRequest(String username, String password) {
+        try {
+            request.login(username, password);
+        } catch (ServletException e) {
+            e.printStackTrace();
+        }
+    }
 
 
 }
