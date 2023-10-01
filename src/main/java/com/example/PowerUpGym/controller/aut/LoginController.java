@@ -1,4 +1,4 @@
-package com.example.PowerUpGym.controller;
+package com.example.PowerUpGym.controller.aut;
 
 import com.example.PowerUpGym.services.PlayerService;
 import org.springframework.beans.factory.annotation.Autowired;

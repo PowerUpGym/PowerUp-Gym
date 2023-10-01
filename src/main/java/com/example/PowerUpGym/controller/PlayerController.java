@@ -3,28 +3,24 @@ package com.example.PowerUpGym.controller;
 import com.example.PowerUpGym.entity.users.PlayersEntity;
 import com.example.PowerUpGym.entity.users.UserEntity;
 import com.example.PowerUpGym.entity.users.UserRoleEntity;
-import com.example.PowerUpGym.repositories.PlayerEntityRepository;
 import com.example.PowerUpGym.repositories.UserEntityRepositories;
 import com.example.PowerUpGym.services.PlayerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.view.RedirectView;
-
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDate;
-import java.util.List;
 
 @Controller
+@Secured("PLAYER")
 public class PlayerController {
 
     @Autowired
@@ -39,9 +35,21 @@ public class PlayerController {
     PasswordEncoder passwordEncoder;
 
 
+
 //    @GetMapping("/login")
 //    public String getLoginPage() {
 //        return "login.html";
+//    }
+
+//    @Autowired
+//    private Authentication authentication;
+//
+//    @GetMapping("/playerPage")
+//    public String playerPage() {
+//        if (!authentication.getAuthorities().contains(new SimpleGrantedAuthority("PLAYER"))) {
+//            return "/";
+//        }
+//        return "playerPage";
 //    }
 
     @GetMapping("/signup")
