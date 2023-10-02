@@ -50,6 +50,9 @@ public class UserEntity implements UserDetails {
     @OneToOne(mappedBy = "user")
     private PlayersEntity player;
 
+    @OneToOne(mappedBy = "user")
+    private TrainerEntity trainer;
+
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

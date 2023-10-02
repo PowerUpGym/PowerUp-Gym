@@ -25,7 +25,7 @@ public class ClassesEntity {
     private Long id;
 
     @Column(name = "schedule", nullable = false)
-    private LocalDate schedule;
+    private LocalDate schedule; // make it string
 
     @Column(name = "description", nullable = false)
     private String description;
