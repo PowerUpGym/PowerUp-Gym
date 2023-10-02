@@ -5,6 +5,7 @@ import com.example.PowerUpGym.entity.users.AdminEntity;
 import com.example.PowerUpGym.entity.users.PlayersEntity;
 import com.example.PowerUpGym.entity.users.TrainerEntity;
 import lombok.*;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -24,6 +25,7 @@ public class ClassesEntity {
     @Column(name = "id", nullable = false)
     private Long id;
 
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     @Column(name = "schedule", nullable = false)
     private LocalDate schedule;
 
