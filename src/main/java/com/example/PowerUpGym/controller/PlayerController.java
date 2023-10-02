@@ -40,23 +40,6 @@ public class PlayerController {
     PasswordEncoder passwordEncoder;
 
 
-
-//    @GetMapping("/login")
-//    public String getLoginPage() {
-//        return "login.html";
-//    }
-
-//    @Autowired
-//    private Authentication authentication;
-//
-//    @GetMapping("/playerPage")
-//    public String playerPage() {
-//        if (!authentication.getAuthorities().contains(new SimpleGrantedAuthority("PLAYER"))) {
-//            return "/";
-//        }
-//        return "playerPage";
-//    }
-
     @GetMapping("/signup")
     public String getSignupPage() {
         return "signup.html";
@@ -170,35 +153,6 @@ public class PlayerController {
     }
 
 
-
-
-
-
-
-
-
-
-    //
-//    public PlayerController(PlayerService playerService) {
-//        this.playerService = playerService;
-//    }
-//
-//    @GetMapping("/players")
-//    public List<PlayersEntity> getAllPlayers() {
-//        return playerService.getAllPlayers();
-//    }
-//
-//    @PostMapping("/players")
-//    public PlayersEntity signupPlayer(@RequestBody PlayersEntity player) {
-//        return playerService.signupPlayer(player);
-//    }
-//
-//    @GetMapping("/players")
-//    public String getPlayers(Model model) {
-//        List<PlayersEntity> players = playerService.getAllPlayers();
-//        model.addAttribute("players", players);
-//        return "players";
-//    }
     @GetMapping("/playerInfo")
     public String getMyInfo(Principal principal, Model model) {
         if (principal != null) {
