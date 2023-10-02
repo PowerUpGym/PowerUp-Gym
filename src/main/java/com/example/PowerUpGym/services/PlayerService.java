@@ -11,19 +11,17 @@ import java.util.List;
 public class PlayerService {
 
     private final PlayerEntityRepository playerRepository;
+
     private final UserEntityRepositories userEntityRepositories;
-    public UserEntity findUserByUsername(String username) {
-        return userEntityRepositories.findByUsername(username);
-    }
 
     public PlayerService(PlayerEntityRepository playerRepository, UserEntityRepositories userEntityRepositories) {
         this.playerRepository = playerRepository;
         this.userEntityRepositories = userEntityRepositories;
     }
-    /////jj
-    /////jj
-    /////jj
 
+    public UserEntity findUserByUsername(String username) {
+        return userEntityRepositories.findByUsername(username);
+    }
     public List<PlayersEntity> getAllPlayers() {
         return playerRepository.findAll();
     }

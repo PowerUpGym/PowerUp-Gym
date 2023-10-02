@@ -1,11 +1,11 @@
 package com.example.PowerUpGym.controller;
 
-import com.example.PowerUpGym.entity.classesGym.PlayerClassEnrollment;
+//import com.example.PowerUpGym.entity.classesGym.PlayerClassEnrollment;
 import com.example.PowerUpGym.entity.users.PlayersEntity;
 import com.example.PowerUpGym.entity.users.UserEntity;
 import com.example.PowerUpGym.entity.users.UserRoleEntity;
 import com.example.PowerUpGym.repositories.UserEntityRepositories;
-import com.example.PowerUpGym.services.ClassEnrollmentService;
+//import com.example.PowerUpGym.services.ClassEnrollmentService;
 import com.example.PowerUpGym.services.PlayerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -28,7 +28,7 @@ public class PlayerController {
 
     @Autowired
     PlayerService playerService;
-    @Autowired ClassEnrollmentService classEnrollmentService;
+//    @Autowired ClassEnrollmentService classEnrollmentService;
 
     @Autowired
     UserEntityRepositories userEntityRepositories;
@@ -162,8 +162,8 @@ public class PlayerController {
                 model.addAttribute("user", userEntity);
                 PlayersEntity player = userEntity.getPlayer();
                 model.addAttribute("player", player);
-                List<PlayerClassEnrollment> enrollments = classEnrollmentService.findByPlayer(player);
-                model.addAttribute("enrollments", enrollments);
+//                List<PlayerClassEnrollment> enrollments = classEnrollmentService.findByPlayer(player);
+//                model.addAttribute("enrollments", enrollments);
                 return "playerPages/playerInfo.html";
             }
         }

@@ -1,6 +1,8 @@
 package com.example.PowerUpGym.entity.classesGym;
 
 
+import com.example.PowerUpGym.entity.users.AdminEntity;
+import com.example.PowerUpGym.entity.users.PlayersEntity;
 import com.example.PowerUpGym.entity.users.TrainerEntity;
 import lombok.*;
 
@@ -25,7 +27,6 @@ public class ClassesEntity {
     @Column(name = "schedule", nullable = false)
     private LocalDate schedule;
 
-
     @Column(name = "description", nullable = false)
     private String description;
 
@@ -36,5 +37,11 @@ public class ClassesEntity {
     @JoinColumn(name = "trainer_id")
     private TrainerEntity trainer;
 
+    @ManyToMany(mappedBy = "enrolledClasses")
+    private List<PlayersEntity> enrolledPlayers;
+
+    @ManyToOne //
+    @JoinColumn(name = "admin_id")
+    private AdminEntity admin;
 
 }
