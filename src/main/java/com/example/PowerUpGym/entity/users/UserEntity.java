@@ -54,12 +54,12 @@ public class UserEntity implements UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
 
-        return null;
+//        return null;
 
-//        UserRoleEntity role = getRole();
-//        List<SimpleGrantedAuthority> authorities = new ArrayList<>();
-//        authorities.add(new SimpleGrantedAuthority(role.getRole().name()));
-//        return authorities;
+        UserRoleEntity role = getRole();
+        List<SimpleGrantedAuthority> authorities = new ArrayList<>();
+        authorities.add(new SimpleGrantedAuthority(role.getRole().name()));
+        return authorities;
 
 
 //        Set<Role> roles = user.getRoles();

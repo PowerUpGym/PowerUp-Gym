@@ -27,8 +27,8 @@ public class LoginController {
     @Autowired
     AdminService adminService;
 
-    @Autowired
-    TrainerService trainerService;
+//    @Autowired
+//    TrainerService trainerService;
 
     @Autowired
     UserEntityRepositories userEntityRepositories;
@@ -109,11 +109,6 @@ public class LoginController {
         return new RedirectView("/login?error=Invalid Role");
     }
 
-    @GetMapping("/signupTrainer")
-    public String getSignupTrainer(){
-        return "signupTrainer";
-    }
-
     @PostMapping("/signupAdmin")
     public RedirectView getSignupTrainer(String fullName, String username, String password, String email, String phoneNumber){
         // Create a new Admin object
@@ -143,40 +138,75 @@ public class LoginController {
         return new RedirectView("/index");
     }
 
-    @PostMapping("/signupTrainer")
-    public RedirectView getSignupTrainer(String fullName, String username, String password, String email, String phoneNumber,int age , String experience){
 
-        TrainerEntity trainerEntity = new TrainerEntity();
+//    @GetMapping("/signupTrainer")
+//    public String getSignupTrainer(){
+//        return "signupTrainer";
+//    }
 
-        UserEntity user = new UserEntity();
-        user.setFullName(fullName);
-        user.setUsername(username);
-        user.setEmail(email);
-        user.setPhoneNumber(phoneNumber);
-        String encryptedPassword = passwordEncoder.encode(password);
-        user.setPassword(encryptedPassword);
+//    @PostMapping("/signupAdmin")
+//    public RedirectView getSignupTrainer(String fullName, String username, String password, String email, String phoneNumber){
+//        // Create a new Admin object
+//        AdminEntity admin = new AdminEntity();
+//
+//        // Create a new UserEntity object and set its properties
+//        UserEntity user = new UserEntity();
+//        user.setFullName(fullName);
+//        user.setUsername(username);
+//        user.setEmail(email);
+//        user.setPhoneNumber(phoneNumber);
+//        String encryptedPassword = passwordEncoder.encode(password);
+//        user.setPassword(encryptedPassword);
+//
+//        // Set the user role to "ADMIN"
+//        UserRoleEntity adminRole = new UserRoleEntity();
+//        adminRole.setId(2L); // Set the ID of the "ADMIN" role
+//        user.setRole(adminRole);
+//
+//        userService.signupUser(user);
+//
+//        admin.setUser(user);
+//
+//        adminService.signupAdmin(admin);
+//        authWithHttpServletRequest(username , password);
+//
+//        return new RedirectView("/index");
+//    }
 
-        UserRoleEntity trainerRole = new UserRoleEntity();
-        trainerRole.setId(3L); // Set the ID of the "Trainer" role
-        user.setRole(trainerRole);
-
-        userService.signupUser(user);
-
-        trainerEntity.setAge(age);
-        trainerEntity.setExperience(experience);
-
-        //////////////// this is temporary
-
-        trainerEntity.setAdmin(adminService.getAllAdmins().get(0));
-
-        ////////////////
-        trainerEntity.setUser(user);
-
-        trainerService.signupTrainer(trainerEntity);
-        authWithHttpServletRequest(username , password);
-
-        return new RedirectView("/index");
-    }
+//    @PostMapping("/signupTrainer")
+//    public RedirectView getSignupTrainer(String fullName, String username, String password, String email, String phoneNumber,int age , String experience){
+//
+//        TrainerEntity trainerEntity = new TrainerEntity();
+//
+//        UserEntity user = new UserEntity();
+//        user.setFullName(fullName);
+//        user.setUsername(username);
+//        user.setEmail(email);
+//        user.setPhoneNumber(phoneNumber);
+//        String encryptedPassword = passwordEncoder.encode(password);
+//        user.setPassword(encryptedPassword);
+//
+//        UserRoleEntity trainerRole = new UserRoleEntity();
+//        trainerRole.setId(3L); // Set the ID of the "Trainer" role
+//        user.setRole(trainerRole);
+//
+//        userService.signupUser(user);
+//
+//        trainerEntity.setAge(age);
+//        trainerEntity.setExperience(experience);
+//
+//        //////////////// this is temporary
+//
+//        trainerEntity.setAdmin(adminService.getAllAdmins().get(0));
+//
+//        ////////////////
+//        trainerEntity.setUser(user);
+//
+//        trainerService.signupTrainer(trainerEntity);
+//        authWithHttpServletRequest(username , password);
+//
+//        return new RedirectView("/index");
+//    }
 
     public void authWithHttpServletRequest(String username, String password) {
         try {

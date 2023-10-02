@@ -33,7 +33,8 @@ public class WepSecurityConfig extends WebSecurityConfigurerAdapter {
                 .cors().disable()
                 .csrf().disable()
                 .authorizeRequests()
-                .antMatchers("/" , "/index" , "/login", "/signup" ,"/signupTrainer", "/loginTrainer","/signupAdmin","/loginAdmin").permitAll()
+                .antMatchers("/" , "/index" , "/login" , "/signupAdmin").permitAll()
+                // "/signup" ,"/signupTrainer", "/loginTrainer","/signupAdmin","/loginAdmin"
                 .antMatchers("/Css/**", "/Js/**").permitAll()
                 .antMatchers("/adminPage/**").hasAuthority("ADMIN")
                 .antMatchers("/trainerPage/**").hasAuthority("TRAINER") // hasRole("TRAINER")
