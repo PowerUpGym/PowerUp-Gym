@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Trainer Enrolled Classes</title>
+</head>
+<body>
+
+<nav>
+    <div>
+        <ul>
+            <!--            <li>-->
+            <!--                <ahref="/">Home</a>-->
+            <!--            </li>--> // this in case we decide to add a home page for all
+            <li>
+                <a th:if="${trainer != null}" href="/trainerPage">Trainer Profile</a>
+            </li>
+            <li>
+                <a th:if="${trainer != null}" href="/trainerClasses">Classes</a>
+            </li>
+            <!--            <li>-->
+            <!--                <a th:if="${trainer != null}" href="">Edit info</a>-->
+            <!--            </li>-->
+            <!--            <li>-->
+            <!--                <a th:if="${trainer}" href="/perform_logout">Log Out</a>-->
+            <!--            </li>-->
+        </ul>
+    </div>
+</nav>
+
+<div>
+  <h2>Enrolled Classes for the trainer</h2>
+
+  <ul>
+    <li th:each = "class: ${trainerClasses}">
+      <p>Class Name: <span th:text="${class.className}"></span></p>
+      <p>Schedule: <span th:text="${class.schedule}"></span></p>
+      <p>Description: <span th:text="${class.description}"></span></p>
+    </li>
+  </ul>
+
+</div>
+
+</body>
+</html>
