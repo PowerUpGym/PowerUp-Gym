@@ -10,8 +10,6 @@ import com.example.PowerUpGym.services.PlayerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.access.annotation.Secured;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -24,7 +22,8 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Controller
-@Secured("PLAYER")
+@Secured("PLAYER") // define a list of security configuration attributes for business methods
+@RequestMapping("/playerPage") // base path
 public class PlayerController {
 
     @Autowired
@@ -39,6 +38,10 @@ public class PlayerController {
     @Autowired
     PasswordEncoder passwordEncoder;
 
+    @GetMapping("")  // Home Page ("/playerPage")
+    public String getLoginPagePlayer() {
+        return "playerPages/playerPage.html";
+    }
 
     @GetMapping("/signup")
     public String getSignupPage() {
@@ -137,10 +140,6 @@ public class PlayerController {
 //        return new RedirectView("/players");
 //    }
 
-    @GetMapping("/playerPage")
-    public String getLoginPagePlayer() {
-        return "playerPage.html";
-    }
 
 
 
@@ -165,7 +164,7 @@ public class PlayerController {
                 model.addAttribute("player", player);
                 List<PlayerClassEnrollment> enrollments = classEnrollmentService.findByPlayer(player);
                 model.addAttribute("enrollments", enrollments);
-                return "playerInfo.html";
+                return "playerPages/playerInfo.html";
             }
         }
         return "index.html";
