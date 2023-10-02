@@ -6,6 +6,7 @@ import com.example.PowerUpGym.entity.users.UserRoleEntity;
 import com.example.PowerUpGym.services.TrainerService;
 import com.example.PowerUpGym.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,6 +18,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 
 @Controller
+@Secured("PLAYER") // define a list of security configuration attributes for business methods
+@RequestMapping("/trainerPage") // base path
 public class TrainerController {
 
     @Autowired
@@ -34,9 +37,9 @@ public class TrainerController {
         return "signupTrainer.html";
     }
 
-    @GetMapping("/trainerPage")
-    public String getLoginPagePlayer() {
-        return "trainerPage.html";
+    @GetMapping("")
+    public String getLoginPageTrainer() {
+        return "trainerPages/trainerPage";
     }
 
 

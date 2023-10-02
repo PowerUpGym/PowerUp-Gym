@@ -7,16 +7,20 @@ import com.example.PowerUpGym.repositories.UserEntityRepositories;
 import com.example.PowerUpGym.services.AdminService;
 import com.example.PowerUpGym.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.view.RedirectView;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 
 @Controller
+@Secured("ADMIN") // define a list of security configuration attributes for business methods
+@RequestMapping("/adminPage") // base path
 public class AdminController {
     @Autowired
     AdminService adminService;
@@ -31,14 +35,8 @@ public class AdminController {
     @Autowired
     UserService userService;
 
-
-//    @GetMapping("/loginAdmin")
-//    public String getLoginTrainer(){
-//        return "loginAdmin.html";
-//    }
-
-    @GetMapping("/adminPage")
-    public String getLoginPagePlayer() {
+    @GetMapping("")
+    public String getLoginPageAdmin() {
         return "adminPage.html";
     }
     @GetMapping("/signupAdmin")
