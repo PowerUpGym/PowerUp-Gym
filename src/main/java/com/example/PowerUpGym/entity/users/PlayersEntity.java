@@ -1,9 +1,11 @@
 package com.example.PowerUpGym.entity.users;
 
 
+import com.example.PowerUpGym.entity.classesGym.ClassesEntity;
 import lombok.*;
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.util.List;
 
 @Entity
 @Setter
@@ -17,7 +19,6 @@ public class PlayersEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Long id;
-
 
     @Column(name = "address", nullable = false)
     private String address;
@@ -44,4 +45,19 @@ public class PlayersEntity {
     @JoinColumn(name = "user_id")
     private UserEntity user;
 
+    @ManyToMany
+    @JoinTable(
+            name = "mst_class_enrollment",
+            joinColumns = @JoinColumn(name = "player_id"),
+            inverseJoinColumns = @JoinColumn(name = "class_id")
+    )
+    private List<ClassesEntity> enrolledClasses;
+
+    @ManyToOne
+    @JoinColumn(name = "trainer_id")
+    private TrainerEntity trainer;
+
+    @ManyToOne
+    @JoinColumn(name = "admin_id")
+    private AdminEntity admin;
 }

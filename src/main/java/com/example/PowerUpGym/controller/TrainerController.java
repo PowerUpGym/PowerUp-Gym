@@ -18,7 +18,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 
 @Controller
-@Secured("PLAYER") // define a list of security configuration attributes for business methods
+@Secured("TRAINER") // define a list of security configuration attributes for business methods
 @RequestMapping("/trainerPage") // base path
 public class TrainerController {
 
@@ -32,10 +32,10 @@ public class TrainerController {
     @Autowired
     UserService userService;
 
-    @GetMapping("/signupTrainer")
-    public String getSignupTrainer(){
-        return "signupTrainer.html";
-    }
+//    @GetMapping("/signupTrainer")
+//    public String getSignupTrainer(){
+//        return "signupTrainer.html";
+//    }
 
     @GetMapping("")
     public String getLoginPageTrainer() {
@@ -43,34 +43,34 @@ public class TrainerController {
     }
 
 
-    @PostMapping("/signupTrainer")
-    public RedirectView getSignupTrainer(String fullName, String username, String password, String email, String phoneNumber,int age , String experience){
-
-        TrainerEntity trainerEntity = new TrainerEntity();
-
-        UserEntity user = new UserEntity();
-        user.setFullName(fullName);
-        user.setUsername(username);
-        user.setEmail(email);
-        user.setPhoneNumber(phoneNumber);
-        String encryptedPassword = passwordEncoder.encode(password);
-        user.setPassword(encryptedPassword);
-
-        UserRoleEntity trainerRole = new UserRoleEntity();
-        trainerRole.setId(3L); // Set the ID of the "Trainer" role
-        user.setRole(trainerRole);
-
-        userService.signupUser(user);
-
-        trainerEntity.setAge(age);
-        trainerEntity.setExperience(experience);
-        trainerEntity.setUser(user);
-
-        trainerService.signupTrainer(trainerEntity);
-        authWithHttpServletRequest(username , password);
-
-        return new RedirectView("/index");
-    }
+//    @PostMapping("/signupTrainer")
+//    public RedirectView getSignupTrainer(String fullName, String username, String password, String email, String phoneNumber,int age , String experience){
+//
+//        TrainerEntity trainerEntity = new TrainerEntity();
+//
+//        UserEntity user = new UserEntity();
+//        user.setFullName(fullName);
+//        user.setUsername(username);
+//        user.setEmail(email);
+//        user.setPhoneNumber(phoneNumber);
+//        String encryptedPassword = passwordEncoder.encode(password);
+//        user.setPassword(encryptedPassword);
+//
+//        UserRoleEntity trainerRole = new UserRoleEntity();
+//        trainerRole.setId(3L); // Set the ID of the "Trainer" role
+//        user.setRole(trainerRole);
+//
+//        userService.signupUser(user);
+//
+//        trainerEntity.setAge(age);
+//        trainerEntity.setExperience(experience);
+//        trainerEntity.setUser(user);
+//
+//        trainerService.signupTrainer(trainerEntity);
+//        authWithHttpServletRequest(username , password);
+//
+//        return new RedirectView("/index");
+//    }
 
 
     public void authWithHttpServletRequest(String username, String password) {

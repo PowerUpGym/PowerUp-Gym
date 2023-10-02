@@ -1,5 +1,6 @@
 package com.example.PowerUpGym.entity.packagesGym;
 
+import com.example.PowerUpGym.entity.users.AdminEntity;
 import lombok.*;
 
 import javax.persistence.*;
@@ -26,5 +27,9 @@ public class PackagesEntity {
 
     @Column(name = "description", nullable = false)
     private String description;
+
+    @ManyToOne
+    @JoinColumn(name = "admin_id")
+    private AdminEntity admin;
 
 }
