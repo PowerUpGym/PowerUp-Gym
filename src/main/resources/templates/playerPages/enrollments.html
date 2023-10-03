@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>enrollments classes  </title>
+</head>
+<body>
+<h1>enrollments class</h1>
+<div th:if="${enrollments != null and not #lists.isEmpty(enrollments)}">
+  <h2>Enrolled Classes</h2>
+  <ul>
+    <li th:each="enrollment : ${enrollments}">
+      <p><strong>Class Name:</strong> <span th:text="${enrollment.className}"></span></p>
+      <p><strong>Schedule:</strong> <span th:text="${enrollment.schedule}"></span></p>
+      <p><strong>Description:</strong> <span th:text="${enrollment.description}"></span></p>
+    </li>
+  </ul>
+</div>
+</body>
+</html>
