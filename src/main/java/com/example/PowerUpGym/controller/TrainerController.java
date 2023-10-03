@@ -1,6 +1,7 @@
 package com.example.PowerUpGym.controller;
 
 import com.example.PowerUpGym.entity.classesGym.ClassesEntity;
+import com.example.PowerUpGym.entity.classesGym.PlayerClassEnrollment;
 import com.example.PowerUpGym.entity.users.PlayersEntity;
 import com.example.PowerUpGym.entity.users.TrainerEntity;
 import com.example.PowerUpGym.entity.users.UserEntity;
@@ -20,6 +21,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
 import java.util.List;
+import java.util.Set;
 
 @Controller
 @Secured("TRAINER") // define a list of security configuration attributes for business methods
@@ -120,7 +122,7 @@ public class TrainerController {
         ClassesEntity classDetails = trainerService.getClassDetails(classId);
 
         if (classDetails != null){
-            List<PlayersEntity> enrolledPlayers = classDetails.getEnrolledPlayers();
+            Set<PlayerClassEnrollment> enrolledPlayers = classDetails.getRegistrations();
 
             model.addAttribute("classDetails", classDetails);
             model.addAttribute("enrolledPlayers", enrolledPlayers);
