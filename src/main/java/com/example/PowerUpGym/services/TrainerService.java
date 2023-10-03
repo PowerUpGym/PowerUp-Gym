@@ -60,4 +60,7 @@ public class TrainerService {
         trainerEntityRepository.save(trainer);
     }
 
+    public TrainerEntity getTrainerById(Long id) {
+        return trainerEntityRepository.findById(id).orElse(null);
+    }
 }

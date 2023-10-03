@@ -30,5 +30,15 @@ public class UserService {
     public UserEntity getUserById(Long userId) {
         Optional<UserEntity> userOptional = userEntityRepositories.findById(userId);
         return userOptional.orElseThrow(() -> new RuntimeException("User not found with ID: " + userId));
+
+        return userEntityRepositories.findById(userId).orElse(null);
+    }
+
+    public UserEntity findUserById(Long userId) {
+        return userEntityRepositories.findById(userId).orElse(null);
+    }
+
+    public void saveUser(UserEntity user) {
+        userEntityRepositories.save(user);
     }
 }
