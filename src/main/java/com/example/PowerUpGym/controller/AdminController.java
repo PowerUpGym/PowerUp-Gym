@@ -8,13 +8,13 @@ import com.example.PowerUpGym.entity.users.*;
 import com.example.PowerUpGym.repositories.UserEntityRepositories;
 import com.example.PowerUpGym.services.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.view.RedirectView;
+
 import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
 import java.time.LocalDate;
@@ -28,6 +28,8 @@ import java.util.stream.Collectors;
 public class AdminController {
     @Autowired
     AdminService adminService;
+    @Autowired
+    HttpServletRequest request;
 
     @Autowired
     ClassService classService;
@@ -49,7 +51,14 @@ public class AdminController {
     public String getLoginPageAdmin() {
         return "adminPages/adminPage.html";
     }
-
+    @GetMapping("/managePlayers")
+    public String managePlayers(){
+        return "managePlayers.html";
+    }
+    @GetMapping("/manageTrainers")
+    public String manageTrainer(){
+        return "manageTrainer.html";
+    }
 
     //    @GetMapping("/signupAdmin")
 //    public String getSignupAdmin(){
@@ -132,31 +141,31 @@ public class AdminController {
         return "adminPages/signup.html";
     }
 
-   @PostMapping("/signupAdmin")
-    public RedirectView getSignupAdmin(String fullName, String username, String password, String email, String phoneNumber){
-        // Create a new Admin object
-        AdminEntity admin = new AdminEntity();
-
-        // Create a new UserEntity object and set its properties
-        UserEntity user = new UserEntity();
-        user.setFullName(fullName);
-        user.setUsername(username);
-        user.setEmail(email);
-        user.setPhoneNumber(phoneNumber);
-        String encryptedPassword = passwordEncoder.encode(password);
-        user.setPassword(encryptedPassword);
-
-        // Set the user role to "ADMIN"
-        UserRoleEntity adminRole = new UserRoleEntity();
-        adminRole.setId(2L); // Set the ID of the "ADMIN" role
-        user.setRole(adminRole);
-        userService.signupUser(user);
-        admin.setUser(user);
-        adminService.signupAdmin(admin);
-//        authWithHttpServletRequest(username , password);
-
-        return new RedirectView("/loginAdmin");
-    }
+//   @PostMapping("/signupAdmin")
+//    public RedirectView postSignupAdmin(String fullName, String username, String password, String email, String phoneNumber){
+//        // Create a new Admin object
+//        AdminEntity admin = new AdminEntity();
+//
+//        // Create a new UserEntity object and set its properties
+//        UserEntity user = new UserEntity();
+//        user.setFullName(fullName);
+//        user.setUsername(username);
+//        user.setEmail(email);
+//        user.setPhoneNumber(phoneNumber);
+//        String encryptedPassword = passwordEncoder.encode(password);
+//        user.setPassword(encryptedPassword);
+//
+//        // Set the user role to "ADMIN"
+//        UserRoleEntity adminRole = new UserRoleEntity();
+//        adminRole.setId(2L); // Set the ID of the "ADMIN" role
+//        user.setRole(adminRole);
+//        userService.signupUser(user);
+//        admin.setUser(user);
+//        adminService.signupAdmin(admin);
+////        authWithHttpServletRequest(username , password);
+//
+//        return new RedirectView("/loginAdmin");
+//    }
     @GetMapping("/loginAdmin")
     public String getLoginAdmin(){
         return "loginAdmin.html";
@@ -281,48 +290,30 @@ public class AdminController {
         return "adminPages/classDetails";
     }
 
-    @PostMapping("/signupAdmin")
-    public RedirectView getSignupAdmin(String fullName, String username, String password, String email, String phoneNumber){
-
-        AdminEntity admin = new AdminEntity();
-
-        UserEntity user = new UserEntity();
-        user.setFullName(fullName);
-        user.setUsername(username);
-        user.setEmail(email);
-        user.setPhoneNumber(phoneNumber);
-        String encryptedPassword = passwordEncoder.encode(password);
-        user.setPassword(encryptedPassword);
-
-        UserRoleEntity adminRole = new UserRoleEntity();
-        adminRole.setId(1L); // Set the ID of the "ADMIN" role
-        user.setRole(adminRole);
-
-        userService.signupUser(user);
-        admin.setUser(user)
-        adminService.signupAdmin(admin);
-        // authWithHttpServletRequest(username , password);
-
-        return new RedirectView("/loginAdmin");
-    }
-public void authWithHttpServletRequest(String username, String password) {
-    try {
-        request.login(username, password);
-    } catch (ServletException e) {
-        e.printStackTrace();
-    }
-}
-    @PostMapping("/loginAdmin")
-    public RedirectView postLoginAdmin(String username,String password){
-        authWithHttpServletRequest(username,password);
-        HttpSession session = request.getSession();
-        List<PlayersEntity> allPlayers = playerService.getAllPlayers();
-        List<TrainerEntity> allTrainers = trainerService.getAllTrainer();
-        List<UserEntity> allUsers=userService.getAllUsers();
-        session.setAttribute("allPlayers", allPlayers);
-        session.setAttribute("allTrainers", allTrainers);
-        session.setAttribute("allUsers", allUsers);
-        return new RedirectView("/adminpage");
-    }
+//    @PostMapping("/signupAdmin")
+//    public RedirectView getSignupAdmin(String fullName, String username, String password, String email, String phoneNumber){
+//
+//        AdminEntity admin = new AdminEntity();
+//
+//        UserEntity user = new UserEntity();
+//        user.setFullName(fullName);
+//        user.setUsername(username);
+//        user.setEmail(email);
+//        user.setPhoneNumber(phoneNumber);
+//        String encryptedPassword = passwordEncoder.encode(password);
+//        user.setPassword(encryptedPassword);
+//
+//        UserRoleEntity adminRole = new UserRoleEntity();
+//        adminRole.setId(1L); // Set the ID of the "ADMIN" role
+//        user.setRole(adminRole);
+//
+//        userService.signupUser(user);
+//        admin.setUser(user);
+//        adminService.signupAdmin(admin);
+//        // authWithHttpServletRequest(username , password);
+//
+//        return new RedirectView("/loginAdmin");
+//    }
 
 }
+

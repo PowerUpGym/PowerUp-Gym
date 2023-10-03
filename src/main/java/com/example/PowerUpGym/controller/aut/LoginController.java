@@ -1,12 +1,10 @@
 package com.example.PowerUpGym.controller.aut;
 
-import com.example.PowerUpGym.entity.users.AdminEntity;
-import com.example.PowerUpGym.entity.users.TrainerEntity;
-import com.example.PowerUpGym.entity.users.UserEntity;
-import com.example.PowerUpGym.entity.users.UserRoleEntity;
+import com.example.PowerUpGym.entity.users.*;
 import com.example.PowerUpGym.enums.Role;
 import com.example.PowerUpGym.repositories.UserEntityRepositories;
 import com.example.PowerUpGym.services.AdminService;
+import com.example.PowerUpGym.services.PlayerService;
 import com.example.PowerUpGym.services.TrainerService;
 import com.example.PowerUpGym.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +16,8 @@ import org.springframework.web.servlet.view.RedirectView;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+import java.util.List;
 
 @Controller
 public class LoginController {
@@ -37,6 +37,10 @@ public class LoginController {
 
     @Autowired
     PasswordEncoder passwordEncoder;
+    @Autowired
+    TrainerService trainerService;
+    @Autowired
+    PlayerService playerService;
 
     @GetMapping("/login")
     public String getLoginPage() {
@@ -100,7 +104,14 @@ public class LoginController {
                 // Redirect to the trainer page
                 return new RedirectView("/trainerPage");
             } else if (userRole.getRole() == Role.ADMIN) {
-                // Redirect to the trainer page
+//                 Redirect to the trainer page
+                HttpSession session=request.getSession();
+        List<PlayersEntity> allPlayers = playerService.getAllPlayers();
+        List<TrainerEntity> allTrainers = trainerService.getAllTrainer();
+        List<UserEntity> allUsers=userService.getAllUsers();
+        session.setAttribute("allPlayers", allPlayers);
+        session.setAttribute("allTrainers", allTrainers);
+        session.setAttribute("allUsers", allUsers);
                 return new RedirectView("/adminPage");
             }
         }
@@ -133,9 +144,9 @@ public class LoginController {
         admin.setUser(user);
 
         adminService.signupAdmin(admin);
-        authWithHttpServletRequest(username , password);
+//        authWithHttpServletRequest(username , password);
 
-        return new RedirectView("/index");
+        return new RedirectView("/login");
     }
 
 
@@ -215,6 +226,17 @@ public class LoginController {
             e.printStackTrace();
         }
     }
-
+//    @PostMapping("/loginAdmin")
+//    public RedirectView postLoginAdmin(String username, String password, Principal principal){
+//        authWithHttpServletRequest(username,password);
+//        HttpSession session = request.getSession();
+//        List<PlayersEntity> allPlayers = playerService.getAllPlayers();
+//        List<TrainerEntity> allTrainers = trainerService.getAllTrainer();
+//        List<UserEntity> allUsers=userService.getAllUsers();
+//        session.setAttribute("allPlayers", allPlayers);
+//        session.setAttribute("allTrainers", allTrainers);
+//        session.setAttribute("allUsers", allUsers);
+//        return new RedirectView("/adminpage");
+//    }
 
 }
