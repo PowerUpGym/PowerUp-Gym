@@ -1,15 +1,20 @@
 package com.example.PowerUpGym.services;
 
 import com.example.PowerUpGym.entity.users.PlayersEntity;
+import com.example.PowerUpGym.entity.users.TrainerEntity;
 import com.example.PowerUpGym.entity.users.UserEntity;
 import com.example.PowerUpGym.repositories.UserEntityRepositories;
+import lombok.Builder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
+
 @Service
 public class UserService {
 
     private final UserEntityRepositories userEntityRepositories;
+
 
     public UserService(UserEntityRepositories userEntityRepositories) {
         this.userEntityRepositories = userEntityRepositories;
@@ -26,7 +31,8 @@ public class UserService {
     }
 
     public UserEntity getUserById(Long userId) {
-        return userEntityRepositories.findById(userId).orElse(null);
+        Optional<UserEntity> userOptional = userEntityRepositories.findById(userId);
+        return userOptional.orElseThrow(() -> new RuntimeException("User not found with ID: " + userId));
     }
 
     public UserEntity findUserById(Long userId) {

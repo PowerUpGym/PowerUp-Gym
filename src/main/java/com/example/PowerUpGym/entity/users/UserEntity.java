@@ -1,22 +1,17 @@
 package com.example.PowerUpGym.entity.users;
 
-import com.example.PowerUpGym.enums.Role;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 
 @Entity
-@Data
+@Setter
+@Getter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -50,27 +45,16 @@ public class UserEntity implements UserDetails {
     @OneToOne(mappedBy = "user")
     private PlayersEntity player;
 
+    @OneToOne(mappedBy = "user")
+    private TrainerEntity trainer;
+
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-
-//        return null;
-
         UserRoleEntity role = getRole();
         List<SimpleGrantedAuthority> authorities = new ArrayList<>();
         authorities.add(new SimpleGrantedAuthority(role.getRole().name()));
         return authorities;
-
-
-//        Set<Role> roles = user.getRoles();
-//        List<SimpleGrantedAuthority> authorities = new ArrayList<>();
-//
-//        for (Role role : roles) {
-//            authorities.add(new SimpleGrantedAuthority(role.getName()));
-//        }
-//
-//        return authorities;
-
     }
 
     @Override
@@ -92,4 +76,6 @@ public class UserEntity implements UserDetails {
     public boolean isEnabled() {
         return true;
     }
+
+
 }

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Trainer Profile</title>
+</head>
+<body>
+
+<nav>
+    <ul>
+        <li>
+            <a href="/trainerPage">Home</a>
+        </li>
+        <li>
+            <a href="/trainerPage/trainerProfile">My Profile</a>
+        </li>
+        <li>
+            <a href="/trainerPage/trainerClasses">My Classes</a>
+        </li>
+    </ul>
+</nav>
+
+<div th:if="${user != null}">
+    <p><strong><span th:text="${user.id}" hidden="hidden"></span></strong></p>
+    <p><strong>Full Name: </strong><span th:text="${user.fullName}"></span></p>
+    <p><strong>Username: </strong><span th:text="${user.username}"></span></p>
+    <p><strong>Email: </strong><span th:text="${user.email}"></span></p>
+    <p><strong>Phone Number: </strong><span th:text="${user.phoneNumber}"></span></p>
+</div>
+
+<div th:if="${trainer != null}">
+    <p> <strong>Age: </strong> <span th:text="${trainer.age}"></span></p>
+    <p><strong>Experience: </strong><span th:text="${trainer.experience}"></span></p>
+
+    <br>
+
+    <form th:action="@{/trainerPage/editTrainerProfile}" method="get">
+        <button type="submit">Edit Profile</button>
+    </form>
+</div>
+
+<div th:if="${trainer == null}">
+    <p>Trainer is null</p>
+</div>
+</body>
+</html>

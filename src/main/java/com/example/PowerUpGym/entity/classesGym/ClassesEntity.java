@@ -19,8 +19,7 @@ import java.util.Set;
 @Table(name = "mst_class")
 public class ClassesEntity {
 
-//    @ManyToMany(mappedBy = "enrolledClasses", cascade = CascadeType.MERGE)
-//    private List<PlayersEntity> enrolledPlayers;
+
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,7 +28,7 @@ public class ClassesEntity {
 
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     @Column(name = "schedule", nullable = false)
-    private LocalDate schedule;
+    private LocalDate schedule; // make it string
 
     @Column(name = "description", nullable = false)
     private String description;

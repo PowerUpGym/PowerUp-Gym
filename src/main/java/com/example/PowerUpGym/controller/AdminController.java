@@ -5,6 +5,7 @@ import com.example.PowerUpGym.entity.classesGym.PlayerClassEnrollment;
 import com.example.PowerUpGym.entity.notifications.NotificationsEntity;
 import com.example.PowerUpGym.entity.packagesGym.PackagesEntity;
 import com.example.PowerUpGym.entity.users.*;
+import com.example.PowerUpGym.enums.Role;
 import com.example.PowerUpGym.repositories.UserEntityRepositories;
 import com.example.PowerUpGym.services.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,6 +45,8 @@ public class AdminController {
     TrainerService trainerService;
     @Autowired
     PlayerService playerService;
+    @Autowired
+    UserRoleService userRoleService;
 
     @Autowired
     private NotificationsService notificationService;
@@ -96,7 +99,7 @@ public class AdminController {
     }
 
     @PostMapping("/signupTrainer")
-    public RedirectView getSignupTrainer(String fullName, String username, String password, String email, String phoneNumber,int age , String experience , Principal principal){
+    public RedirectView getSignupTrainer(String fullName, String username, String password, String email, String phoneNumber, int age, String experience, Principal principal) {
 
         TrainerEntity trainerEntity = new TrainerEntity();
 
@@ -108,8 +111,7 @@ public class AdminController {
         String encryptedPassword = passwordEncoder.encode(password);
         user.setPassword(encryptedPassword);
 
-        UserRoleEntity trainerRole = new UserRoleEntity();
-        trainerRole.setId(3L); // Set the ID of the "Trainer" role
+        UserRoleEntity trainerRole = userRoleService.getUserRoleByName(Role.TRAINER);
         user.setRole(trainerRole);
 
         userService.signupUser(user);
@@ -117,11 +119,9 @@ public class AdminController {
         trainerEntity.setAge(age);
         trainerEntity.setExperience(experience);
 
-        //////////////// this is temporary
         String loggedInAdminUsername = principal.getName();
         AdminEntity admin = adminService.getAdminByUsername(loggedInAdminUsername);
         trainerEntity.setAdmin(admin);
-        ////////////////
 
         trainerEntity.setUser(user);
 
@@ -130,13 +130,14 @@ public class AdminController {
         return new RedirectView("/adminPage");
     }
 
-    @GetMapping("/signup")
-    public String getSignupPage() {
-        return "adminPages/signup.html";
+
+    @GetMapping("/signupPlayer")
+    public String getSignupPlayer() {
+        return "adminPages/signupPlayer.html";
     }
 
-    @PostMapping("/signup")
-    public RedirectView signup(String fullName, String username, String password, String email, String phoneNumber, String address, int age, int height, int weight, String image, @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate start_date, @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate end_date , Principal principal) {
+    @PostMapping("/signupPlayer")
+    public RedirectView signupPlayer(String fullName, String username, String password, String email, String phoneNumber, String address, int age, int height, int weight, String image, @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate start_date, @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate end_date , Principal principal) {
 
         PlayersEntity player = new PlayersEntity();
 
@@ -148,17 +149,14 @@ public class AdminController {
         String encryptedPassword = passwordEncoder.encode(password);
         user.setPassword(encryptedPassword);
 
-        UserRoleEntity playerRole = new UserRoleEntity();
-        playerRole.setId(1L); // Set the ID of the "PLAYER" role
+        UserRoleEntity playerRole = userRoleService.getUserRoleByName(Role.PLAYER);
         user.setRole(playerRole);
 
         userEntityRepositories.save(user);
 
-        /////////////////////////////////////////////
         String loggedInAdminUsername = principal.getName();
         AdminEntity admin = adminService.getAdminByUsername(loggedInAdminUsername);
         player.setAdmin(admin);
-        /////////////////////////////
 
         player.setUser(user);
         player.setAddress(address);
@@ -181,16 +179,15 @@ public class AdminController {
 
     @PostMapping("/addPackage")
     public RedirectView addPackage(String packageName, int price, String description, Principal principal) {
-        // Create a new PackagesEntity object
+
         PackagesEntity packageEntity = new PackagesEntity();
+
         packageEntity.setPackageName(packageName);
         packageEntity.setPrice(price);
         packageEntity.setDescription(description);
 
         String loggedInAdminUsername = principal.getName();
-
         AdminEntity admin = adminService.getAdminByUsername(loggedInAdminUsername);
-
         packageEntity.setAdmin(admin);
 
         packageService.addPackage(packageEntity);
@@ -206,16 +203,38 @@ public class AdminController {
         return "adminPages/addClass";
     }
 
-    @PostMapping("/addClass")
-    public RedirectView addClass(@ModelAttribute("classEntity") ClassesEntity classEntity) {
-        TrainerEntity trainer = trainerService.getTrainerById(classEntity.getTrainer().getId());
+    @PostMapping("/addClass") // Way 1 :  Retrieve the form fields from request parameters
+    public RedirectView addClass(HttpServletRequest request , Principal principal) {
+        String className = request.getParameter("className");
+        LocalDate schedule = LocalDate.parse(request.getParameter("schedule"));
+        String description = request.getParameter("description");
+        Long trainerId = Long.parseLong(request.getParameter("trainer.id"));
+
+        ClassesEntity classEntity = new ClassesEntity();
+        classEntity.setClassName(className);
+        classEntity.setSchedule(schedule);
+        classEntity.setDescription(description);
+
+        TrainerEntity trainer = trainerService.getTrainerById(trainerId);
 
         classEntity.setTrainer(trainer);
+
+        String loggedInAdminUsername = principal.getName();
+        AdminEntity admin = adminService.getAdminByUsername(loggedInAdminUsername);
+        classEntity.setAdmin(admin);
 
         classService.addClass(classEntity);
 
         return new RedirectView("/adminPage");
     }
+
+//    @PostMapping("/addClass") // Way 2 :  Retrieve the form fields from Model Object
+//    public RedirectView addClass(@ModelAttribute("classEntity") ClassesEntity classEntity) {
+//        TrainerEntity trainer = trainerService.getTrainerById(classEntity.getTrainer().getId());
+//        classEntity.setTrainer(trainer);
+//        classService.addClass(classEntity);
+//        return new RedirectView("/adminPage");
+//    }
 
     @GetMapping("/addPlayerToClass")
     public String getAddPlayerToClassForm(Model model) {
@@ -262,9 +281,10 @@ public class AdminController {
 
         Set<PlayerClassEnrollment> registrations = classEntity.getRegistrations();
 
-        List<PlayersEntity> enrolledPlayers = registrations
+        List<PlayersEntity> enrolledPlayers =
+                registrations
                 .stream()
-                .map(PlayerClassEnrollment::getPlayer)
+                .map(PlayerClassEnrollment::getPlayer) // takes each PlayerClassEnrollment object from the Stream and applies the getPlayer method to it.
                 .collect(Collectors.toList());
 
         model.addAttribute("enrolledPlayers", enrolledPlayers);
@@ -317,8 +337,6 @@ public class AdminController {
         // Redirect back to the player management page
         return new RedirectView("/adminPage/managePlayer");
     }
-
-
 
 
 }
