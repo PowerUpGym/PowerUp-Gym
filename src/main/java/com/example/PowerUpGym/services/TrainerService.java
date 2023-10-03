@@ -25,4 +25,8 @@ public class TrainerService {
         trainerEntityRepository.save(trainerEntity);
         return trainerEntity;
     }
+
+    public TrainerEntity getTrainerById(Long id) {
+        return trainerEntityRepository.findById(id).orElse(null);
+    }
 }

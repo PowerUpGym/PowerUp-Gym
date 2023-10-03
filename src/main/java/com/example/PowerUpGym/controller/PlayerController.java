@@ -194,7 +194,7 @@ public class PlayerController {
     @PostMapping("/updatePlayer")
     public RedirectView updatePlayer(Long userId,Long playerId,String address, int age, int height, int weight, String image, String fullName, String username, String email, String phoneNumber) {
         UserEntity user = userService.findUserById(userId);
-        PlayersEntity player = playerService.findPlayerById(playerId);
+        PlayersEntity player = playerService.getPlayerById(playerId);
 
         player.setAddress(address);
         player.setAge(age);
@@ -207,32 +207,32 @@ public class PlayerController {
         user.setEmail(email);
         user.setPhoneNumber(phoneNumber);
 
-        playerService.savePlayer(player);
+        playerService.signupPlayer(player);
         userService.saveUser(user);
 
         // Redirect to the player details page
         return new RedirectView("playerInfo");
     }
 
-    @GetMapping("/enrollments")
-    public String getMyclasses(Principal principal, Model model) {
-        if (principal != null) {
-            String userName = principal.getName();
-            UserEntity userEntity = playerService.findUserByUsername(userName);
-            if (userEntity != null && userEntity.getRole() != null) {
-                PlayersEntity player = userEntity.getPlayer();
-
-                List<ClassesEntity> enrollments = playerService.getEnrollmentsForPlayer(player);
-
-//                model.addAttribute("user", userEntity);
-//                model.addAttribute("player", player);
-                model.addAttribute("enrollments", enrollments);
-
-                return "playerPages/enrollments.html";
-            }
-        }
-        return "index.html";
-    }
+//    @GetMapping("/enrollments")
+//    public String getMyclasses(Principal principal, Model model) {
+//        if (principal != null) {
+//            String userName = principal.getName();
+//            UserEntity userEntity = playerService.findUserByUsername(userName);
+//            if (userEntity != null && userEntity.getRole() != null) {
+//                PlayersEntity player = userEntity.getPlayer();
+//
+//                List<ClassesEntity> enrollments = playerService.getEnrollmentsForPlayer(player);
+//
+////                model.addAttribute("user", userEntity);
+////                model.addAttribute("player", player);
+//                model.addAttribute("enrollments", enrollments);
+//
+//                return "playerPages/enrollments.html";
+//            }
+//        }
+//        return "index.html";
+//    }
 
 
 

@@ -25,6 +25,10 @@ public class UserService {
         return user;
     }
 
+    public UserEntity getUserById(Long userId) {
+        return userEntityRepositories.findById(userId).orElse(null);
+    }
+
     public UserEntity findUserById(Long userId) {
         return userEntityRepositories.findById(userId).orElse(null);
     }
