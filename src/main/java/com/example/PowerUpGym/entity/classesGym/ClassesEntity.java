@@ -19,8 +19,7 @@ import java.util.Set;
 @Table(name = "mst_class")
 public class ClassesEntity {
 
-//    @ManyToMany(mappedBy = "enrolledClasses", cascade = CascadeType.MERGE)
-//    private List<PlayersEntity> enrolledPlayers;
+
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
