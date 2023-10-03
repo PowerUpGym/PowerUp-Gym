@@ -1,12 +1,15 @@
 package com.example.PowerUpGym.controller;
 
 //import com.example.PowerUpGym.entity.classesGym.PlayerClassEnrollment;
+import com.example.PowerUpGym.entity.classesGym.ClassesEntity;
+import com.example.PowerUpGym.entity.users.AdminEntity;
 import com.example.PowerUpGym.entity.users.PlayersEntity;
 import com.example.PowerUpGym.entity.users.UserEntity;
 import com.example.PowerUpGym.entity.users.UserRoleEntity;
 import com.example.PowerUpGym.repositories.UserEntityRepositories;
 //import com.example.PowerUpGym.services.ClassEnrollmentService;
 import com.example.PowerUpGym.services.PlayerService;
+import com.example.PowerUpGym.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.access.annotation.Secured;
@@ -29,7 +32,8 @@ public class PlayerController {
     @Autowired
     PlayerService playerService;
 //    @Autowired ClassEnrollmentService classEnrollmentService;
-
+@Autowired
+    UserService userService;
     @Autowired
     UserEntityRepositories userEntityRepositories;
     @Autowired
@@ -169,6 +173,68 @@ public class PlayerController {
         }
         return "index.html";
     }
+
+    @GetMapping("/updatePlayerProfile")
+    public String getEditPlayerProfile(Principal principal, Model model) {
+        if (principal != null) {
+            String username = principal.getName();
+            UserEntity userEntity = playerService.findUserByUsername(username);
+
+            if (userEntity != null) {
+                model.addAttribute("user", userEntity);
+                PlayersEntity player = userEntity.getPlayer();
+                model.addAttribute("player", player);
+                return "playerPages/editprofile.html";
+
+            }
+        }
+         return "updatePlayer.html";
+     }
+
+    @PostMapping("/updatePlayer")
+    public RedirectView updatePlayer(Long userId,Long playerId,String address, int age, int height, int weight, String image, String fullName, String username, String email, String phoneNumber) {
+        UserEntity user = userService.findUserById(userId);
+        PlayersEntity player = playerService.findPlayerById(playerId);
+
+        player.setAddress(address);
+        player.setAge(age);
+        player.setHeight(height);
+        player.setWeight(weight);
+        player.setImage(image);
+
+        user.setFullName(fullName);
+        user.setUsername(username);
+        user.setEmail(email);
+        user.setPhoneNumber(phoneNumber);
+
+        playerService.savePlayer(player);
+        userService.saveUser(user);
+
+        // Redirect to the player details page
+        return new RedirectView("playerInfo");
+    }
+
+    @GetMapping("/enrollments")
+    public String getMyclasses(Principal principal, Model model) {
+        if (principal != null) {
+            String userName = principal.getName();
+            UserEntity userEntity = playerService.findUserByUsername(userName);
+            if (userEntity != null && userEntity.getRole() != null) {
+                PlayersEntity player = userEntity.getPlayer();
+
+                List<ClassesEntity> enrollments = playerService.getEnrollmentsForPlayer(player);
+
+//                model.addAttribute("user", userEntity);
+//                model.addAttribute("player", player);
+                model.addAttribute("enrollments", enrollments);
+
+                return "playerPages/enrollments.html";
+            }
+        }
+        return "index.html";
+    }
+
+
 
 
 //    @GetMapping("/calculateBMI")

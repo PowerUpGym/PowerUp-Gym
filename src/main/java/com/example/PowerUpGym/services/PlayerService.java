@@ -1,5 +1,6 @@
 package com.example.PowerUpGym.services;
 
+import com.example.PowerUpGym.entity.classesGym.ClassesEntity;
 import com.example.PowerUpGym.entity.users.PlayersEntity;
 import com.example.PowerUpGym.entity.users.UserEntity;
 import com.example.PowerUpGym.repositories.PlayerEntityRepository;
@@ -31,4 +32,15 @@ public class PlayerService {
         return player;
     }
 
+    public List<ClassesEntity> getEnrollmentsForPlayer(PlayersEntity player) {
+        return player.getEnrolledClasses();
+
+    }
+    public PlayersEntity findPlayerById(Long playerId) {
+        return playerRepository.findById(playerId).orElse(null);
+    }
+
+    public void savePlayer(PlayersEntity player) {
+        playerRepository.save(player);
+    }
 }

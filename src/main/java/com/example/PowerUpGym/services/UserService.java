@@ -24,4 +24,12 @@ public class UserService {
         userEntityRepositories.save(user);
         return user;
     }
+
+    public UserEntity findUserById(Long userId) {
+        return userEntityRepositories.findById(userId).orElse(null);
+    }
+
+    public void saveUser(UserEntity user) {
+        userEntityRepositories.save(user);
+    }
 }
