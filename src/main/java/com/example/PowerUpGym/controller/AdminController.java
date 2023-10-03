@@ -1,6 +1,7 @@
 package com.example.PowerUpGym.controller;
 
 import com.example.PowerUpGym.entity.classesGym.ClassesEntity;
+import com.example.PowerUpGym.entity.classesGym.PlayerClassEnrollment;
 import com.example.PowerUpGym.entity.packagesGym.PackagesEntity;
 import com.example.PowerUpGym.entity.users.*;
 import com.example.PowerUpGym.repositories.UserEntityRepositories;
@@ -13,16 +14,16 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.view.RedirectView;
-
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Controller
 @Secured("ADMIN") // define a list of security configuration attributes for business methods
-@RequestMapping("/adminPage") // base path
+@RequestMapping("/adminPage") // base path (Home path)
 public class AdminController {
     @Autowired
     AdminService adminService;
@@ -34,8 +35,6 @@ public class AdminController {
     PackageService packageService;
     @Autowired
     UserEntityRepositories userEntityRepositories;
-    @Autowired
-    private HttpServletRequest request;
     @Autowired
     PasswordEncoder passwordEncoder;
     @Autowired
@@ -116,9 +115,7 @@ public class AdminController {
 
         //////////////// this is temporary
         String loggedInAdminUsername = principal.getName();
-        // Retrieve the admin entity by username
         AdminEntity admin = adminService.getAdminByUsername(loggedInAdminUsername);
-        // Associate the admin with the package
         trainerEntity.setAdmin(admin);
         ////////////////
 
@@ -136,10 +133,9 @@ public class AdminController {
 
     @PostMapping("/signup")
     public RedirectView signup(String fullName, String username, String password, String email, String phoneNumber, String address, int age, int height, int weight, String image, @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate start_date, @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate end_date , Principal principal) {
-        // Create a new PlayersEntity object
+
         PlayersEntity player = new PlayersEntity();
 
-        // Create a new UserEntity object and set its properties
         UserEntity user = new UserEntity();
         user.setFullName(fullName);
         user.setUsername(username);
@@ -148,7 +144,6 @@ public class AdminController {
         String encryptedPassword = passwordEncoder.encode(password);
         user.setPassword(encryptedPassword);
 
-        // Set the user role to "PLAYER"
         UserRoleEntity playerRole = new UserRoleEntity();
         playerRole.setId(1L); // Set the ID of the "PLAYER" role
         user.setRole(playerRole);
@@ -157,13 +152,10 @@ public class AdminController {
 
         /////////////////////////////////////////////
         String loggedInAdminUsername = principal.getName();
-        // Retrieve the admin entity by username
         AdminEntity admin = adminService.getAdminByUsername(loggedInAdminUsername);
-        // Associate the admin with the package
         player.setAdmin(admin);
         /////////////////////////////
 
-        // Set the user for the player
         player.setUser(user);
         player.setAddress(address);
         player.setAge(age);
@@ -173,17 +165,14 @@ public class AdminController {
         player.setStart_date(start_date);
         player.setImage(image);
 
-        // Sign up the user
         playerService.signupPlayer(player);
 
-        // If the user account is successfully created, redirect to the home page
-        // Otherwise, redirect to the signup page with an error message
         return new RedirectView("/adminPage");
     }
 
     @GetMapping("/addPackage")
     public String getAddPackageForm() {
-        return "adminPages/addPackage"; // Return the name of your HTML form
+        return "adminPages/addPackage";
     }
 
     @PostMapping("/addPackage")
@@ -194,16 +183,12 @@ public class AdminController {
         packageEntity.setPrice(price);
         packageEntity.setDescription(description);
 
-        // Get the username of the logged-in admin
         String loggedInAdminUsername = principal.getName();
 
-        // Retrieve the admin entity by username
         AdminEntity admin = adminService.getAdminByUsername(loggedInAdminUsername);
 
-        // Associate the admin with the package
         packageEntity.setAdmin(admin);
 
-        // Save the package to the database
         packageService.addPackage(packageEntity);
 
         return new RedirectView("/adminPage");
@@ -219,13 +204,10 @@ public class AdminController {
 
     @PostMapping("/addClass")
     public RedirectView addClass(@ModelAttribute("classEntity") ClassesEntity classEntity) {
-        // Retrieve the selected trainer by ID
         TrainerEntity trainer = trainerService.getTrainerById(classEntity.getTrainer().getId());
 
-        // Set the selected trainer for the class
         classEntity.setTrainer(trainer);
 
-        // Save the class to the database
         classService.addClass(classEntity);
 
         return new RedirectView("/adminPage");
@@ -233,31 +215,32 @@ public class AdminController {
 
     @GetMapping("/addPlayerToClass")
     public String getAddPlayerToClassForm(Model model) {
-        // Retrieve all players and classes to populate the form
         List<PlayersEntity> players = playerService.getAllPlayers();
         List<ClassesEntity> classes = classService.getAllClasses();
 
-        // Add players and classes to the model
         model.addAttribute("players", players);
         model.addAttribute("classes", classes);
 
-        return "adminPages/addPlayerToClass"; // Create this HTML form
+        return "adminPages/addPlayerToClass";
     }
 
     @PostMapping("/addPlayerToClass")
     public RedirectView addPlayerToClass(@RequestParam Long playerId, @RequestParam Long classId) {
-        // Retrieve the selected player and class by their IDs
+
         PlayersEntity player = playerService.getPlayerById(playerId);
         ClassesEntity classEntity = classService.getClassById(classId);
 
-        // Enroll the player in the class (update the relationship)
-        classEntity.getEnrolledPlayers().add(player);
+        PlayerClassEnrollment enrollment = new PlayerClassEnrollment();
+        enrollment.setPlayer(player);
+        enrollment.setEnrolledClass(classEntity);
+        enrollment.setEnrollmentDateTime(LocalDate.now());
 
-        // Save the changes
-        classService.addClass(classEntity);
+        playerService.addPlayerClassEnrollment(enrollment);
 
         return new RedirectView("/adminPage/allClasses");
     }
+
+
 
 
 
@@ -273,12 +256,18 @@ public class AdminController {
         ClassesEntity classEntity = classService.getClassById(id);
         model.addAttribute("classEntity", classEntity);
 
-        // Retrieve the enrolled players for the class
-        List<PlayersEntity> enrolledPlayers = classEntity.getEnrolledPlayers();
+        Set<PlayerClassEnrollment> registrations = classEntity.getRegistrations();
+
+        List<PlayersEntity> enrolledPlayers = registrations
+                .stream()
+                .map(PlayerClassEnrollment::getPlayer)
+                .collect(Collectors.toList());
+
         model.addAttribute("enrolledPlayers", enrolledPlayers);
 
         return "adminPages/classDetails";
     }
+
 
 
 

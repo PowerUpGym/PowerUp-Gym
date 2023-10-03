@@ -6,23 +6,19 @@
 </head>
 <body>
 <h1>Class Details</h1>
-<table>
-    <tr>
-        <th>Class Name:</th>
-        <td th:text="${classEntity.className}"></td>
-    </tr>
-    <tr>
-        <th>Trainer:</th>
-        <td th:text="${classEntity.trainer.user.fullName}"></td>
-    </tr>
-    <!-- Add other class details as needed -->
-</table>
+<div th:object="${classEntity}">
+    <p><strong>Class Name:</strong> <span th:text="*{className}"></span></p>
+    <p><strong>Schedule:</strong> <span th:text="*{schedule}"></span></p>
+    <p><strong>Description:</strong> <span th:text="*{description}"></span></p>
+</div>
 
-<h2>Enrolled Players</h2>
+<h2>Enrolled Players:</h2>
 <ul>
     <li th:each="player : ${enrolledPlayers}">
         <span th:text="${player.user.fullName}"></span>
     </li>
 </ul>
+
+<a href="/adminPage/allClasses">Back to All Classes</a>
 </body>
 </html>
