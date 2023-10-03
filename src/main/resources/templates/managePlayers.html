@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Dashboard</title>
+</head>
+<body>
+<h1>manage players</h1>
+<p>here you can manage all the players.</p>
+<fieldset>
+    <section>
+        <table >
+            <tr>
+                <th>name</th>
+                <th>username</th>
+                <th>email</th>
+                <th>phone</th>
+                <th>address</th>
+                <th>height</th>
+                <th>weight</th>
+                <th>age</th>
+                <th>start date</th>
+                <th>end date</th>
+            </tr>
+            <tr if="${session.allPlayers!= null}" th:each="player:${session?.allPlayers}" >
+                <td th:text="${player?.user?.fullName}"></td>
+                <td th:text="${player?.user?.username}"></td>
+                <td th:text="${player?.user?.email}"></td>
+                <td th:text="${player?.user?.phoneNumber}"></td>
+                <td th:text="${player?.address}"></td>
+                <td th:text="${player?.height}"></td>
+                <td th:text="${player?.weight}"></td>
+                <td th:text="${player?.age}"></td>
+                <td th:text="${player?.start_date}"></td>
+                <td th:text="${player?.start_end_date}"></td>
+
+            </tr>
+        </table>
+    </section>
+</fieldset>
+</body>
+</html>

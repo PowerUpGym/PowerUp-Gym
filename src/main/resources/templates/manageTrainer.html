@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Dashboard</title>
+</head>
+<body>
+<h1>manage trainers</h1>
+<p>here you can manage all the trainers.</p>
+<fieldset>
+    <section>
+        <table >
+            <tr>
+                <th>name</th>
+                <th>username</th>
+                <th>email</th>
+                <th>phone</th>
+                <th>experience</th>
+                <th>age</th>
+                <th>owned classes</th>
+                <th>enrolled players</th>
+            </tr>
+            <tr if="${session.alltrainers!= null}" th:each="trainer:${session?.alltrainers}" >
+                <td th:text="${trainer?.user?.fullName}"></td>
+                <td th:text="${trainer?.user?.username}"></td>
+                <td th:text="${trainer?.user?.email}"></td>
+                <td th:text="${trainer?.user?.phoneNumber}"></td>
+                <td th:text="${trainer?.experience}"></td>
+                <td th:text="${trainer?.age}"></td>
+                <td th:each="ownedClass:${trainer?.ownedClasses}"><p th:text="ownedClass"></p></td>
+                <td th:each="enrolledPlayer, iterStat : ${trainer?.enrolledPlayers}">
+                    <p th:if="${iterStat.index &lt; 5}" th:text="${enrolledPlayer}"></p>
+                    <p th:if="${iterStat.index == 5}">...</p>
+                </td>
+            </tr>
+        </table>
+    </section>
+</fieldset>
+</body>
+</html>
