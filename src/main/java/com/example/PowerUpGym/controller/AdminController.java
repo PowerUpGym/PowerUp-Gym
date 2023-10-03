@@ -177,16 +177,15 @@ public class AdminController {
 
     @PostMapping("/addPackage")
     public RedirectView addPackage(String packageName, int price, String description, Principal principal) {
-        // Create a new PackagesEntity object
+
         PackagesEntity packageEntity = new PackagesEntity();
+
         packageEntity.setPackageName(packageName);
         packageEntity.setPrice(price);
         packageEntity.setDescription(description);
 
         String loggedInAdminUsername = principal.getName();
-
         AdminEntity admin = adminService.getAdminByUsername(loggedInAdminUsername);
-
         packageEntity.setAdmin(admin);
 
         packageService.addPackage(packageEntity);
@@ -279,17 +278,16 @@ public class AdminController {
 
         Set<PlayerClassEnrollment> registrations = classEntity.getRegistrations();
 
-        List<PlayersEntity> enrolledPlayers = registrations
+        List<PlayersEntity> enrolledPlayers =
+                registrations
                 .stream()
-                .map(PlayerClassEnrollment::getPlayer)
+                .map(PlayerClassEnrollment::getPlayer) // takes each PlayerClassEnrollment object from the Stream and applies the getPlayer method to it.
                 .collect(Collectors.toList());
 
         model.addAttribute("enrolledPlayers", enrolledPlayers);
 
         return "adminPages/classDetails";
     }
-
-
 
 
 }

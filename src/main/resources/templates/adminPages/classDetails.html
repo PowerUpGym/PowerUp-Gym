@@ -7,9 +7,9 @@
 <body>
 <h1>Class Details</h1>
 <div th:object="${classEntity}">
-    <p><strong>Class Name:</strong> <span th:text="*{className}"></span></p>
-    <p><strong>Schedule:</strong> <span th:text="*{schedule}"></span></p>
-    <p><strong>Description:</strong> <span th:text="*{description}"></span></p>
+    <p><strong>Class Name:</strong> <span th:text="${classEntity.className}"></span></p>
+    <p><strong>Schedule:</strong> <span th:text="{classEntity.schedule}"></span></p>
+    <p><strong>Description:</strong> <span th:text="{classEntity.description}"></span></p>
 </div>
 
 <h2>Enrolled Players:</h2>
