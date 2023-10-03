@@ -7,11 +7,14 @@
 <section class="wrapper">
     <div class="form login">
         <header>Login</header>
-        <form action="/perform_login" method="POST">
-            <input type="text" name="username" placeholder="Username" required />
-            <input type="password" placeholder="Password" name="password" required />
-            <input type="submit" value="Login" />
-        </form><br>
+        <form action="/login" method="post">
+            <input type="text" name="username" placeholder="Username">
+            <input type="password" name="password" placeholder="Password">
+            <input type="submit" value="Login">
+
+            <input type="hidden" name="successHandler" value="customAuthenticationSuccessHandler">
+        </form>
+
         <p class="signup-text">don't have an account ?  <a href="/signup" class="creative-button">Sign Up</a></p>
     </div>
 </section>

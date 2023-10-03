@@ -30,4 +30,16 @@ public class TrainerEntity {
     @OneToOne
     @JoinColumn(name = "user_id")
     private UserEntity user;
+
+    @OneToMany(mappedBy = "trainer", cascade = CascadeType.ALL)
+    private List<ClassesEntity> ownedClasses;
+
+    @OneToMany(mappedBy = "trainer", cascade = CascadeType.ALL)
+    private List<PlayersEntity> enrolledPlayers;
+
+    @ManyToOne
+    @JoinColumn(name = "admin_id")
+    private AdminEntity admin;
+
+
 }

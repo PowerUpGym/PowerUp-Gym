@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit Trainer Profile</title>
+</head>
+<body>
+
+<nav>
+    <ul>
+        <li>
+            <a href="/trainerPage">Home</a>
+        </li>
+        <li>
+            <a href="/trainerPage/trainerProfile">My Profile</a>
+        </li>
+        <li>
+            <a href="/trainerPage/trainerClasses">My Classes</a>
+        </li>
+    </ul>
+</nav>
+
+<form action="/trainerPage/updateTrainerProfile" method="post">
+
+    <input type="hidden" name="userId" th:value="${user.id}" />
+
+    <label for="fullName">Full Name:</label>
+    <input type="text" id="fullName" name="fullName" th:value="${user.fullName}" />
+
+    <label for="username">Username:</label>
+    <input type="text" id="username" name="username" th:value="${user.username}" />
+
+    <label for="email">Email:</label>
+    <input type="text" id="email" name="email" th:value="${user.email}" />
+
+    <label for="phoneNumber">Phone Number:</label>
+    <input type="text" id="phoneNumber" name="phoneNumber" th:value="${user.phoneNumber}" />
+
+    <label for="password">Password:</label>
+    <input type="password" id="password" name="password" />
+
+    <label for="age">Age:</label>
+    <input type="text" id="age" name="age" th:value="${trainer.age}" />
+
+    <label for="experience">Experience:</label>
+    <input type="text" id="experience" name="experience" th:value="${trainer.experience}" />
+
+    <button type="submit">Update Profile</button>
+</form>
+
+</body>
+</html>

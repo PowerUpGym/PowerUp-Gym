@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Add Class</title>
+</head>
+<body>
+<h1>Add a New Class</h1>
+<form th:action="@{/adminPage/addClass}" method="post">
+    <label for="className">Class Name:</label>
+    <input type="text" id="className" name="className" required><br>
+
+    <label for="schedule">Schedule:</label>
+    <input type="date" id="schedule" name="schedule" required><br>
+
+    <label for="description">Description:</label>
+    <textarea id="description" name="description" required></textarea><br>
+
+    <label for="trainer.id">Select Trainer:</label>
+    <select id="trainer.id" name="trainer.id" required>
+        <option th:each="trainer : ${trainers}" th:value="${trainer.id}" th:text="${trainer.user.fullName}"></option>
+    </select><br>
+
+    <button type="submit">Add Class</button>
+</form>
+</body>
+</html>
+
+
+<!--
+Another Way :
+
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Add Class</title>
+</head>
+<body>
+<h1>Add a New Class</h1>                              // Here is the diff
+<form th:action="@{/adminPage/addClass}" method="post" th:object="${classEntity}">
+    <label for="className">Class Name:</label>
+    <input type="text" id="className" name="className" th:field="*{className}" required><br>
+
+    <label for="schedule">Schedule:</label>
+    <input type="date" id="schedule" name="schedule" th:field="*{schedule}" required><br>
+
+    <label for="description">Description:</label>
+    <textarea id="description" name="description" th:field="*{description}" required></textarea><br>
+
+    <label for="trainer.id">Select Trainer:</label>
+    <select id="trainer.id" name="trainer.id" th:field="*{trainer.id}" required>
+        <option th:each="trainer : ${trainers}" th:value="${trainer.id}" th:text="${trainer.user.fullName}"></option>
+    </select><br>
+
+    <button type="submit">Add Class</button>
+</form>
+</body>
+</html>
+
+
+
+-->

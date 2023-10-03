@@ -12,14 +12,21 @@ public class AdminService {
     public AdminService(AdminEntityRepository adminEntityRepository) {
         this.adminEntityRepository = adminEntityRepository;
     }
-    
+
     public List<AdminEntity> getAllAdmins(){
         return adminEntityRepository.findAll();
     }
-    
+
     public AdminEntity signupAdmin(AdminEntity admin) {
         adminEntityRepository.save(admin);
         return admin;
     }
-    
+
+    public AdminEntity getAdminById(Long id) {
+        return adminEntityRepository.findById(id).orElse(null);
+    }
+
+    public AdminEntity getAdminByUsername(String username) {
+        return adminEntityRepository.findByUserUsername(username);
+    }
 }
