@@ -1,11 +1,12 @@
 package com.example.PowerUpGym.entity.users;
 
 
-import com.example.PowerUpGym.entity.classesGym.ClassesEntity;
+import com.example.PowerUpGym.entity.classesGym.PlayerClassEnrollment;
 import lombok.*;
+
 import javax.persistence.*;
 import java.time.LocalDate;
-import java.util.List;
+import java.util.Set;
 
 @Entity
 @Setter
@@ -45,13 +46,15 @@ public class PlayersEntity {
     @JoinColumn(name = "user_id")
     private UserEntity user;
 
-    @ManyToMany
-    @JoinTable(
-            name = "mst_class_enrollment",
-            joinColumns = @JoinColumn(name = "player_id"),
-            inverseJoinColumns = @JoinColumn(name = "class_id")
-    )
-    private List<ClassesEntity> enrolledClasses;
+    //    @ManyToMany
+//    @JoinTable(
+//            name = "mst_class_enrollment",
+//            joinColumns = @JoinColumn(name = "player_id"),
+//            inverseJoinColumns = @JoinColumn(name = "class_id")
+//    )
+//    private List<ClassesEntity> enrolledClasses;
+    @OneToMany(mappedBy = "player")
+    private Set<PlayerClassEnrollment> registrations;
 
     @ManyToOne
     @JoinColumn(name = "trainer_id")

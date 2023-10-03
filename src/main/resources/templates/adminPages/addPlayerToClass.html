@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Add Player To Class</title>
+</head>
+<body>
+<h1>Add Player To Class</h1>
+<form th:action="@{/adminPage/addPlayerToClass}" method="post">
+    <label for="playerId">Select Player:</label>
+    <select id="playerId" name="playerId" required>
+        <option th:each="player : ${players}" th:value="${player.id}" th:text="${player.user.fullName}"></option>
+    </select><br>
+
+    <label for="classId">Select Class:</label>
+    <select id="classId" name="classId" required>
+        <option th:each="class : ${classes}" th:value="${class.id}" th:text="${class.className}"></option>
+    </select><br>
+
+    <button type="submit">Enroll Player</button>
+</form>
+</body>
+</html>
