@@ -39,8 +39,8 @@ public class TrainerService {
     }
 
     public UserEntity findUserByUsername(String username){
-        return userEntityRepositories.findByUsername(username);
-    }
+        return userEntityRepositories.findByUsername(username);    }
+
 
     public List<ClassesEntity> getClassesForTrainer(TrainerEntity trainer){
         return trainer.getOwnedClasses();
@@ -63,4 +63,15 @@ public class TrainerService {
     public TrainerEntity getTrainerById(Long id) {
         return trainerEntityRepository.findById(id).orElse(null);
     }
+
+  public void updateTrainerInfo(UserEntity userEntity){
+        TrainerEntity trainerEntity = userEntity.getTrainer();
+
+        if (trainerEntity != null){
+            trainerEntity.setAge(trainerEntity.getAge());
+            trainerEntity.setExperience(trainerEntity.getExperience());
+
+            trainerEntityRepository.save(trainerEntity);
+        }
+  }
 }

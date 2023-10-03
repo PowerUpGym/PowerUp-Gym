@@ -34,10 +34,13 @@
 
     <br>
 
-    <form action="/trainerPage/editTrainerProfile" method="get">
+    <form th:action="@{/trainerPage/editTrainerProfile}" method="get">
         <button type="submit">Edit Profile</button>
     </form>
 </div>
 
+<div th:if="${trainer == null}">
+    <p>Trainer is null</p>
+</div>
 </body>
 </html>

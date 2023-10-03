@@ -41,5 +41,13 @@ public class TrainerEntity {
     @JoinColumn(name = "admin_id")
     private AdminEntity admin;
 
-
+    @Builder
+    public TrainerEntity(int age, String experience, UserEntity user, List<ClassesEntity> ownedClasses, List<PlayersEntity> enrolledPlayers, AdminEntity admin) {
+        this.age = age;
+        this.experience = experience;
+        this.user = user;
+        this.ownedClasses = ownedClasses;
+        this.enrolledPlayers = enrolledPlayers;
+        this.admin = admin;
+    }
 }
