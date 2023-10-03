@@ -2,10 +2,7 @@ package com.example.PowerUpGym.controller;
 
 import com.example.PowerUpGym.entity.classesGym.ClassesEntity;
 import com.example.PowerUpGym.entity.classesGym.PlayerClassEnrollment;
-import com.example.PowerUpGym.entity.users.PlayersEntity;
-import com.example.PowerUpGym.entity.users.TrainerEntity;
-import com.example.PowerUpGym.entity.users.UserEntity;
-import com.example.PowerUpGym.entity.users.UserRoleEntity;
+import com.example.PowerUpGym.entity.users.*;
 import com.example.PowerUpGym.services.TrainerService;
 import com.example.PowerUpGym.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -86,6 +83,7 @@ public class TrainerController {
             UserEntity userEntity = trainerService.findUserByUsername(username);
 
             if (userEntity != null){
+                trainerService.updateTrainerInfo(userEntity);
                 model.addAttribute("user", userEntity);
                 TrainerEntity trainer = userEntity.getTrainer();
                 model.addAttribute("trainer", trainer);
@@ -160,24 +158,42 @@ public class TrainerController {
                                              @RequestParam("password") String password,
                                              @RequestParam("age") int age,
                                              @RequestParam("experience") String experience) {
+
         UserEntity userEntity = userService.getUserById(userId);
-        TrainerEntity trainer = userEntity.getTrainer();
 
-        userEntity.setFullName(fullName);
-        userEntity.setUsername(username);
-        userEntity.setEmail(email);
-        userEntity.setPhoneNumber(phoneNumber);
-        trainer.setAge(age);
-        trainer.setExperience(experience);
+        UserEntity updatedUser = buildUpdatedUser(userId, fullName, username, email, phoneNumber, password, userEntity);
 
-        if (!password.isEmpty()) {
-            String encryptedPassword = passwordEncoder.encode(password);
-            userEntity.setPassword(encryptedPassword);
-        }
-
-        trainerService.updateTrainer(trainer);
+        updateTrainerInfo(updatedUser, age, experience);
 
         return new RedirectView("/trainerPage/trainerProfile");
+    }
+
+    private UserEntity buildUpdatedUser(Long userId, String fullName, String username, String email,
+                                        String phoneNumber, String password, UserEntity userEntity) {
+        return UserEntity.builder()
+                .id(userId)
+                .fullName(fullName)
+                .username(username)
+                .email(email)
+                .phoneNumber(phoneNumber)
+                .password(password.isEmpty() ? userEntity.getPassword() : passwordEncoder.encode(password))
+                .role(userEntity.getRole())
+                .player(userEntity.getPlayer())
+                .trainer(userEntity.getTrainer())
+                .build();
+    }
+
+    private void updateTrainerInfo(UserEntity userEntity, int age, String experience) {
+        TrainerEntity trainer = TrainerEntity.builder()
+                .id(userEntity.getTrainer().getId())
+                .age(age)
+                .experience(experience)
+                .user(userEntity)
+                .build();
+
+        userEntity.setTrainer(trainer);
+
+        trainerService.updateTrainerInfo(userEntity);
     }
 
 
