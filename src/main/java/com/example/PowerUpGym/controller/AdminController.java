@@ -11,10 +11,7 @@ import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.view.RedirectView;
 
 import javax.servlet.ServletException;
@@ -226,6 +223,56 @@ public class AdminController {
 
         return new RedirectView("/adminPage");
     }
+
+    @GetMapping("/addPlayerToClass")
+    public String getAddPlayerToClassForm(Model model) {
+        // Retrieve all players and classes to populate the form
+        List<PlayersEntity> players = playerService.getAllPlayers();
+        List<ClassesEntity> classes = classService.getAllClasses();
+
+        // Add players and classes to the model
+        model.addAttribute("players", players);
+        model.addAttribute("classes", classes);
+
+        return "adminPages/addPlayerToClass"; // Create this HTML form
+    }
+
+    @PostMapping("/addPlayerToClass")
+    public RedirectView addPlayerToClass(@RequestParam Long playerId, @RequestParam Long classId) {
+        // Retrieve the selected player and class by their IDs
+        PlayersEntity player = playerService.getPlayerById(playerId);
+        ClassesEntity classEntity = classService.getClassById(classId);
+
+        // Enroll the player in the class (update the relationship)
+        classEntity.getEnrolledPlayers().add(player);
+
+        // Save the changes
+        classService.addClass(classEntity);
+
+        return new RedirectView("/adminPage/allClasses");
+    }
+
+
+
+    @GetMapping("/allClasses")
+    public String getAllClasses(Model model) {
+        List<ClassesEntity> classes = classService.getAllClasses();
+        model.addAttribute("classes", classes);
+        return "adminPages/allClasses";
+    }
+
+    @GetMapping("/allClasses/classDetails/{id}")
+    public String getClassDetails(@PathVariable Long id, Model model) {
+        ClassesEntity classEntity = classService.getClassById(id);
+        model.addAttribute("classEntity", classEntity);
+
+        // Retrieve the enrolled players for the class
+        List<PlayersEntity> enrolledPlayers = classEntity.getEnrolledPlayers();
+        model.addAttribute("enrolledPlayers", enrolledPlayers);
+
+        return "adminPages/classDetails";
+    }
+
 
 
 }

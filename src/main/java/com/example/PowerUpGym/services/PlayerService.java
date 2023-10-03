@@ -31,4 +31,9 @@ public class PlayerService {
         return player;
     }
 
+    public PlayersEntity getPlayerById(Long playerId) {
+        return playerRepository.findById(playerId)
+                .orElseThrow(() -> new RuntimeException("Player not found with ID: " + playerId));
+    }
+
 }

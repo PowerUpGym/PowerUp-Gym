@@ -39,7 +39,7 @@ public class ClassesEntity {
     @JoinColumn(name = "trainer_id")
     private TrainerEntity trainer;
 
-    @ManyToMany(mappedBy = "enrolledClasses")
+    @ManyToMany(mappedBy = "enrolledClasses", cascade = CascadeType.MERGE)
     private List<PlayersEntity> enrolledPlayers;
 
     @ManyToOne //
