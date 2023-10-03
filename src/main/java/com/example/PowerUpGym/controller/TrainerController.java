@@ -161,29 +161,15 @@ public class TrainerController {
 
         UserEntity userEntity = userService.getUserById(userId);
 
-        UserEntity updatedUser = buildUpdatedUser(userId, fullName, username, email, phoneNumber, password, userEntity);
+        UserEntity updateUser = UpdateTrainer(userId, fullName, username, email, phoneNumber, password, userEntity, age, experience);
 
-        updateTrainerInfo(updatedUser, age, experience);
+        userService.saveUser(updateUser);
 
         return new RedirectView("/trainerPage/trainerProfile");
     }
 
-    private UserEntity buildUpdatedUser(Long userId, String fullName, String username, String email,
-                                        String phoneNumber, String password, UserEntity userEntity) {
-        return UserEntity.builder()
-                .id(userId)
-                .fullName(fullName)
-                .username(username)
-                .email(email)
-                .phoneNumber(phoneNumber)
-                .password(password.isEmpty() ? userEntity.getPassword() : passwordEncoder.encode(password))
-                .role(userEntity.getRole())
-                .player(userEntity.getPlayer())
-                .trainer(userEntity.getTrainer())
-                .build();
-    }
+    private UserEntity UpdateTrainer(Long userId, String fullName, String username, String email, String phoneNumbeer, String password, UserEntity userEntity, int age, String experience) {
 
-    private void updateTrainerInfo(UserEntity userEntity, int age, String experience) {
         TrainerEntity trainer = TrainerEntity.builder()
                 .id(userEntity.getTrainer().getId())
                 .age(age)
@@ -193,9 +179,18 @@ public class TrainerController {
 
         userEntity.setTrainer(trainer);
 
-        trainerService.updateTrainerInfo(userEntity);
+        return UserEntity.builder()
+                .id(userId)
+                .fullName(fullName)
+                .username(username)
+                .email(email)
+                .phoneNumber(phoneNumbeer)
+                .password(password.isEmpty() ? userEntity.getPassword() : passwordEncoder.encode(password))
+                .role(userEntity.getRole())
+                .player(userEntity.getPlayer())
+                .trainer(userEntity.getTrainer())
+                .build();
     }
-
 
     public void authWithHttpServletRequest(String username, String password) {
         try {
