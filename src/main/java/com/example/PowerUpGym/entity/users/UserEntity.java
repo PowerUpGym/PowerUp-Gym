@@ -45,7 +45,7 @@ public class UserEntity implements UserDetails {
     @OneToOne(mappedBy = "user")
     private PlayersEntity player;
 
-    @OneToOne(mappedBy = "user")
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     private TrainerEntity trainer;
 
 
@@ -78,4 +78,15 @@ public class UserEntity implements UserDetails {
     }
 
 
+    @Builder
+    public UserEntity(String fullName, String username, String email, String phoneNumber, String password, UserRoleEntity role, PlayersEntity player, TrainerEntity trainer) {
+        this.fullName = fullName;
+        this.username = username;
+        this.email = email;
+        this.phoneNumber = phoneNumber;
+        this.password = password;
+        this.role = role;
+        this.player = player;
+        this.trainer = trainer;
+    }
 }
