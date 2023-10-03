@@ -36,4 +36,9 @@ public class UserService {
     public void saveUser(UserEntity user) {
         userEntityRepositories.save(user);
     }
+
+
+    public UserEntity findUserByUsername(String senderUsername) {
+        return userEntityRepositories.findByUsername(senderUsername);
+    }
 }

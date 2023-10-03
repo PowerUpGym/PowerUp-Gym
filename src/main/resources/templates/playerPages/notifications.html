@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>Player Notifications</title>
+</head>
+<body>
+<h1>Notifications</h1>
+
+<table>
+  <thead>
+  <tr>
+    <th>Sender</th>
+    <th>Message</th>
+    <th>Timestamp</th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr th:each="notification : ${notifications}">
+    <td th:text="${notification.sender.fullName}"></td>
+    <td th:text="${notification.message}"></td>
+<!--    <td th:text="${#dates.format(notification.timestamp, 'dd-MM-yyyy HH:mm:ss')}"></td>-->
+  </tr>
+  </tbody>
+</table>
+</body>
+</html>

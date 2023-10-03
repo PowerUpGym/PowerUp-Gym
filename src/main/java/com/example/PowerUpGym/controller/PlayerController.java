@@ -2,12 +2,14 @@ package com.example.PowerUpGym.controller;
 
 //import com.example.PowerUpGym.entity.classesGym.PlayerClassEnrollment;
 import com.example.PowerUpGym.entity.classesGym.ClassesEntity;
+import com.example.PowerUpGym.entity.notifications.NotificationsEntity;
 import com.example.PowerUpGym.entity.users.AdminEntity;
 import com.example.PowerUpGym.entity.users.PlayersEntity;
 import com.example.PowerUpGym.entity.users.UserEntity;
 import com.example.PowerUpGym.entity.users.UserRoleEntity;
 import com.example.PowerUpGym.repositories.UserEntityRepositories;
 //import com.example.PowerUpGym.services.ClassEnrollmentService;
+import com.example.PowerUpGym.services.NotificationsService;
 import com.example.PowerUpGym.services.PlayerService;
 import com.example.PowerUpGym.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +36,8 @@ public class PlayerController {
 //    @Autowired ClassEnrollmentService classEnrollmentService;
 @Autowired
     UserService userService;
+    @Autowired
+    private NotificationsService notificationService;
     @Autowired
     UserEntityRepositories userEntityRepositories;
     @Autowired
@@ -264,6 +268,21 @@ public class PlayerController {
 //
 //        return "playerInfo";
 //    }
+
+    @GetMapping("/notifications")
+    public String getNotifications(Principal principal, Model model) {
+        String userName = principal.getName();
+        UserEntity userEntity = userService.findUserByUsername(userName);
+
+        if (userEntity != null && userEntity.getPlayer() != null) {
+            Long playerId = userEntity.getPlayer().getId();
+            List<NotificationsEntity> notifications = notificationService.getNotificationsForPlayer(playerId);
+            model.addAttribute("notifications", notifications);
+        }
+
+        return "playerPages/notifications.html";
+    }
+
 
 
 
