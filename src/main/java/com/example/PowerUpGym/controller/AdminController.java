@@ -202,9 +202,19 @@ public class AdminController {
         return "adminPages/addClass";
     }
 
-    @PostMapping("/addClass")
-    public RedirectView addClass(@ModelAttribute("classEntity") ClassesEntity classEntity) {
-        TrainerEntity trainer = trainerService.getTrainerById(classEntity.getTrainer().getId());
+    @PostMapping("/addClass") // Way 1 :  Retrieve the form fields from request parameters
+    public RedirectView addClass(HttpServletRequest request) {
+        String className = request.getParameter("className");
+        LocalDate schedule = LocalDate.parse(request.getParameter("schedule"));
+        String description = request.getParameter("description");
+        Long trainerId = Long.parseLong(request.getParameter("trainer.id"));
+
+        ClassesEntity classEntity = new ClassesEntity();
+        classEntity.setClassName(className);
+        classEntity.setSchedule(schedule);
+        classEntity.setDescription(description);
+
+        TrainerEntity trainer = trainerService.getTrainerById(trainerId);
 
         classEntity.setTrainer(trainer);
 
@@ -212,6 +222,17 @@ public class AdminController {
 
         return new RedirectView("/adminPage");
     }
+
+//    @PostMapping("/addClass") // Way 2 :  Retrieve the form fields from Model Object
+//    public RedirectView addClass(@ModelAttribute("classEntity") ClassesEntity classEntity) {
+//        TrainerEntity trainer = trainerService.getTrainerById(classEntity.getTrainer().getId());
+//
+//        classEntity.setTrainer(trainer);
+//
+//        classService.addClass(classEntity);
+//
+//        return new RedirectView("/adminPage");
+//    }
 
     @GetMapping("/addPlayerToClass")
     public String getAddPlayerToClassForm(Model model) {
