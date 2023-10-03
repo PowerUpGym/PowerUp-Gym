@@ -116,13 +116,12 @@ public class AdminController {
 
         //////////////// this is temporary
         String loggedInAdminUsername = principal.getName();
-
         // Retrieve the admin entity by username
         AdminEntity admin = adminService.getAdminByUsername(loggedInAdminUsername);
-
         // Associate the admin with the package
         trainerEntity.setAdmin(admin);
         ////////////////
+
         trainerEntity.setUser(user);
 
         trainerService.signupTrainer(trainerEntity);
@@ -136,7 +135,7 @@ public class AdminController {
     }
 
     @PostMapping("/signup")
-    public RedirectView signup(String fullName, String username, String password, String email, String phoneNumber, String address, int age, int height, int weight, String image, @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate start_date, @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate end_date) {
+    public RedirectView signup(String fullName, String username, String password, String email, String phoneNumber, String address, int age, int height, int weight, String image, @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate start_date, @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate end_date , Principal principal) {
         // Create a new PlayersEntity object
         PlayersEntity player = new PlayersEntity();
 
@@ -155,6 +154,14 @@ public class AdminController {
         user.setRole(playerRole);
 
         userEntityRepositories.save(user);
+
+        /////////////////////////////////////////////
+        String loggedInAdminUsername = principal.getName();
+        // Retrieve the admin entity by username
+        AdminEntity admin = adminService.getAdminByUsername(loggedInAdminUsername);
+        // Associate the admin with the package
+        player.setAdmin(admin);
+        /////////////////////////////
 
         // Set the user for the player
         player.setUser(user);
