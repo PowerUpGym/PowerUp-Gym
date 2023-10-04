@@ -1,5 +1,6 @@
 package com.example.PowerUpGym.controller.aut;
 
+import com.example.PowerUpGym.bo.auth.LoginRequest;
 import com.example.PowerUpGym.entity.users.AdminEntity;
 import com.example.PowerUpGym.entity.users.UserEntity;
 import com.example.PowerUpGym.entity.users.UserRoleEntity;
@@ -50,11 +51,11 @@ public class LoginController {
     }
 
     @PostMapping("/login")
-    public RedirectView login(String username, String password) {
-        // Authenticate the user
-        authWithHttpServletRequest(username, password);
-        // Check the role of the authenticated user
-        UserEntity authenticatedUser = userEntityRepositories.findByUsername(username);
+    public RedirectView login(LoginRequest loginRequest) {
+
+        authWithHttpServletRequest(loginRequest.getUsername() , loginRequest.getPassword());
+
+        UserEntity authenticatedUser = userEntityRepositories.findByUsername(loginRequest.getUsername());
 
         if (authenticatedUser != null) {
             UserRoleEntity userRole = authenticatedUser.getRole();
@@ -77,30 +78,30 @@ public class LoginController {
     }
 
     @PostMapping("/signupAdmin")
-    public RedirectView getSignupAdmin(String fullName, String username, String password, String email, String phoneNumber){
-        AdminEntity admin = new AdminEntity();
-
-        UserEntity user = new UserEntity();
-        user.setFullName(fullName);
-        user.setUsername(username);
-        user.setEmail(email);
-        user.setPhoneNumber(phoneNumber);
-        String encryptedPassword = passwordEncoder.encode(password);
-        user.setPassword(encryptedPassword);
-
-        // Set the user role to "ADMIN"
-        UserRoleEntity trainerRole = userRoleService.getUserRoleByName(Role.ADMIN);
-        user.setRole(trainerRole);
+    public RedirectView postSignupAdmin(String fullName, String username, String password, String email, String phoneNumber) {
+        // Create a UserEntity first
+        UserEntity user = UserEntity.builder()
+                .fullName(fullName)
+                .username(username)
+                .email(email)
+                .phoneNumber(phoneNumber)
+                .password(passwordEncoder.encode(password))
+                .role(userRoleService.getUserRoleByName(Role.ADMIN))
+                .build();
 
         userService.signupUser(user);
 
-        admin.setUser(user);
+        AdminEntity admin = AdminEntity.builder()
+                .user(user)
+                .build();
 
         adminService.signupAdmin(admin);
-        authWithHttpServletRequest(username , password);
+
+        authWithHttpServletRequest(username, password);
 
         return new RedirectView("/index");
     }
+
 
     public void authWithHttpServletRequest(String username, String password) {
         try {
