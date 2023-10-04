@@ -111,12 +111,13 @@ public class PlayerController {
         player.setAge(age);
         player.setHeight(height);
         player.setWeight(weight);
-        player.setImage(image);
+//        player.setImage(image);
 
         user.setFullName(fullName);
         user.setUsername(username);
         user.setEmail(email);
         user.setPhoneNumber(phoneNumber);
+        user.setImage(image);
 
         playerService.signupPlayer(player);
         userService.saveUser(user);

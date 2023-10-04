@@ -33,9 +33,6 @@ public class PlayersEntity {
     @Column(name = "weight", nullable = false)
     private int weight;
 
-    @Column(name = "image", nullable = false)
-    private String image;
-
     @Column(name = "start_date", nullable = false)
     private LocalDate start_date;
 
