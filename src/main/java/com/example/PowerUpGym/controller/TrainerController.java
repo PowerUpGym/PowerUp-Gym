@@ -2,7 +2,9 @@ package com.example.PowerUpGym.controller;
 
 import com.example.PowerUpGym.entity.classesGym.ClassesEntity;
 import com.example.PowerUpGym.entity.classesGym.PlayerClassEnrollment;
+import com.example.PowerUpGym.entity.notifications.NotificationsEntity;
 import com.example.PowerUpGym.entity.users.*;
+import com.example.PowerUpGym.services.NotificationsService;
 import com.example.PowerUpGym.services.TrainerService;
 import com.example.PowerUpGym.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +19,7 @@ import org.springframework.web.servlet.view.RedirectView;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
 
@@ -27,6 +30,8 @@ public class TrainerController {
 
     @Autowired
     private HttpServletRequest request;
+    @Autowired
+    private NotificationsService notificationService;
     @Autowired
     PasswordEncoder passwordEncoder;
     @Autowired
@@ -199,4 +204,34 @@ public class TrainerController {
             e.printStackTrace();
         }
     }
+
+    @GetMapping("/managePlayer/{id}")
+    public String sendMessageToUser(@PathVariable Long id, Model model) {
+        model.addAttribute("receiverId", id); // Pass the receivers ID
+        return "trainerPages/sendMessage";
+    }
+
+    @GetMapping("/sendMessage")
+    public String getSendMessageForm(@RequestParam Long receiverId, Model model) {
+        model.addAttribute("receiverId", receiverId);
+        return "trainerPages/sendMessage";
+    }
+
+    @PostMapping("/sendMessage")
+    public RedirectView sendMessage(@RequestParam("receiverId") Long receiverId, @RequestParam String message, Principal principal) {
+        String senderUsername = principal.getName();
+        UserEntity sender = userService.findUserByUsername(senderUsername);
+
+        UserEntity receiver = userService.findUserById(receiverId);
+
+        NotificationsEntity notification = new NotificationsEntity();
+        notification.setMessage(message);
+        notification.setSender(sender);
+        notification.setReceiver(receiver);
+        notification.setTimeStamp(LocalDate.now());
+        notificationService.saveNotification(notification);
+
+        return new RedirectView("trainerClasses");
+    }
+
 }

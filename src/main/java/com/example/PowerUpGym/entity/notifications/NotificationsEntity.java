@@ -32,6 +32,4 @@ public class NotificationsEntity {
     @ManyToOne
     @JoinColumn(name = "receiver_id")
     private UserEntity receiver;
-
-
 }

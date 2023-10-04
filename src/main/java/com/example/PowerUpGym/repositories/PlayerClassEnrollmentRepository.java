@@ -9,4 +9,5 @@ import java.util.List;
 
 public interface PlayerClassEnrollmentRepository extends JpaRepository<PlayerClassEnrollment,Long> {
 
+    List<PlayerClassEnrollment> findByPlayer(PlayersEntity player);
 }

@@ -2,6 +2,7 @@ package com.example.PowerUpGym.controller;
 
 import com.example.PowerUpGym.entity.classesGym.ClassesEntity;
 import com.example.PowerUpGym.entity.classesGym.PlayerClassEnrollment;
+import com.example.PowerUpGym.entity.notifications.NotificationsEntity;
 import com.example.PowerUpGym.entity.packagesGym.PackagesEntity;
 import com.example.PowerUpGym.entity.users.*;
 import com.example.PowerUpGym.enums.Role;
@@ -46,6 +47,9 @@ public class AdminController {
     PlayerService playerService;
     @Autowired
     UserRoleService userRoleService;
+
+    @Autowired
+    private NotificationsService notificationService;
 
     @GetMapping("")
     public String getLoginPageAdmin() {
@@ -281,6 +285,47 @@ public class AdminController {
         model.addAttribute("enrolledPlayers", enrolledPlayers);
 
         return "adminPages/classDetails";
+    }
+    ///////////////////////MOSUAB RAMI AL-BORINI===========================================================================
+    @GetMapping("/managePlayer")
+    public String getManagePlayer(Model model) {
+        List<PlayersEntity> players = playerService.getAllPlayers();
+        model.addAttribute("players", players);
+        return "adminPages/managePlayer";
+    }
+
+//    @GetMapping("/manageTrainer")
+//    public String getManageTrainer() {
+//        return "adminPages/manageTrainer.html";
+//    }
+
+    @GetMapping("/managePlayer/{id}")
+    public String sendMessageToUser(@PathVariable Long id, Model model) {
+        model.addAttribute("receiverId", id); // Pass the receiver's ID
+        return "adminPages/sendMessage";
+    }
+
+    @GetMapping("/sendMessage")
+    public String getSendMessageForm(@RequestParam Long receiverId, Model model) {
+        model.addAttribute("receiverId", receiverId);
+        return "adminPages/sendMessage";
+    }
+
+    @PostMapping("/sendMessage")
+    public RedirectView sendMessage(@RequestParam Long receiverId, @RequestParam String message, Principal principal) {
+        String senderUsername = principal.getName();
+        UserEntity sender = userService.findUserByUsername(senderUsername);
+
+        UserEntity receiver = userService.findUserById(receiverId);
+
+        NotificationsEntity notification = new NotificationsEntity();
+        notification.setMessage(message);
+        notification.setSender(sender);
+        notification.setReceiver(receiver);
+        notification.setTimeStamp(LocalDate.now());
+        notificationService.saveNotification(notification);
+
+        return new RedirectView("/adminPage/managePlayer");
     }
 
 

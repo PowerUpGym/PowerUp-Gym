@@ -1,5 +1,6 @@
 package com.example.PowerUpGym.services;
 
+import com.example.PowerUpGym.entity.classesGym.ClassesEntity;
 import com.example.PowerUpGym.entity.classesGym.PlayerClassEnrollment;
 import com.example.PowerUpGym.entity.users.PlayersEntity;
 import com.example.PowerUpGym.entity.users.UserEntity;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class PlayerService {
@@ -47,6 +49,16 @@ public class PlayerService {
     @Transactional
     public void addPlayerClassEnrollment(PlayerClassEnrollment enrollment) {
         playerClassEnrollmentRepository.save(enrollment);
+    }
+
+    public List<ClassesEntity> getPlayerEnrolment(PlayersEntity player) {
+        List<PlayerClassEnrollment> enrollments = playerClassEnrollmentRepository.findByPlayer(player);
+
+        List<ClassesEntity> enrolledClasses = enrollments.stream()
+                .map(PlayerClassEnrollment::getEnrolledClass)
+                .collect(Collectors.toList());
+
+        return enrolledClasses;
     }
 
 }

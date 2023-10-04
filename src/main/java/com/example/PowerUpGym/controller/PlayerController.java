@@ -2,12 +2,14 @@ package com.example.PowerUpGym.controller;
 
 //import com.example.PowerUpGym.entity.classesGym.PlayerClassEnrollment;
 import com.example.PowerUpGym.entity.classesGym.ClassesEntity;
+import com.example.PowerUpGym.entity.notifications.NotificationsEntity;
 import com.example.PowerUpGym.entity.users.AdminEntity;
 import com.example.PowerUpGym.entity.users.PlayersEntity;
 import com.example.PowerUpGym.entity.users.UserEntity;
 import com.example.PowerUpGym.entity.users.UserRoleEntity;
 import com.example.PowerUpGym.repositories.UserEntityRepositories;
 //import com.example.PowerUpGym.services.ClassEnrollmentService;
+import com.example.PowerUpGym.services.NotificationsService;
 import com.example.PowerUpGym.services.PlayerService;
 import com.example.PowerUpGym.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +25,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @Controller
 @Secured("PLAYER") // define a list of security configuration attributes for business methods
@@ -34,6 +37,8 @@ public class PlayerController {
 //    @Autowired ClassEnrollmentService classEnrollmentService;
 @Autowired
     UserService userService;
+    @Autowired
+    private NotificationsService notificationService;
     @Autowired
     UserEntityRepositories userEntityRepositories;
     @Autowired
@@ -158,21 +163,22 @@ public class PlayerController {
 
     @GetMapping("/playerInfo")
     public String getMyInfo(Principal principal, Model model) {
-        if (principal != null) {
-            String userName = principal.getName();
-            UserEntity userEntity = playerService.findUserByUsername(userName);
-//            && userEntity.getRole().getId() == 1
-            if (userEntity != null && userEntity.getRole() != null) {
-                model.addAttribute("user", userEntity);
-                PlayersEntity player = userEntity.getPlayer();
-                model.addAttribute("player", player);
-//                List<PlayerClassEnrollment> enrollments = classEnrollmentService.findByPlayer(player);
-//                model.addAttribute("enrollments", enrollments);
-                return "playerPages/playerInfo.html";
-            }
-        }
-        return "index.html";
+        return Optional.ofNullable(principal)
+                .map(Principal::getName)
+                .flatMap(userName -> {
+                    UserEntity userEntity = playerService.findUserByUsername(userName);
+                    return Optional.ofNullable(userEntity)
+                            .filter(entity -> entity.getRole() != null)
+                            .map(entity -> {
+                                model.addAttribute("user", entity);
+                                PlayersEntity player = entity.getPlayer();
+                                model.addAttribute("player", player);
+                                return "playerPages/playerInfo.html";
+                            });
+                })
+                .orElse("index.html");
     }
+
 
     @GetMapping("/updatePlayerProfile")
     public String getEditPlayerProfile(Principal principal, Model model) {
@@ -214,25 +220,25 @@ public class PlayerController {
         return new RedirectView("playerInfo");
     }
 
-//    @GetMapping("/enrollments")
-//    public String getMyclasses(Principal principal, Model model) {
-//        if (principal != null) {
-//            String userName = principal.getName();
-//            UserEntity userEntity = playerService.findUserByUsername(userName);
-//            if (userEntity != null && userEntity.getRole() != null) {
-//                PlayersEntity player = userEntity.getPlayer();
-//
-//                List<ClassesEntity> enrollments = playerService.getEnrollmentsForPlayer(player);
-//
-////                model.addAttribute("user", userEntity);
-////                model.addAttribute("player", player);
-//                model.addAttribute("enrollments", enrollments);
-//
-//                return "playerPages/enrollments.html";
-//            }
-//        }
-//        return "index.html";
-//    }
+    @GetMapping("/enrollments")
+    public String getMyclasses(Principal principal, Model model) {
+        if (principal != null) {
+            String userName = principal.getName();
+            UserEntity userEntity = playerService.findUserByUsername(userName);
+            if (userEntity != null && userEntity.getRole() != null) {
+                PlayersEntity player = userEntity.getPlayer();
+
+                List<ClassesEntity> enrollments = playerService.getPlayerEnrolment(player);
+
+//                model.addAttribute("user", userEntity);
+//                model.addAttribute("player", player);
+                model.addAttribute("enrollments", enrollments);
+
+                return "playerPages/enrollments.html";
+            }
+        }
+        return "index.html";
+    }
 
 
 
@@ -264,6 +270,21 @@ public class PlayerController {
 //
 //        return "playerInfo";
 //    }
+
+    @GetMapping("/notifications")
+    public String getNotifications(Principal principal, Model model) {
+        String userName = principal.getName();
+        UserEntity userEntity = userService.findUserByUsername(userName);
+
+        if (userEntity != null && userEntity.getPlayer() != null) {
+            Long playerId = userEntity.getId();
+            List<NotificationsEntity> notifications = notificationService.getNotificationsForPlayer(playerId);
+            model.addAttribute("notifications", notifications);
+        }
+
+        return "playerPages/notifications.html";
+    }
+
 
 
 

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Manage Players</title>
+</head>
+<body>
+<h1>Player Management</h1>
+
+<table>
+    <thead>
+    <tr>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Phone Number</th>
+        <th>Address</th>
+        <th>Age</th>
+        <th>Height</th>
+        <th>Weight</th>
+        <th>Image</th>
+        <th>Start Date</th>
+        <th>End Date</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="player : ${players}">
+        <td th:text="${player.user.fullName}"></td>
+        <td th:text="${player.user.email}"></td>
+        <td th:text="${player.user.phoneNumber}"></td>
+        <td th:text="${player.address}"></td>
+        <td th:text="${player.age}"></td>
+        <td th:text="${player.height}"></td>
+        <td th:text="${player.image}"></td>
+        <td th:text="${player.weight}"></td>
+        <td th:text="${player.start_date}"></td>
+        <td th:text="${player.end_date}"></td>
+        <td>
+            <form th:action="@{/adminPage/managePlayer/{id}(id=${player.user.id})}" method="get">
+                <button>Send</button>
+            </form>
+
+
+
+        </td>
+    </tr>
+    </tbody>
+</table>
+</body>
+</html>
