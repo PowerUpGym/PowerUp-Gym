@@ -34,7 +34,6 @@ public class PlayerController {
 
     @Autowired
     PlayerService playerService;
-//    @Autowired ClassEnrollmentService classEnrollmentService;
 @Autowired
     UserService userService;
     @Autowired
@@ -52,105 +51,11 @@ public class PlayerController {
         return "playerPages/playerPage.html";
     }
 
-//    @GetMapping("/signup")
-//    public String getSignupPage() {
-//        return "signup.html";
-//    }
 
     @GetMapping("/index")
     public String index() {
         return "index.html";
     }
-
-
-//    @PostMapping("/signup")
-//    public RedirectView signup(String fullName, String username, String password, String email, String phoneNumber, String address, int age, int height, int weight, String image, @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate start_date, @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate end_date) {
-//        // Create a new PlayersEntity object
-//        PlayersEntity player = new PlayersEntity();
-//
-//        // Create a new UserEntity object and set its properties
-//        UserEntity user = new UserEntity();
-//        user.setFullName(fullName);
-//        user.setUsername(username);
-//        user.setEmail(email);
-//        user.setPhoneNumber(phoneNumber);
-//        String encryptedPassword = passwordEncoder.encode(password);
-//        user.setPassword(encryptedPassword);
-//
-//        // Set the user role to "PLAYER"
-//        UserRoleEntity playerRole = new UserRoleEntity();
-//        playerRole.setId(1L); // Set the ID of the "PLAYER" role
-//        user.setRole(playerRole);
-//
-//        userEntityRepositories.save(user);
-//
-//        // Set the user for the player
-//        player.setUser(user);
-//        player.setAddress(address);
-//        player.setAge(age);
-//        player.setHeight(height);
-//        player.setWeight(weight);
-//        player.setEnd_date(end_date);
-//        player.setStart_date(start_date);
-//        player.setImage(image);
-//
-//        // Sign up the user
-//        playerService.signupPlayer(player);
-//
-//        // Authenticate the user
-//        authWithHttpServletRequest(username, password);
-//
-//        // If the user account is successfully created, redirect to the home page
-//        // Otherwise, redirect to the signup page with an error message
-//        return new RedirectView("/playerInfo");
-//    }
-
-
-
-
-
-//    @PostMapping("/signup")
-//    public RedirectView signup(Model model, String fullName, String username, String password, String email, String phoneNumber, String address, int age, int height, int weight, String image, @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate start_date, @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate end_date) {
-//        // Create a new PlayersEntity object
-//        PlayersEntity player = new PlayersEntity();
-//
-//        // Create a new UserEntity object and set its properties
-//        UserEntity user = new UserEntity();
-//        user.setFullName(fullName);
-//        user.setUsername(username);
-//        user.setEmail(email);
-//        user.setPhoneNumber(phoneNumber);
-//        String encryptedPassword = passwordEncoder.encode(password);
-//        user.setPassword(encryptedPassword);
-//
-//        userEntityRepositories.save(user);
-//
-//        // Set the user for the player
-//        player.setUser(user);
-//
-//
-//
-//        player.setAddress(address);
-//        player.setAge(age); // Assuming there's a setAge method in your PlayersEntity
-//        player.setHeight(height);
-//        player.setWeight(weight);
-//        player.setEnd_date(end_date);
-//        player.setStart_date(start_date);
-//        player.setImage(image);
-//
-//        // Sign up the user
-//        playerService.signupPlayer(player);
-//
-//        // Authenticate the user
-//        authWithHttpServletRequest(username, password);
-//
-//        // If the user account is successfully created, redirect to the home page
-//        // Otherwise, redirect to the signup page with an error message
-//        return new RedirectView("/players");
-//    }
-
-
-
 
     public void authWithHttpServletRequest(String username, String password) {
         try {
@@ -230,8 +135,6 @@ public class PlayerController {
 
                 List<ClassesEntity> enrollments = playerService.getPlayerEnrolment(player);
 
-//                model.addAttribute("user", userEntity);
-//                model.addAttribute("player", player);
                 model.addAttribute("enrollments", enrollments);
 
                 return "playerPages/enrollments.html";

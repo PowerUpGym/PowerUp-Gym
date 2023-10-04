@@ -9,7 +9,6 @@ import com.example.PowerUpGym.services.TrainerService;
 import com.example.PowerUpGym.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
-import org.springframework.security.core.parameters.P;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -40,45 +39,10 @@ public class TrainerController {
     @Autowired
     UserService userService;
 
-//    @GetMapping("/signupTrainer")
-//    public String getSignupTrainer(){
-//        return "signupTrainer.html";
-//    }
-
     @GetMapping("")
     public String getLoginPageTrainer() {
         return "trainerPages/trainerPage";
     }
-
-
-//    @PostMapping("/signupTrainer")
-//    public RedirectView getSignupTrainer(String fullName, String username, String password, String email, String phoneNumber,int age , String experience){
-//
-//        TrainerEntity trainerEntity = new TrainerEntity();
-//
-//        UserEntity user = new UserEntity();
-//        user.setFullName(fullName);
-//        user.setUsername(username);
-//        user.setEmail(email);
-//        user.setPhoneNumber(phoneNumber);
-//        String encryptedPassword = passwordEncoder.encode(password);
-//        user.setPassword(encryptedPassword);
-//
-//        UserRoleEntity trainerRole = new UserRoleEntity();
-//        trainerRole.setId(3L); // Set the ID of the "Trainer" role
-//        user.setRole(trainerRole);
-//
-//        userService.signupUser(user);
-//
-//        trainerEntity.setAge(age);
-//        trainerEntity.setExperience(experience);
-//        trainerEntity.setUser(user);
-//
-//        trainerService.signupTrainer(trainerEntity);
-//        authWithHttpServletRequest(username , password);
-//
-//        return new RedirectView("/index");
-//    }
 
     @GetMapping("/trainerProfile")
     public String getTrainerInfo(Principal principal, Model model){
@@ -205,9 +169,9 @@ public class TrainerController {
         }
     }
 
-    @GetMapping("/managePlayer/{id}")
+    @GetMapping("/allplayersenrollment/{id}")
     public String sendMessageToUser(@PathVariable Long id, Model model) {
-        model.addAttribute("receiverId", id); // Pass the receivers ID
+        model.addAttribute("receiverId", id);
         return "trainerPages/sendMessage";
     }
 
