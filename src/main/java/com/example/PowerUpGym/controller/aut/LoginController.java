@@ -1,5 +1,6 @@
 package com.example.PowerUpGym.controller.aut;
 
+import com.example.PowerUpGym.bo.auth.LoginRequest;
 import com.example.PowerUpGym.entity.users.AdminEntity;
 import com.example.PowerUpGym.entity.users.UserEntity;
 import com.example.PowerUpGym.entity.users.UserRoleEntity;
@@ -50,11 +51,11 @@ public class LoginController {
     }
 
     @PostMapping("/login")
-    public RedirectView login(String username, String password) {
-        // Authenticate the user
-        authWithHttpServletRequest(username, password);
-        // Check the role of the authenticated user
-        UserEntity authenticatedUser = userEntityRepositories.findByUsername(username);
+    public RedirectView login(LoginRequest loginRequest) {
+
+        authWithHttpServletRequest(loginRequest.getUsername() , loginRequest.getPassword());
+
+        UserEntity authenticatedUser = userEntityRepositories.findByUsername(loginRequest.getUsername());
 
         if (authenticatedUser != null) {
             UserRoleEntity userRole = authenticatedUser.getRole();
