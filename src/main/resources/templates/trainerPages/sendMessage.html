@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Send Message</title>
+</head>
+<body>
+<h1>Send Message</h1>
+<form th:action="@{/trainerPage/sendMessage}" method="post">
+  <input type="hidden" name="receiverId" th:value="${receiverId}" />
+  <label for="message">Message:</label>
+  <input type="text" id="message" name="message" required />
+  <button type="submit">Send</button>
+</form>
+</body>
+</html>

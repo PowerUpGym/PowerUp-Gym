@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
 <head>
-    <meta charset="UTF-8">
-    <title>Classes Details</title>
+  <meta charset="UTF-8">
+  <title>Classes Details</title>
 </head>
 <body>
 
@@ -30,11 +30,14 @@
 
   <h2>Enrolled Players</h2>
   <ul>
-    <li th:each="player : ${enrolledPlayers}">
-      <p><strong></strong> <span th:text="${player.id}" hidden="hidden"></span></p>
-      <p><strong>Player Name:</strong> <span th:text="${player.user.fullName}"></span></p>
+    <li th:each="enrollment : ${enrolledPlayers}">
+      <p><strong></strong> <span th:text="${enrollment.player.id}" hidden="hidden"></span></p>
+      <p><strong>Player Name:</strong> <span th:text="${enrollment.player.user.fullName}"></span></p>
+      <!-- Add a "Send" button with a link to the sendMessageToUser endpoint -->
+      <a th:href="@{/trainerPage/managePlayer/{id}(id=${enrollment.player.user.id})}" class="btn btn-primary">Send</a>
     </li>
   </ul>
+
 </div>
 
 <div th:unless="${classDetails != null}">

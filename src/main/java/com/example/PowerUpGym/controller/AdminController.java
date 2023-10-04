@@ -312,21 +312,17 @@ public class AdminController {
 
     @GetMapping("/sendMessage")
     public String getSendMessageForm(@RequestParam Long receiverId, Model model) {
-        // Pass the receiver's ID to the form
         model.addAttribute("receiverId", receiverId);
         return "adminPages/sendMessage";
     }
 
     @PostMapping("/sendMessage")
     public RedirectView sendMessage(@RequestParam Long receiverId, @RequestParam String message, Principal principal) {
-        // Get the sender (admin) based on the logged-in principal
         String senderUsername = principal.getName();
         UserEntity sender = userService.findUserByUsername(senderUsername);
 
-        // Get the receiver (player) based on the receiverId
         UserEntity receiver = userService.findUserById(receiverId);
 
-        // Create and save the notification
         NotificationsEntity notification = new NotificationsEntity();
         notification.setMessage(message);
         notification.setSender(sender);
@@ -334,7 +330,6 @@ public class AdminController {
         notification.setTimeStamp(LocalDate.now());
         notificationService.saveNotification(notification);
 
-        // Redirect back to the player management page
         return new RedirectView("/adminPage/managePlayer");
     }
 

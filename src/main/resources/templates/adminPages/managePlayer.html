@@ -34,7 +34,7 @@
         <td th:text="${player.start_date}"></td>
         <td th:text="${player.end_date}"></td>
         <td>
-            <form th:action="@{/adminPage/managePlayer/{id}(id=${player.id})}" method="get">
+            <form th:action="@{/adminPage/managePlayer/{id}(id=${player.user.id})}" method="get">
                 <button>Send</button>
             </form>
 
