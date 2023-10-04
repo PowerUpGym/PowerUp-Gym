@@ -23,6 +23,7 @@ import org.springframework.web.servlet.view.RedirectView;
 import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -326,7 +327,6 @@ public class AdminController {
                 .receiver(receiver)
                 .timeStamp(LocalDate.now())
                 .build();
-
         notificationService.saveNotification(notification);
         return new RedirectView("/adminPage/allplayers");
     }
@@ -339,6 +339,5 @@ public class AdminController {
 //        notification.setTimeStamp(LocalDate.now());
 //        return notification;
 //    }
-
 
 }

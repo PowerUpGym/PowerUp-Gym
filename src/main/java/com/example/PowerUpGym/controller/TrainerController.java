@@ -19,6 +19,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 
@@ -192,10 +193,53 @@ public class TrainerController {
         notification.setMessage(message);
         notification.setSender(sender);
         notification.setReceiver(receiver);
-        notification.setTimeStamp(LocalDate.now());
+        notification.setTimeStamp(LocalDateTime.now());
         notificationService.saveNotification(notification);
 
         return new RedirectView("trainerClasses");
     }
+
+// ==============================
+
+    @GetMapping("/sendToAllPlayers/{classId}")
+    public String sendToAllPlayersForm(@PathVariable Long classId, Model model) {
+        model.addAttribute("classId", classId);
+        return "trainerPages/sendToAllPlayers";
+    }
+    @PostMapping("/sendMessageToAllPlayers")
+    public RedirectView sendMessageToAllPlayers(@RequestParam("classId") Long classId, @RequestParam("message") String message, Principal principal) {
+        // Retrieve the class details and enrolled players
+        ClassesEntity classDetails = trainerService.getClassDetails(classId);
+        Set<PlayerClassEnrollment> enrolledPlayers = classDetails.getRegistrations();
+
+        // Get the trainer as the sender
+        String senderUsername = principal.getName();
+        UserEntity sender = userService.findUserByUsername(senderUsername);
+
+        // Iterate through enrolled players and send notifications
+        for (PlayerClassEnrollment enrollment : enrolledPlayers) {
+            UserEntity receiver = enrollment.getPlayer().getUser();
+
+            NotificationsEntity notification = new NotificationsEntity();
+            notification.setMessage(message);
+            notification.setSender(sender);
+            notification.setReceiver(receiver);
+            notification.setTimeStamp(LocalDateTime.now());
+            notificationService.saveNotification(notification);
+        }
+
+        return new RedirectView("/trainerPage/trainerClasses");
+    }
+
+
+
+
+
+
+
+
+
+
+
 
 }
