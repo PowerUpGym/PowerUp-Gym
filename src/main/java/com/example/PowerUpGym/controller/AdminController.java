@@ -56,8 +56,7 @@ public class AdminController {
         return "adminPages/adminPage.html";
     }
 
-
-    //    @GetMapping("/signupAdmin")
+//    @GetMapping("/signupAdmin")
 //    public String getSignupAdmin(){
 //        return "signupAdmin";
 //    }
@@ -262,10 +261,6 @@ public class AdminController {
 
         return new RedirectView("/adminPage/allClasses");
     }
-
-
-
-
 
     @GetMapping("/allClasses")
     public String getAllClasses(Model model) {

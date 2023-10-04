@@ -64,14 +64,15 @@ public class TrainerService {
         return trainerEntityRepository.findById(id).orElse(null);
     }
 
-  public void updateTrainerInfo(UserEntity userEntity){
+    public void updateTrainerInfo(UserEntity userEntity) {
         TrainerEntity trainerEntity = userEntity.getTrainer();
 
-        if (trainerEntity != null){
-            trainerEntity.setAge(trainerEntity.getAge());
-            trainerEntity.setExperience(trainerEntity.getExperience());
+        if (trainerEntity != null) {
+            trainerEntity.setAge(userEntity.getTrainer().getAge());
+            trainerEntity.setExperience(userEntity.getTrainer().getExperience());
 
             trainerEntityRepository.save(trainerEntity);
         }
-  }
+    }
+
 }
