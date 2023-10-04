@@ -286,18 +286,13 @@ public class AdminController {
 
         return "adminPages/classDetails";
     }
-    ///////////////////////MOSUAB RAMI AL-BORINI===========================================================================
+    
     @GetMapping("/allplayers")
     public String getManagePlayer(Model model) {
         List<PlayersEntity> players = playerService.getAllPlayers();
         model.addAttribute("players", players);
         return "adminPages/allplayers";
     }
-
-//    @GetMapping("/manageTrainer")
-//    public String getManageTrainer() {
-//        return "adminPages/manageTrainer.html";
-//    }
 
     @GetMapping("/allplayers/{id}")
     public String sendMessageToUser(@PathVariable Long id, Model model) {
