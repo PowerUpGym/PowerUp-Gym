@@ -18,7 +18,7 @@
     <textarea id="description" name="description" required></textarea><br>
 
     <label for="trainer.id">Select Trainer:</label>
-    <select id="trainer.id" name="trainer.id" required>
+    <select id="trainer.id" name="trainerId" required>
         <option th:each="trainer : ${trainers}" th:value="${trainer.id}" th:text="${trainer.user.fullName}"></option>
     </select><br>
 

@@ -95,14 +95,15 @@ public class AdminController {
 //        return new RedirectView("/index");
 //    }
 
-    private UserEntity createUser(
-            String fullName, String username, String email, String phoneNumber, String password, Role role) {
+    private UserEntity createUser(String fullName, String username, String email,
+                                  String phoneNumber,String image, String password, Role role) {
 
         UserEntity user = UserEntity.builder()
                 .fullName(fullName)
                 .username(username)
                 .email(email)
                 .phoneNumber(phoneNumber)
+                .image(image)
                 .password(passwordEncoder.encode(password))
                 .role(userRoleService.getUserRoleByName(role))
                 .build();
@@ -118,11 +119,10 @@ public class AdminController {
     }
 
     @PostMapping("/signupTrainer")
-    public RedirectView signupTrainer(
-            String fullName, String username, String password, String email, String phoneNumber,
-            int age, String experience, Principal principal) {
+    public RedirectView signupTrainer(String fullName, String username, String email, String phoneNumber,
+                                      String image, String password, int age, String experience, Principal principal) {
 
-        UserEntity user = createUser(fullName, username, email, phoneNumber, password, Role.TRAINER);
+        UserEntity user = createUser(fullName, username, email, phoneNumber,image, password, Role.TRAINER);
 
         TrainerEntity trainerEntity = TrainerEntity.builder()
                 .age(age)
@@ -149,7 +149,7 @@ public class AdminController {
             @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate start_date,
             @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate end_date, Principal principal) {
 
-        UserEntity user = createUser(fullName, username, email, phoneNumber, password, Role.PLAYER);
+        UserEntity user = createUser(fullName, username, email, image , phoneNumber, password, Role.PLAYER);
 
         PlayersEntity player = PlayersEntity.builder()
                 .admin(adminService.getAdminByUsername(principal.getName()))
@@ -158,7 +158,6 @@ public class AdminController {
                 .age(age)
                 .height(height)
                 .weight(weight)
-                .image(image)
                 .start_date(start_date)
                 .end_date(end_date)
                 .build();
@@ -214,6 +213,7 @@ public class AdminController {
 
         return new RedirectView("/adminPage");
     }
+
     private ClassesEntity createClass(String className, LocalDate schedule, String description,
                                       TrainerEntity trainer, AdminEntity admin) {
 
