@@ -4,7 +4,10 @@ import com.example.PowerUpGym.entity.classesGym.ClassesEntity;
 import com.example.PowerUpGym.entity.classesGym.PlayerClassEnrollment;
 import com.example.PowerUpGym.entity.notifications.NotificationsEntity;
 import com.example.PowerUpGym.entity.packagesGym.PackagesEntity;
-import com.example.PowerUpGym.entity.users.*;
+import com.example.PowerUpGym.entity.users.AdminEntity;
+import com.example.PowerUpGym.entity.users.PlayersEntity;
+import com.example.PowerUpGym.entity.users.TrainerEntity;
+import com.example.PowerUpGym.entity.users.UserEntity;
 import com.example.PowerUpGym.enums.Role;
 import com.example.PowerUpGym.repositories.UserEntityRepositories;
 import com.example.PowerUpGym.services.*;
@@ -16,6 +19,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.view.RedirectView;
+
 import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
 import java.time.LocalDate;
@@ -91,38 +95,41 @@ public class AdminController {
 //        return new RedirectView("/index");
 //    }
 
+    private UserEntity createUser(
+            String fullName, String username, String email, String phoneNumber, String password, Role role) {
+
+        UserEntity user = UserEntity.builder()
+                .fullName(fullName)
+                .username(username)
+                .email(email)
+                .phoneNumber(phoneNumber)
+                .password(passwordEncoder.encode(password))
+                .role(userRoleService.getUserRoleByName(role))
+                .build();
+
+        userService.signupUser(user);
+
+        return user;
+    }
 
     @GetMapping("/signupTrainer")
-    public String getSignupTrainer(){
+    public String getSignupTrainer() {
         return "adminPages/signupTrainer.html";
     }
 
     @PostMapping("/signupTrainer")
-    public RedirectView getSignupTrainer(String fullName, String username, String password, String email, String phoneNumber, int age, String experience, Principal principal) {
+    public RedirectView signupTrainer(
+            String fullName, String username, String password, String email, String phoneNumber,
+            int age, String experience, Principal principal) {
 
-        TrainerEntity trainerEntity = new TrainerEntity();
+        UserEntity user = createUser(fullName, username, email, phoneNumber, password, Role.TRAINER);
 
-        UserEntity user = new UserEntity();
-        user.setFullName(fullName);
-        user.setUsername(username);
-        user.setEmail(email);
-        user.setPhoneNumber(phoneNumber);
-        String encryptedPassword = passwordEncoder.encode(password);
-        user.setPassword(encryptedPassword);
-
-        UserRoleEntity trainerRole = userRoleService.getUserRoleByName(Role.TRAINER);
-        user.setRole(trainerRole);
-
-        userService.signupUser(user);
-
-        trainerEntity.setAge(age);
-        trainerEntity.setExperience(experience);
-
-        String loggedInAdminUsername = principal.getName();
-        AdminEntity admin = adminService.getAdminByUsername(loggedInAdminUsername);
-        trainerEntity.setAdmin(admin);
-
-        trainerEntity.setUser(user);
+        TrainerEntity trainerEntity = TrainerEntity.builder()
+                .age(age)
+                .experience(experience)
+                .admin(adminService.getAdminByUsername(principal.getName()))
+                .user(user)
+                .build();
 
         trainerService.signupTrainer(trainerEntity);
 
@@ -136,35 +143,25 @@ public class AdminController {
     }
 
     @PostMapping("/signupPlayer")
-    public RedirectView signupPlayer(String fullName, String username, String password, String email, String phoneNumber, String address, int age, int height, int weight, String image, @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate start_date, @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate end_date , Principal principal) {
+    public RedirectView signupPlayer(
+            String fullName, String username, String password, String email, String phoneNumber, String address,
+            int age, int height, int weight, String image,
+            @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate start_date,
+            @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate end_date, Principal principal) {
 
-        PlayersEntity player = new PlayersEntity();
+        UserEntity user = createUser(fullName, username, email, phoneNumber, password, Role.PLAYER);
 
-        UserEntity user = new UserEntity();
-        user.setFullName(fullName);
-        user.setUsername(username);
-        user.setEmail(email);
-        user.setPhoneNumber(phoneNumber);
-        String encryptedPassword = passwordEncoder.encode(password);
-        user.setPassword(encryptedPassword);
-
-        UserRoleEntity playerRole = userRoleService.getUserRoleByName(Role.PLAYER);
-        user.setRole(playerRole);
-
-        userEntityRepositories.save(user);
-
-        String loggedInAdminUsername = principal.getName();
-        AdminEntity admin = adminService.getAdminByUsername(loggedInAdminUsername);
-        player.setAdmin(admin);
-
-        player.setUser(user);
-        player.setAddress(address);
-        player.setAge(age);
-        player.setHeight(height);
-        player.setWeight(weight);
-        player.setEnd_date(end_date);
-        player.setStart_date(start_date);
-        player.setImage(image);
+        PlayersEntity player = PlayersEntity.builder()
+                .admin(adminService.getAdminByUsername(principal.getName()))
+                .user(user)
+                .address(address)
+                .age(age)
+                .height(height)
+                .weight(weight)
+                .image(image)
+                .start_date(start_date)
+                .end_date(end_date)
+                .build();
 
         playerService.signupPlayer(player);
 
@@ -177,21 +174,24 @@ public class AdminController {
     }
 
     @PostMapping("/addPackage")
-    public RedirectView addPackage(String packageName, int price, String description, Principal principal) {
+    public RedirectView addPackage(
+            String packageName, int price, String description, Principal principal) {
 
-        PackagesEntity packageEntity = new PackagesEntity();
-
-        packageEntity.setPackageName(packageName);
-        packageEntity.setPrice(price);
-        packageEntity.setDescription(description);
-
-        String loggedInAdminUsername = principal.getName();
-        AdminEntity admin = adminService.getAdminByUsername(loggedInAdminUsername);
-        packageEntity.setAdmin(admin);
+        AdminEntity admin = adminService.getAdminByUsername(principal.getName());
+        PackagesEntity packageEntity = createPackage(packageName, price, description, admin);
 
         packageService.addPackage(packageEntity);
 
         return new RedirectView("/adminPage");
+    }
+
+    private PackagesEntity createPackage(String packageName, int price, String description, AdminEntity admin) {
+        return PackagesEntity.builder()
+                .packageName(packageName)
+                .price(price)
+                .description(description)
+                .admin(admin)
+                .build();
     }
 
     @GetMapping("/addClass")
@@ -202,29 +202,28 @@ public class AdminController {
         return "adminPages/addClass";
     }
 
-    @PostMapping("/addClass") // Way 1 :  Retrieve the form fields from request parameters
-    public RedirectView addClass(HttpServletRequest request , Principal principal) {
-        String className = request.getParameter("className");
-        LocalDate schedule = LocalDate.parse(request.getParameter("schedule"));
-        String description = request.getParameter("description");
-        Long trainerId = Long.parseLong(request.getParameter("trainer.id"));
-
-        ClassesEntity classEntity = new ClassesEntity();
-        classEntity.setClassName(className);
-        classEntity.setSchedule(schedule);
-        classEntity.setDescription(description);
+    @PostMapping("/addClass")
+    public RedirectView addClass(String className, @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate schedule
+            , String description, Long trainerId, Principal principal) {
 
         TrainerEntity trainer = trainerService.getTrainerById(trainerId);
-
-        classEntity.setTrainer(trainer);
-
-        String loggedInAdminUsername = principal.getName();
-        AdminEntity admin = adminService.getAdminByUsername(loggedInAdminUsername);
-        classEntity.setAdmin(admin);
+        AdminEntity admin = adminService.getAdminByUsername(principal.getName());
+        ClassesEntity classEntity = createClass(className, schedule, description, trainer, admin);
 
         classService.addClass(classEntity);
 
         return new RedirectView("/adminPage");
+    }
+    private ClassesEntity createClass(String className, LocalDate schedule, String description,
+                                      TrainerEntity trainer, AdminEntity admin) {
+
+        return ClassesEntity.builder()
+                .className(className)
+                .schedule(schedule)
+                .description(description)
+                .trainer(trainer)
+                .admin(admin)
+                .build();
     }
 
 //    @PostMapping("/addClass") // Way 2 :  Retrieve the form fields from Model Object
@@ -252,14 +251,22 @@ public class AdminController {
         PlayersEntity player = playerService.getPlayerById(playerId);
         ClassesEntity classEntity = classService.getClassById(classId);
 
+        PlayerClassEnrollment enrollment = PlayerClassEnrollment.builder()
+                .player(player)
+                .enrolledClass(classEntity)
+                .enrollmentDateTime(LocalDate.now())
+                .build();
+
+        playerService.addPlayerClassEnrollment(enrollment);
+        return new RedirectView("/adminPage/allClasses");
+    }
+
+    private PlayerClassEnrollment createPlayerClassEnrollment(PlayersEntity player, ClassesEntity classEntity) {
         PlayerClassEnrollment enrollment = new PlayerClassEnrollment();
         enrollment.setPlayer(player);
         enrollment.setEnrolledClass(classEntity);
         enrollment.setEnrollmentDateTime(LocalDate.now());
-
-        playerService.addPlayerClassEnrollment(enrollment);
-
-        return new RedirectView("/adminPage/allClasses");
+        return enrollment;
     }
 
     @GetMapping("/allClasses")
@@ -278,15 +285,15 @@ public class AdminController {
 
         List<PlayersEntity> enrolledPlayers =
                 registrations
-                .stream()
-                .map(PlayerClassEnrollment::getPlayer) // takes each PlayerClassEnrollment object from the Stream and applies the getPlayer method to it.
-                .collect(Collectors.toList());
+                        .stream()
+                        .map(PlayerClassEnrollment::getPlayer) // takes each PlayerClassEnrollment object from the Stream and applies the getPlayer method to it.
+                        .collect(Collectors.toList());
 
         model.addAttribute("enrolledPlayers", enrolledPlayers);
 
         return "adminPages/classDetails";
     }
-    
+
     @GetMapping("/allplayers")
     public String getManagePlayer(Model model) {
         List<PlayersEntity> players = playerService.getAllPlayers();
@@ -296,7 +303,7 @@ public class AdminController {
 
     @GetMapping("/allplayers/{id}")
     public String sendMessageToUser(@PathVariable Long id, Model model) {
-        model.addAttribute("receiverId", id); // Pass the receiver's ID
+        model.addAttribute("receiverId", id);
         return "adminPages/sendMessage";
     }
 
@@ -306,22 +313,32 @@ public class AdminController {
         return "adminPages/sendMessage";
     }
 
+
     @PostMapping("/sendMessage")
     public RedirectView sendMessage(@RequestParam Long receiverId, @RequestParam String message, Principal principal) {
         String senderUsername = principal.getName();
         UserEntity sender = userService.findUserByUsername(senderUsername);
-
         UserEntity receiver = userService.findUserById(receiverId);
 
-        NotificationsEntity notification = new NotificationsEntity();
-        notification.setMessage(message);
-        notification.setSender(sender);
-        notification.setReceiver(receiver);
-        notification.setTimeStamp(LocalDate.now());
-        notificationService.saveNotification(notification);
+        NotificationsEntity notification = NotificationsEntity.builder()
+                .message(message)
+                .sender(sender)
+                .receiver(receiver)
+                .timeStamp(LocalDate.now())
+                .build();
 
+        notificationService.saveNotification(notification);
         return new RedirectView("/adminPage/allplayers");
     }
+
+//    private NotificationsEntity createNotification(String message, UserEntity sender, UserEntity receiver) {
+//        NotificationsEntity notification = new NotificationsEntity();
+//        notification.setMessage(message);
+//        notification.setSender(sender);
+//        notification.setReceiver(receiver);
+//        notification.setTimeStamp(LocalDate.now());
+//        return notification;
+//    }
 
 
 }
