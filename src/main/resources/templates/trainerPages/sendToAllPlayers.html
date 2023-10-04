@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Send Message to All Players</title>
+</head>
+<body>
+<h1>Send Message to All Players</h1>
+<form action="/trainerPage/sendMessageToAllPlayers" method="post">
+    <input type="hidden" name="classId" th:value="${classId}" />
+    <label for="message">Message:</label>
+    <textarea id="message" name="message" rows="4" cols="50"></textarea>
+    <br />
+    <input type="submit" value="Send Message" />
+</form>
+</body>
+</html>
