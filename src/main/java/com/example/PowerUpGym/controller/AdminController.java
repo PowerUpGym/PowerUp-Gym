@@ -325,7 +325,7 @@ public class AdminController {
                 .message(message)
                 .sender(sender)
                 .receiver(receiver)
-                .timeStamp(LocalDate.now())
+                .timeStamp(LocalDateTime.now())
                 .build();
         notificationService.saveNotification(notification);
         return new RedirectView("/adminPage/allplayers");
