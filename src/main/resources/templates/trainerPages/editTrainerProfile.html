@@ -45,6 +45,8 @@
     <label for="experience">Experience:</label>
     <input type="text" id="experience" name="experience" th:value="${trainer.experience}" />
 
+    <input type="hidden" name="adminId" th:value="${trainer.admin.id}" />
+
     <button type="submit">Update Profile</button>
 </form>
 

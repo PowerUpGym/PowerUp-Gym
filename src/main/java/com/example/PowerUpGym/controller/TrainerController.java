@@ -4,6 +4,7 @@ import com.example.PowerUpGym.entity.classesGym.ClassesEntity;
 import com.example.PowerUpGym.entity.classesGym.PlayerClassEnrollment;
 import com.example.PowerUpGym.entity.notifications.NotificationsEntity;
 import com.example.PowerUpGym.entity.users.*;
+import com.example.PowerUpGym.services.AdminService;
 import com.example.PowerUpGym.services.NotificationsService;
 import com.example.PowerUpGym.services.TrainerService;
 import com.example.PowerUpGym.services.UserService;
@@ -36,6 +37,9 @@ public class TrainerController {
     PasswordEncoder passwordEncoder;
     @Autowired
     TrainerService trainerService;
+
+    @Autowired
+    AdminService adminService;
 
     @Autowired
     UserService userService;
@@ -127,24 +131,28 @@ public class TrainerController {
                                              @RequestParam("phoneNumber") String phoneNumber,
                                              @RequestParam("password") String password,
                                              @RequestParam("age") int age,
-                                             @RequestParam("experience") String experience) {
+                                             @RequestParam("experience") String experience,
+                                             @RequestParam("adminId") Long adminId)
+                                             {
 
         UserEntity userEntity = userService.getUserById(userId);
 
-        UserEntity updateUser = UpdateTrainer(userId, fullName, username, email, phoneNumber, password, userEntity, age, experience);
+        UserEntity updateUser = UpdateTrainer(userId, fullName, username, email, phoneNumber, password, userEntity, age, experience , adminId);
 
         userService.saveUser(updateUser);
 
         return new RedirectView("/trainerPage/trainerProfile");
     }
 
-    private UserEntity UpdateTrainer(Long userId, String fullName, String username, String email, String phoneNumbeer, String password, UserEntity userEntity, int age, String experience) {
+    private UserEntity UpdateTrainer(Long userId, String fullName, String username, String email, String phoneNumbeer, String password, UserEntity userEntity, int age, String experience,Long adminId) {
 
+        AdminEntity admin = adminService.getAdminById(adminId);
         TrainerEntity trainer = TrainerEntity.builder()
                 .id(userEntity.getTrainer().getId())
                 .age(age)
                 .experience(experience)
                 .user(userEntity)
+                .admin(admin)
                 .build();
 
         userEntity.setTrainer(trainer);

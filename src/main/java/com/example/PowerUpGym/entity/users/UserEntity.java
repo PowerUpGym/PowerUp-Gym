@@ -38,7 +38,7 @@ public class UserEntity implements UserDetails {
     @Column(name = "password", nullable = false)
     private String password;
 
-    @Column(name = "image", nullable = false)
+    @Column(name = "image")
     private String image;
 
     @OneToOne
