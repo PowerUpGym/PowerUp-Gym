@@ -19,6 +19,7 @@ import org.springframework.web.servlet.view.RedirectView;
 import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -279,7 +280,7 @@ public class AdminController {
         List<PlayersEntity> enrolledPlayers =
                 registrations
                 .stream()
-                .map(PlayerClassEnrollment::getPlayer) // takes each PlayerClassEnrollment object from the Stream and applies the getPlayer method to it.
+                .map(PlayerClassEnrollment::getPlayer)
                 .collect(Collectors.toList());
 
         model.addAttribute("enrolledPlayers", enrolledPlayers);
@@ -296,7 +297,7 @@ public class AdminController {
 
     @GetMapping("/allplayers/{id}")
     public String sendMessageToUser(@PathVariable Long id, Model model) {
-        model.addAttribute("receiverId", id); // Pass the receiver's ID
+        model.addAttribute("receiverId", id);
         return "adminPages/sendMessage";
     }
 
@@ -317,11 +318,12 @@ public class AdminController {
         notification.setMessage(message);
         notification.setSender(sender);
         notification.setReceiver(receiver);
-        notification.setTimeStamp(LocalDate.now());
+        notification.setTimeStamp(LocalDateTime.now()); // Use LocalDateTime for both date and time
         notificationService.saveNotification(notification);
 
         return new RedirectView("/adminPage/allplayers");
     }
+
 
 
 }
