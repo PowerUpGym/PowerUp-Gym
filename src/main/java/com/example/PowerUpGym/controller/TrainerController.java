@@ -205,9 +205,9 @@ public class TrainerController {
         }
     }
 
-    @GetMapping("/managePlayer/{id}")
+    @GetMapping("/allplayersenrollment/{id}")
     public String sendMessageToUser(@PathVariable Long id, Model model) {
-        model.addAttribute("receiverId", id); // Pass the receivers ID
+        model.addAttribute("receiverId", id);
         return "trainerPages/sendMessage";
     }
 

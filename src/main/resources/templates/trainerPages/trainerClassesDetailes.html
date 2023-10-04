@@ -34,7 +34,7 @@
       <p><strong></strong> <span th:text="${enrollment.player.id}" hidden="hidden"></span></p>
       <p><strong>Player Name:</strong> <span th:text="${enrollment.player.user.fullName}"></span></p>
       <!-- Add a "Send" button with a link to the sendMessageToUser endpoint -->
-      <a th:href="@{/trainerPage/managePlayer/{id}(id=${enrollment.player.user.id})}" class="btn btn-primary">Send</a>
+      <a th:href="@{/trainerPage/allplayersenrollment/{id}(id=${enrollment.player.user.id})}" class="btn btn-primary">Send</a>
     </li>
   </ul>
 

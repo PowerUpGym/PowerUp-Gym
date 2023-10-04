@@ -287,11 +287,11 @@ public class AdminController {
         return "adminPages/classDetails";
     }
     ///////////////////////MOSUAB RAMI AL-BORINI===========================================================================
-    @GetMapping("/managePlayer")
+    @GetMapping("/allplayers")
     public String getManagePlayer(Model model) {
         List<PlayersEntity> players = playerService.getAllPlayers();
         model.addAttribute("players", players);
-        return "adminPages/managePlayer";
+        return "adminPages/allplayers";
     }
 
 //    @GetMapping("/manageTrainer")
@@ -299,7 +299,7 @@ public class AdminController {
 //        return "adminPages/manageTrainer.html";
 //    }
 
-    @GetMapping("/managePlayer/{id}")
+    @GetMapping("/allplayers/{id}")
     public String sendMessageToUser(@PathVariable Long id, Model model) {
         model.addAttribute("receiverId", id); // Pass the receiver's ID
         return "adminPages/sendMessage";
@@ -325,7 +325,7 @@ public class AdminController {
         notification.setTimeStamp(LocalDate.now());
         notificationService.saveNotification(notification);
 
-        return new RedirectView("/adminPage/managePlayer");
+        return new RedirectView("/adminPage/allplayers");
     }
 
 
