@@ -46,13 +46,6 @@ public class PlayersEntity {
     @JoinColumn(name = "user_id")
     private UserEntity user;
 
-    //    @ManyToMany
-//    @JoinTable(
-//            name = "mst_class_enrollment",
-//            joinColumns = @JoinColumn(name = "player_id"),
-//            inverseJoinColumns = @JoinColumn(name = "class_id")
-//    )
-//    private List<ClassesEntity> enrolledClasses;
     @OneToMany(mappedBy = "player")
     private Set<PlayerClassEnrollment> registrations;
 
