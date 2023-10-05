@@ -34,7 +34,7 @@ public class TrainerEntity {
     @OneToMany(mappedBy = "trainer", cascade = CascadeType.ALL)
     private List<ClassesEntity> ownedClasses;
 
-    @OneToMany(mappedBy = "trainer", cascade = CascadeType.ALL)
+    @OneToMany()
     private List<PlayersEntity> enrolledPlayers;
 
     @ManyToOne

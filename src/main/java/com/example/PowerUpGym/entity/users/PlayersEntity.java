@@ -2,6 +2,7 @@ package com.example.PowerUpGym.entity.users;
 
 
 import com.example.PowerUpGym.entity.classesGym.PlayerClassEnrollment;
+import com.example.PowerUpGym.entity.packagesGym.PackagesEntity;
 import lombok.*;
 
 import javax.persistence.*;
@@ -39,6 +40,13 @@ public class PlayersEntity {
     @Column(name = "end_date", nullable = false)
     private LocalDate end_date;
 
+    @Column(name = "account_enabled")
+    private boolean accountEnabled;
+
+    @ManyToOne
+    @JoinColumn(name = "package_id")
+    private PackagesEntity selectedPackage;
+
     @OneToOne
     @JoinColumn(name = "user_id")
     private UserEntity user;
@@ -46,9 +54,6 @@ public class PlayersEntity {
     @OneToMany(mappedBy = "player")
     private Set<PlayerClassEnrollment> registrations;
 
-    @ManyToOne
-    @JoinColumn(name = "trainer_id")
-    private TrainerEntity trainer;
 
     @ManyToOne
     @JoinColumn(name = "admin_id")
