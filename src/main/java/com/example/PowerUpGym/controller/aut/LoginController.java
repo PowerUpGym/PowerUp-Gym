@@ -60,16 +60,15 @@ public class LoginController {
         if (authenticatedUser != null) {
             UserRoleEntity userRole = authenticatedUser.getRole();
 
-            // Check the role and redirect accordingly
             if (userRole.getRole() == Role.PLAYER) {
-                // Redirect to the player page
-                return new RedirectView("/playerPage");
+                if (!authenticatedUser.getPlayer().isAccountEnabled()) { // Check if the account is enabled
+                    return new RedirectView("/error");
+                }
+                return new RedirectView("/playerPage"); // Redirect to the player page
             } else if (userRole.getRole() == Role.TRAINER) {
-                // Redirect to the trainer page
-                return new RedirectView("/trainerPage");
+                return new RedirectView("/trainerPage"); // Redirect to the trainer page
             } else if (userRole.getRole() == Role.ADMIN) {
-                // Redirect to the trainer page
-                return new RedirectView("/adminPage");
+                return new RedirectView("/adminPage"); // Redirect to the trainer page
             }
         }
 

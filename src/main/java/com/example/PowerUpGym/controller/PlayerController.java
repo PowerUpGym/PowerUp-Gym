@@ -124,7 +124,6 @@ public class PlayerController {
         playerService.signupPlayer(player);
         userService.saveUser(user);
 
-        // Redirect to the player details page
         return new RedirectView("playerInfo");
     }
 

@@ -4,6 +4,7 @@ import com.example.PowerUpGym.entity.classesGym.ClassesEntity;
 import com.example.PowerUpGym.entity.classesGym.PlayerClassEnrollment;
 import com.example.PowerUpGym.entity.notifications.NotificationsEntity;
 import com.example.PowerUpGym.entity.users.*;
+import com.example.PowerUpGym.services.AdminService;
 import com.example.PowerUpGym.services.NotificationsService;
 import com.example.PowerUpGym.services.TrainerService;
 import com.example.PowerUpGym.services.UserService;
@@ -19,6 +20,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 
@@ -35,6 +37,9 @@ public class TrainerController {
     PasswordEncoder passwordEncoder;
     @Autowired
     TrainerService trainerService;
+
+    @Autowired
+    AdminService adminService;
 
     @Autowired
     UserService userService;
@@ -126,24 +131,28 @@ public class TrainerController {
                                              @RequestParam("phoneNumber") String phoneNumber,
                                              @RequestParam("password") String password,
                                              @RequestParam("age") int age,
-                                             @RequestParam("experience") String experience) {
+                                             @RequestParam("experience") String experience,
+                                             @RequestParam("adminId") Long adminId)
+    {
 
         UserEntity userEntity = userService.getUserById(userId);
 
-        UserEntity updateUser = UpdateTrainer(userId, fullName, username, email, phoneNumber, password, userEntity, age, experience);
+        UserEntity updateUser = UpdateTrainer(userId, fullName, username, email, phoneNumber, password, userEntity, age, experience , adminId);
 
         userService.saveUser(updateUser);
 
         return new RedirectView("/trainerPage/trainerProfile");
     }
 
-    private UserEntity UpdateTrainer(Long userId, String fullName, String username, String email, String phoneNumbeer, String password, UserEntity userEntity, int age, String experience) {
+    private UserEntity UpdateTrainer(Long userId, String fullName, String username, String email, String phoneNumbeer, String password, UserEntity userEntity, int age, String experience,Long adminId) {
 
+        AdminEntity admin = adminService.getAdminById(adminId);
         TrainerEntity trainer = TrainerEntity.builder()
                 .id(userEntity.getTrainer().getId())
                 .age(age)
                 .experience(experience)
                 .user(userEntity)
+                .admin(admin)
                 .build();
 
         userEntity.setTrainer(trainer);
@@ -192,10 +201,43 @@ public class TrainerController {
         notification.setMessage(message);
         notification.setSender(sender);
         notification.setReceiver(receiver);
-        notification.setTimeStamp(LocalDate.now());
+        notification.setTimeStamp(LocalDateTime.now());
         notificationService.saveNotification(notification);
 
         return new RedirectView("trainerClasses");
+    }
+
+// ==============================
+
+    @GetMapping("/sendToAllPlayers/{classId}")
+    public String sendToAllPlayersForm(@PathVariable Long classId, Model model) {
+        model.addAttribute("classId", classId);
+        return "trainerPages/sendToAllPlayers";
+    }
+    @PostMapping("/sendMessageToAllPlayers")
+    public RedirectView sendMessageToAllPlayers(@RequestParam("classId") Long classId, @RequestParam("message") String message, Principal principal) {
+        // Retrieve the class details and enrolled players
+        ClassesEntity classDetails = trainerService.getClassDetails(classId);
+        Set<PlayerClassEnrollment> enrolledPlayers = classDetails.getRegistrations();
+
+        String senderUsername = principal.getName();
+        UserEntity sender = userService.findUserByUsername(senderUsername);
+
+        LocalDateTime now = LocalDateTime.now();
+
+        enrolledPlayers.stream()
+                .map(enrollment -> enrollment.getPlayer().getUser()) // Use lambda expression here
+                .map(receiver -> {
+                    NotificationsEntity notification = new NotificationsEntity();
+                    notification.setMessage(message);
+                    notification.setSender(sender);
+                    notification.setReceiver(receiver);
+                    notification.setTimeStamp(now);
+                    return notification;
+                })
+                .forEach(notificationService::saveNotification);
+
+        return new RedirectView("/trainerPage/trainerClasses");
     }
 
 }

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Renew Subscription</title>
+</head>
+<body>
+<h1>Renew Player Subscription</h1>
+<form action="/adminPage/renewSubscription" method="post">
+    <label for="playerId">Select Player:</label>
+    <select id="playerId" name="playerId">
+        <option th:each="player : ${players}"
+                th:value="${player.id}"
+                th:text="${player.user.fullName}">
+        </option>
+    </select>
+    <br>
+    <label for="newPackageId">Select Package:</label>
+    <select id="newPackageId" name="newPackageId">
+        <option th:each="package : ${availablePackages}"
+                th:value="${package.id}"
+                th:text="${package.packageName}"></option>
+    </select>
+    <br>
+    <button type="submit">Renew Subscription</button>
+</form>
+
+</body>
+</html>

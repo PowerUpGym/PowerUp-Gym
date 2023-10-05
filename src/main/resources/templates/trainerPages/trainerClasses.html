@@ -27,6 +27,8 @@
             <a th:href="@{/trainerPage/trainerClassDetails(classId=${class.id})}">Class Name: </strong><span th:text="${class.className}"></span></a>
 <!--            <p><strong>Schedule: </strong><span th:text="${class.schedule}"></span></p>-->
 <!--            <p><strong>Description: </strong><span th:text="${class.description}"></span></p>-->
+            <a th:href="@{/trainerPage/sendToAllPlayers/{classId}(classId=${class.id})}">Send to All Players</a>
+
         </li>
     </ul>
 </div>

@@ -23,6 +23,7 @@ import org.springframework.web.servlet.view.RedirectView;
 import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -95,14 +96,15 @@ public class AdminController {
 //        return new RedirectView("/index");
 //    }
 
-    private UserEntity createUser(
-            String fullName, String username, String email, String phoneNumber, String password, Role role) {
+    private UserEntity createUser(String fullName, String username, String email,
+                                  String phoneNumber,String image, String password, Role role) {
 
         UserEntity user = UserEntity.builder()
                 .fullName(fullName)
                 .username(username)
                 .email(email)
                 .phoneNumber(phoneNumber)
+                .image(image)
                 .password(passwordEncoder.encode(password))
                 .role(userRoleService.getUserRoleByName(role))
                 .build();
@@ -118,11 +120,10 @@ public class AdminController {
     }
 
     @PostMapping("/signupTrainer")
-    public RedirectView signupTrainer(
-            String fullName, String username, String password, String email, String phoneNumber,
-            int age, String experience, Principal principal) {
+    public RedirectView signupTrainer(String fullName, String username, String email, String phoneNumber,
+                                      String image, String password, int age, String experience, Principal principal) {
 
-        UserEntity user = createUser(fullName, username, email, phoneNumber, password, Role.TRAINER);
+        UserEntity user = createUser(fullName, username, email, phoneNumber,image, password, Role.TRAINER);
 
         TrainerEntity trainerEntity = TrainerEntity.builder()
                 .age(age)
@@ -138,36 +139,111 @@ public class AdminController {
 
 
     @GetMapping("/signupPlayer")
-    public String getSignupPlayer() {
-        return "adminPages/signupPlayer.html";
+    public String getSignupPlayer(Model model) {
+        List<PackagesEntity> availablePackages = packageService.getAllPackages();
+        model.addAttribute("availablePackages", availablePackages);
+        return "adminPages/signupPlayer";
     }
 
     @PostMapping("/signupPlayer")
     public RedirectView signupPlayer(
-            String fullName, String username, String password, String email, String phoneNumber, String address,
-            int age, int height, int weight,
-//            String image,
-            @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate start_date,
-            @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate end_date, Principal principal) {
+            String fullName, String username, String email, String phoneNumber, String image,
+            String password, String address, int age, int height, int weight,
+            @RequestParam Long packageId, Principal principal) {
 
-        UserEntity user = createUser(fullName, username, email, phoneNumber, password, Role.PLAYER);
+        if (principal != null) {
+            UserEntity user = createUser(fullName, username, email, phoneNumber, image, password, Role.PLAYER);
+            PackagesEntity selectedPackage = packageService.getPackageById(packageId);
+            LocalDate startDate = LocalDate.now();
+            LocalDate endDate = startDate.plusMonths(selectedPackage.getDuration());
+            PlayersEntity player = PlayersEntity.builder()
+                    .admin(adminService.getAdminByUsername(principal.getName()))
+                    .user(user)
+                    .address(address)
+                    .age(age)
+                    .height(height)
+                    .weight(weight)
+                    .start_date(startDate)
+                    .end_date(endDate)
+                    .selectedPackage(selectedPackage)
+                    .accountEnabled(true)
+                    .build();
 
-        PlayersEntity player = PlayersEntity.builder()
-                .admin(adminService.getAdminByUsername(principal.getName()))
-                .user(user)
-                .address(address)
-                .age(age)
-                .height(height)
-                .weight(weight)
-//                .image(image)
-                .start_date(start_date)
-                .end_date(end_date)
-                .build();
+            playerService.signupPlayer(player);
 
+            return new RedirectView("/adminPage");
+        } else {
+            return new RedirectView("/error");
+        }
+    }
+
+
+////////////////////////////////////////////////////////////////////////////////
+
+    @GetMapping("/renewSubscription")
+    public String getRenewSubscriptionForm(Model model) {
+        List<PlayersEntity> players = playerService.getAllPlayers();
+        List<PackagesEntity> availablePackages = packageService.getAllPackages();
+        model.addAttribute("players", players);
+        model.addAttribute("availablePackages", availablePackages);
+
+        return "adminPages/renewSubscription";
+    }
+
+
+// ========== Resubscribe a player to a new package ====================
+@PostMapping("/renewSubscription")
+public RedirectView resubscribePlayer(@RequestParam(name = "playerId") Long playerId,
+                                      @RequestParam(name = "newPackageId") Long newPackageId) {
+    PlayersEntity player = playerService.getPlayerById(playerId);
+    PackagesEntity newPackage = packageService.getPackageById(newPackageId);
+
+    if (player != null && newPackage != null) {
+        LocalDate newEndDate = LocalDate.now().plusMonths(newPackage.getDuration());
+
+        player.setSelectedPackage(newPackage);
+        player.setEnd_date(newEndDate);
+        player.setAccountEnabled(true);
         playerService.signupPlayer(player);
 
-        return new RedirectView("/adminPage");
+        return new RedirectView("/adminPage/allplayers");
+    } else {
+        return new RedirectView("/error");
     }
+}
+// ========== Resubscribe a player to a new package ====================
+
+
+// ==========  Update the player's account status  ====================
+    @GetMapping("/updateAccountStatus")
+    public String getUpdateAccountStatusForm(Model model) {
+        List<PlayersEntity> players = playerService.getAllPlayers();
+        model.addAttribute("players", players);
+        return "adminPages/updateAccountStatus";
+    }
+
+    @PostMapping("/updateAccountStatus")
+    public RedirectView updateAccountStatus(
+            @RequestParam(name = "playerId") Long playerId,
+            @RequestParam(name = "accountStatus") String accountStatus) {
+        PlayersEntity player = playerService.getPlayerById(playerId);
+
+        if (player != null) {
+            // Update the player's account status based on the selected option
+            if ("ENABLED".equals(accountStatus)) {
+                player.setAccountEnabled(true);
+            } else if ("DISABLED".equals(accountStatus)) {
+                player.setAccountEnabled(false);
+            }
+
+            playerService.signupPlayer(player);
+
+            return new RedirectView("/adminPage/allplayers");
+        } else {
+            return new RedirectView("/error");
+        }
+    }
+// ==========  Update the player's account status  ====================
 
     @GetMapping("/addPackage")
     public String getAddPackageForm() {
@@ -176,20 +252,21 @@ public class AdminController {
 
     @PostMapping("/addPackage")
     public RedirectView addPackage(
-            String packageName, int price, String description, Principal principal) {
+            String packageName, int price, int duration, String description, Principal principal) {
 
         AdminEntity admin = adminService.getAdminByUsername(principal.getName());
-        PackagesEntity packageEntity = createPackage(packageName, price, description, admin);
+        PackagesEntity packageEntity = createPackage(packageName, price, duration, description, admin);
 
         packageService.addPackage(packageEntity);
 
         return new RedirectView("/adminPage");
     }
 
-    private PackagesEntity createPackage(String packageName, int price, String description, AdminEntity admin) {
+    private PackagesEntity createPackage(String packageName, int price, int duration, String description, AdminEntity admin) {
         return PackagesEntity.builder()
                 .packageName(packageName)
                 .price(price)
+                .duration(duration)
                 .description(description)
                 .admin(admin)
                 .build();
@@ -215,6 +292,7 @@ public class AdminController {
 
         return new RedirectView("/adminPage");
     }
+
     private ClassesEntity createClass(String className, LocalDate schedule, String description,
                                       TrainerEntity trainer, AdminEntity admin) {
 
@@ -262,13 +340,13 @@ public class AdminController {
         return new RedirectView("/adminPage/allClasses");
     }
 
-    private PlayerClassEnrollment createPlayerClassEnrollment(PlayersEntity player, ClassesEntity classEntity) {
-        PlayerClassEnrollment enrollment = new PlayerClassEnrollment();
-        enrollment.setPlayer(player);
-        enrollment.setEnrolledClass(classEntity);
-        enrollment.setEnrollmentDateTime(LocalDate.now());
-        return enrollment;
-    }
+//    private PlayerClassEnrollment createPlayerClassEnrollment(PlayersEntity player, ClassesEntity classEntity) {
+//        PlayerClassEnrollment enrollment = new PlayerClassEnrollment();
+//        enrollment.setPlayer(player);
+//        enrollment.setEnrolledClass(classEntity);
+//        enrollment.setEnrollmentDateTime(LocalDate.now());
+//        return enrollment;
+//    }
 
     @GetMapping("/allClasses")
     public String getAllClasses(Model model) {
@@ -325,9 +403,8 @@ public class AdminController {
                 .message(message)
                 .sender(sender)
                 .receiver(receiver)
-                .timeStamp(LocalDate.now())
+                .timeStamp(LocalDateTime.now())
                 .build();
-
         notificationService.saveNotification(notification);
         return new RedirectView("/adminPage/allplayers");
     }
@@ -340,6 +417,5 @@ public class AdminController {
 //        notification.setTimeStamp(LocalDate.now());
 //        return notification;
 //    }
-
 
 }

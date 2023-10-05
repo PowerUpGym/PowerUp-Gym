@@ -4,6 +4,7 @@ import com.example.PowerUpGym.entity.users.UserEntity;
 import lombok.*;
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Setter
@@ -23,7 +24,7 @@ public class NotificationsEntity {
     private String message;
 
     @Column(name = "time_stamp", nullable = false)
-    private LocalDate timeStamp;
+    private LocalDateTime timeStamp;
 
     @ManyToOne
     @JoinColumn(name = "sender_id")
