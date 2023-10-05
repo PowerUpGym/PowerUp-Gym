@@ -41,6 +41,11 @@ public class TrainerEntity {
     @JoinColumn(name = "admin_id")
     private AdminEntity admin;
 
+    public UserEntity getUser() {
+        return this.user;
+    }
+
+
     @Builder
     public TrainerEntity(int age, String experience, UserEntity user, List<ClassesEntity> ownedClasses, List<PlayersEntity> enrolledPlayers, AdminEntity admin) {
         this.age = age;

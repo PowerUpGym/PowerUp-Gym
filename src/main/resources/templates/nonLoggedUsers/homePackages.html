@@ -1,9 +1,8 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
-    <link rel="stylesheet" href="/Css/style1.css">
+    <title>Packages</title>
 </head>
 <body>
 
@@ -24,7 +23,12 @@
     </ul>
 </nav>
 
-<h1>Hello</h1>
+<h1>Packages</h1>
 
+<ul th:each="package : ${packages}">
+    <li><strong>Package Name: </strong><span th:text="${package.packageName}"></span></li>
+    <li><strong>Description: </strong><span th:text="${package.description}"></span></li>
+    <li><strong>Price: </strong><span th:text="${package.price}"></span></li>
+</ul>
 </body>
 </html>

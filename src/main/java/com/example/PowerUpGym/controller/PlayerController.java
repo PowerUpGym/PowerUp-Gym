@@ -103,7 +103,9 @@ public class PlayerController {
      }
 
     @PostMapping("/updatePlayer")
-    public RedirectView updatePlayer(Long userId,Long playerId,String address, int age, int height, int weight, String image, String fullName, String username, String email, String phoneNumber) {
+    public RedirectView updatePlayer(Long userId,Long playerId,String address, int age, int height, int weight,
+//                                     String image,
+                                     String fullName, String username, String email, String phoneNumber) {
         UserEntity user = userService.findUserById(userId);
         PlayersEntity player = playerService.getPlayerById(playerId);
 
@@ -117,7 +119,7 @@ public class PlayerController {
         user.setUsername(username);
         user.setEmail(email);
         user.setPhoneNumber(phoneNumber);
-        user.setImage(image);
+//        user.setImage(image);
 
         playerService.signupPlayer(player);
         userService.saveUser(user);
