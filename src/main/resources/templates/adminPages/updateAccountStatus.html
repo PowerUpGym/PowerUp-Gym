@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Update Account Status</title>
+</head>
+<body>
+<h1>Update Player Account Status</h1>
+<form action="/adminPage/updateAccountStatus" method="post">
+    <label for="playerId">Select Player:</label>
+    <select id="playerId" name="playerId">
+        <option th:each="player : ${players}"
+                th:value="${player.id}"
+                th:text="${player.user.fullName}">
+        </option>
+    </select>
+    <br>
+    <label for="accountStatus">Account Status:</label>
+    <select id="accountStatus" name="accountStatus">
+        <option value="ENABLED">Enabled</option>
+        <option value="DISABLED">Disabled</option>
+    </select>
+    <br>
+    <input type="submit" value="Update Account Status">
+</form>
+</body>
+</html>

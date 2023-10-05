@@ -25,6 +25,9 @@ public class PackagesEntity {
     @Column(name = "price", nullable = false)
     private int price;
 
+    @Column(name = "duration", nullable = false) // Duration in months
+    private int duration;
+
     @Column(name = "description", nullable = false)
     private String description;
 
