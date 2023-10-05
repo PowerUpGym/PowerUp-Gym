@@ -1,31 +1,27 @@
 package com.example.PowerUpGym.controller;
 
 //import com.example.PowerUpGym.entity.classesGym.PlayerClassEnrollment;
+
 import com.example.PowerUpGym.entity.classesGym.ClassesEntity;
 import com.example.PowerUpGym.entity.notifications.NotificationsEntity;
-import com.example.PowerUpGym.entity.users.AdminEntity;
 import com.example.PowerUpGym.entity.users.PlayersEntity;
 import com.example.PowerUpGym.entity.users.UserEntity;
-import com.example.PowerUpGym.entity.users.UserRoleEntity;
 import com.example.PowerUpGym.repositories.UserEntityRepositories;
-//import com.example.PowerUpGym.services.ClassEnrollmentService;
 import com.example.PowerUpGym.services.NotificationsService;
 import com.example.PowerUpGym.services.PlayerService;
 import com.example.PowerUpGym.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.view.RedirectView;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
-import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 
 @Controller
 @Secured("PLAYER") // define a list of security configuration attributes for business methods
@@ -34,17 +30,16 @@ public class PlayerController {
 
     @Autowired
     PlayerService playerService;
-@Autowired
-    UserService userService;
     @Autowired
-    private NotificationsService notificationService;
+    UserService userService;
     @Autowired
     UserEntityRepositories userEntityRepositories;
     @Autowired
-    private HttpServletRequest request;
-
-    @Autowired
     PasswordEncoder passwordEncoder;
+    @Autowired
+    private NotificationsService notificationService;
+    @Autowired
+    private HttpServletRequest request;
 
     @GetMapping("")  // Home Page ("/playerPage")
     public String getLoginPagePlayer() {
@@ -57,31 +52,23 @@ public class PlayerController {
         return "index.html";
     }
 
-    public void authWithHttpServletRequest(String username, String password) {
-        try {
-            request.login(username, password);
-        } catch (ServletException e) {
-            e.printStackTrace();
-        }
-    }
-
 
     @GetMapping("/playerInfo")
     public String getMyInfo(Principal principal, Model model) {
-        return Optional.ofNullable(principal)
-                .map(Principal::getName)
-                .flatMap(userName -> {
-                    UserEntity userEntity = playerService.findUserByUsername(userName);
-                    return Optional.ofNullable(userEntity)
-                            .filter(entity -> entity.getRole() != null)
-                            .map(entity -> {
-                                model.addAttribute("user", entity);
-                                PlayersEntity player = entity.getPlayer();
-                                model.addAttribute("player", player);
-                                return "playerPages/playerInfo.html";
-                            });
-                })
-                .orElse("index.html");
+        if (principal == null) {
+            return "redirect:/login";
+        }
+        String username = principal.getName();
+        UserEntity userEntity = playerService.findUserByUsername(username);
+
+        if (userEntity == null || userEntity.getRole() == null) {
+            return "redirect:/error";
+        }
+        model.addAttribute("user", userEntity);
+        PlayersEntity player = userEntity.getPlayer();
+        model.addAttribute("player", player);
+
+        return "playerPages/playerInfo.html";
     }
 
 
@@ -99,36 +86,59 @@ public class PlayerController {
 
             }
         }
-         return "updatePlayer.html";
-     }
+        return "playerPages/playerInfo.html";
+    }
 
     @PostMapping("/updatePlayer")
-    public RedirectView updatePlayer(Long userId,Long playerId,String address, int age, int height, int weight,
-//                                     String image,
-                                     String fullName, String username, String email, String phoneNumber) {
-        UserEntity user = userService.findUserById(userId);
-        PlayersEntity player = playerService.getPlayerById(playerId);
+    public RedirectView updatePlayer(Long userId, Long playerId, String address, Integer age, Integer height, Integer weight,
+                                     String fullName, String username, String email, String phoneNumber, String password) {
 
-        player.setAddress(address);
-        player.setAge(age);
-        player.setHeight(height);
-        player.setWeight(weight);
-//        player.setImage(image);
+        PlayersEntity existingPlayer = playerService.getPlayerById(playerId);
+        UserEntity existingUser = userService.findUserById(userId);
 
-        user.setFullName(fullName);
-        user.setUsername(username);
-        user.setEmail(email);
-        user.setPhoneNumber(phoneNumber);
-//        user.setImage(image);
+        String newPassword = (password != null && !password.isEmpty()) ? passwordEncoder.encode(password) : existingUser.getPassword();
 
-        playerService.signupPlayer(player);
-        userService.saveUser(user);
+        UserEntity updatedUser = updateUser(existingUser, fullName, username, email, phoneNumber, newPassword);
+        userService.saveUser(updatedUser);
+
+        PlayersEntity updatedPlayer = updatePlayer(existingPlayer, address, age, height, weight, updatedUser);
+        playerService.signupPlayer(updatedPlayer);
 
         return new RedirectView("playerInfo");
     }
 
+    private UserEntity updateUser(UserEntity existingUser, String fullName, String username, String email, String phoneNumber, String password) {
+        return UserEntity.builder()
+                .id(existingUser.getId())
+                .fullName(fullName)
+                .username(username)
+                .email(email)
+                .phoneNumber(phoneNumber)
+                .password(password)
+                .role(existingUser.getRole())
+                .image(existingUser.getImage())
+                .build();
+    }
+
+    private PlayersEntity updatePlayer(PlayersEntity existingPlayer, String address, Integer age, Integer height, Integer weight, UserEntity updatedUser) {
+        return PlayersEntity.builder()
+                .id(existingPlayer.getId())
+                .address(address)
+                .age(age)
+                .height(height)
+                .weight(weight)
+                .start_date(existingPlayer.getStart_date())
+                .end_date(existingPlayer.getEnd_date())
+                .user(updatedUser)
+                .admin(existingPlayer.getAdmin())
+                .selectedPackage(existingPlayer.getSelectedPackage())
+                .accountEnabled(existingPlayer.isAccountEnabled())
+                .build();
+    }
+
+
     @GetMapping("/enrollments")
-    public String getMyclasses(Principal principal, Model model) {
+    public String getMyClasses(Principal principal, Model model) {
         if (principal != null) {
             String userName = principal.getName();
             UserEntity userEntity = playerService.findUserByUsername(userName);
@@ -144,8 +154,6 @@ public class PlayerController {
         }
         return "index.html";
     }
-
-
 
 
 //    @GetMapping("/calculateBMI")
@@ -186,11 +194,8 @@ public class PlayerController {
             List<NotificationsEntity> notifications = notificationService.getNotificationsForPlayer(playerId);
             model.addAttribute("notifications", notifications);
         }
-
         return "playerPages/notifications.html";
     }
-
-
 
 
 }
