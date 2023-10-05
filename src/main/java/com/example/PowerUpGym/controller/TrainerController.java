@@ -220,24 +220,26 @@ public class TrainerController {
         ClassesEntity classDetails = trainerService.getClassDetails(classId);
         Set<PlayerClassEnrollment> enrolledPlayers = classDetails.getRegistrations();
 
-        // Get the trainer as the sender
         String senderUsername = principal.getName();
         UserEntity sender = userService.findUserByUsername(senderUsername);
 
-        // Iterate through enrolled players and send notifications
-        for (PlayerClassEnrollment enrollment : enrolledPlayers) {
-            UserEntity receiver = enrollment.getPlayer().getUser();
+        LocalDateTime now = LocalDateTime.now();
 
-            NotificationsEntity notification = new NotificationsEntity();
-            notification.setMessage(message);
-            notification.setSender(sender);
-            notification.setReceiver(receiver);
-            notification.setTimeStamp(LocalDateTime.now());
-            notificationService.saveNotification(notification);
-        }
+        enrolledPlayers.stream()
+                .map(enrollment -> enrollment.getPlayer().getUser()) // Use lambda expression here
+                .map(receiver -> {
+                    NotificationsEntity notification = new NotificationsEntity();
+                    notification.setMessage(message);
+                    notification.setSender(sender);
+                    notification.setReceiver(receiver);
+                    notification.setTimeStamp(now);
+                    return notification;
+                })
+                .forEach(notificationService::saveNotification);
 
         return new RedirectView("/trainerPage/trainerClasses");
     }
+
 
 
 

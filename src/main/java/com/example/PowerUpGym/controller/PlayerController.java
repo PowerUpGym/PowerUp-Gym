@@ -187,8 +187,4 @@ public class PlayerController {
 
         return "playerPages/notifications.html";
     }
-
-
-
-
 }
