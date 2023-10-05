@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Trainers</title>
+</head>
+<body>
+
+<nav>
+    <ul>
+        <li>
+            <a href="/">Home</a>
+        </li>
+        <li>
+            <a href="/homeTrainers">Trainers</a>
+        </li>
+        <li>
+            <a href="/homePackages">Packages</a>
+        </li>
+        <li>
+            <a href="/homeClasses">Classes</a>
+        </li>
+    </ul>
+</nav>
+
+<h1>Trainers</h1>
+<ul th:each="trainer : ${trainers}">
+    <li><strong>Name: </strong><span th:if="${trainer.user != null}" th:text="${trainer.user.fullName}"></span></li>
+    <li><strong>Age: </strong><span th:text="${trainer.age}"></span></li>
+    <li><strong>Experience: </strong><span th:text="${trainer.experience}"></span></li>
+    <li><strong>Email: </strong><span th:if="${trainer.user != null}" th:text="${trainer.user.email}"></span></li>
+    <li><strong>Phone Number: </strong><span th:if="${trainer.user != null}" th:text="${trainer.user.phoneNumber}"></span></li>
+    </ul>
+</body>
+</html>

@@ -38,8 +38,8 @@ public class UserEntity implements UserDetails {
     @Column(name = "password", nullable = false)
     private String password;
 
-    @Column(name = "image", nullable = false)
-    private String image;
+//    @Column(name = "image", nullable = false)
+//    private String image;
 
     @OneToOne
     @JoinColumn(name = "role_id")

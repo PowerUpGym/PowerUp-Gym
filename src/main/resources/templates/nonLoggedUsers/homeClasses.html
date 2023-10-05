@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Classes</title>
+</head>
+<body>
+
+<nav>
+    <ul>
+        <li>
+            <a href="/">Home</a>
+        </li>
+        <li>
+            <a href="/homeTrainers">Trainers</a>
+        </li>
+        <li>
+            <a href="/homePackages">Packages</a>
+        </li>
+        <li>
+            <a href="/homeClasses">Classes</a>
+        </li>
+    </ul>
+</nav>
+
+<h1>Classes</h1>
+<ul th:each="class : ${classes}">
+    <li><strong>Class Name: </strong><span th:text="${class.className}"></span></li>
+    <li><strong>Description: </strong><span th:text="${class.description}"></span></li>
+    <li><strong>Class Trainer: </strong><span th:if="${class.trainer != null}" th:text="${class.trainer.user.fullName}"></span></li>
+    <li><strong>Schedule: </strong><span th:text="${class.schedule}"></span></li>
+</ul>
+</body>
+</html>

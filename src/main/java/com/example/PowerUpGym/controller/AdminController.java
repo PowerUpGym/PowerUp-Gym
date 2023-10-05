@@ -145,7 +145,8 @@ public class AdminController {
     @PostMapping("/signupPlayer")
     public RedirectView signupPlayer(
             String fullName, String username, String password, String email, String phoneNumber, String address,
-            int age, int height, int weight, String image,
+            int age, int height, int weight,
+//            String image,
             @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate start_date,
             @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate end_date, Principal principal) {
 
@@ -158,7 +159,7 @@ public class AdminController {
                 .age(age)
                 .height(height)
                 .weight(weight)
-                .image(image)
+//                .image(image)
                 .start_date(start_date)
                 .end_date(end_date)
                 .build();
