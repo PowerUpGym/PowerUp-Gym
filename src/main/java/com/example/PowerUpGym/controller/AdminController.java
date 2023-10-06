@@ -95,14 +95,15 @@ public class AdminController {
 //    }
 
     private UserEntity createUser(String fullName, String username, String email,
-                                  String phoneNumber,String image, String password, Role role) {
+                                  String phoneNumber, String password, Role role) {
 
+        String defaultImage = "/assets/profileImg.png"; // Set the default image
         UserEntity user = UserEntity.builder()
                 .fullName(fullName)
                 .username(username)
                 .email(email)
                 .phoneNumber(phoneNumber)
-                .image(image)
+                .image(defaultImage) // Set the default image
                 .password(passwordEncoder.encode(password))
                 .role(userRoleService.getUserRoleByName(role))
                 .build();
@@ -121,7 +122,11 @@ public class AdminController {
     public RedirectView signupTrainer(String fullName, String username, String email, String phoneNumber,
                                       String image, String password, int age, String experience, Principal principal) {
 
-        UserEntity user = createUser(fullName, username, email, phoneNumber,image, password, Role.TRAINER);
+        if (image == null || image.isEmpty()) {
+            image = "/assets/profileImg.png"; // Set to your default image URL
+        }
+
+        UserEntity user = createUser(fullName, username, email, phoneNumber, password, Role.TRAINER);
 
         TrainerEntity trainerEntity = TrainerEntity.builder()
                 .age(age)
@@ -134,6 +139,8 @@ public class AdminController {
 
         return new RedirectView("/adminPage");
     }
+
+
 
 
     @GetMapping("/signupPlayer")
@@ -149,31 +156,33 @@ public class AdminController {
             String password, String address, int age, int height, int weight,
             @RequestParam Long packageId, Principal principal) {
 
-        if (principal != null) {
-            UserEntity user = createUser(fullName, username, email, phoneNumber, image, password, Role.PLAYER);
-            PackagesEntity selectedPackage = packageService.getPackageById(packageId);
-            LocalDate startDate = LocalDate.now();
-            LocalDate endDate = startDate.plusMonths(selectedPackage.getDuration());
-            PlayersEntity player = PlayersEntity.builder()
-                    .admin(adminService.getAdminByUsername(principal.getName()))
-                    .user(user)
-                    .address(address)
-                    .age(age)
-                    .height(height)
-                    .weight(weight)
-                    .start_date(startDate)
-                    .end_date(endDate)
-                    .selectedPackage(selectedPackage)
-                    .accountEnabled(true)
-                    .build();
-
-            playerService.signupPlayer(player);
-
-            return new RedirectView("/adminPage");
-        } else {
-            return new RedirectView("/error");
+        if (image.isEmpty()) {
+            image = "/assets/profileImg.png"; // Set to your default image
         }
+
+        UserEntity user = createUser(fullName, username, email, phoneNumber, password, Role.PLAYER);
+        PackagesEntity selectedPackage = packageService.getPackageById(packageId);
+        LocalDate startDate = LocalDate.now();
+        LocalDate endDate = startDate.plusMonths(selectedPackage.getDuration());
+
+        PlayersEntity player = PlayersEntity.builder()
+                .admin(adminService.getAdminByUsername(principal.getName()))
+                .user(user)
+                .address(address)
+                .age(age)
+                .height(height)
+                .weight(weight)
+                .start_date(startDate)
+                .end_date(endDate)
+                .selectedPackage(selectedPackage)
+                .accountEnabled(true)
+                .build();
+
+        playerService.signupPlayer(player);
+
+        return new RedirectView("/adminPage");
     }
+
 
 
 ////////////////////////////////////////////////////////////////////////////////
