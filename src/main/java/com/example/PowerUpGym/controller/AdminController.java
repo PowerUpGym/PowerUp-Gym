@@ -185,7 +185,7 @@ public class AdminController {
 
         PaymentsEntity payment = PaymentsEntity.builder()
                 .userEntity(player.getUser()) // Set the user associated with the player
-                .amount(selectedPackage.getPrice())
+                .amount(player.getSelectedPackage().getPrice())
                 .paymentMethod(paymentMethod)
                 .paymentDate(LocalDate.now())
                 .paymentStatus(true) // You can set the status as needed
@@ -213,24 +213,35 @@ public class AdminController {
 
     // ========== Resubscribe a player to a new package ====================
     @PostMapping("/renewSubscription")
-    public RedirectView resubscribePlayer(@RequestParam(name = "playerId") Long playerId,
+    public RedirectView renewSubscription(@RequestParam(name = "playerId") Long playerId,
                                           @RequestParam(name = "newPackageId") Long newPackageId) {
         PlayersEntity player = playerService.getPlayerById(playerId);
         PackagesEntity newPackage = packageService.getPackageById(newPackageId);
 
         if (player != null && newPackage != null) {
-            LocalDate newEndDate = LocalDate.now().plusMonths(newPackage.getDuration());
+            // Calculate the new amount based on the selected package
+            int newAmount = newPackage.getPrice();
 
+            // Update the player's selected package and end date
             player.setSelectedPackage(newPackage);
+            LocalDate newEndDate = LocalDate.now().plusMonths(newPackage.getDuration());
             player.setEnd_date(newEndDate);
-            player.setAccountEnabled(true);
+
             playerService.signupPlayer(player);
+            PaymentsEntity payment = paymentService.getPaymentByPlayer(player);
+            if (payment != null) {
+                payment.setAmount(newAmount);
+                paymentService.savePayment(payment);
+            } else {
+
+            }
 
             return new RedirectView("/adminPage/allplayers");
         } else {
             return new RedirectView("/error");
         }
     }
+
 // ========== Resubscribe a player to a new package ====================
 
 
@@ -393,12 +404,12 @@ public class AdminController {
         return "adminPages/classDetails";
     }
 
-    @GetMapping("/allplayers")
-    public String getManagePlayer(Model model) {
-        List<PlayersEntity> players = playerService.getAllPlayers();
-        model.addAttribute("players", players);
-        return "adminPages/allplayers";
-    }
+//    @GetMapping("/allplayers")
+//    public String getManagePlayer(Model model) {
+//        List<PlayersEntity> players = playerService.getAllPlayers();
+//        model.addAttribute("players", players);
+//        return "adminPages/allplayers";
+//    }
 
     @GetMapping("/allplayers/{id}")
     public String sendMessageToUser(@PathVariable Long id, Model model) {
@@ -437,5 +448,23 @@ public class AdminController {
 //        notification.setTimeStamp(LocalDate.now());
 //        return notification;
 //    }
+//---------------------------------------/////////////////////////////////////
+@GetMapping("/allplayers")
+public String searchPlayers(@RequestParam(value = "search", required = false) String searchTerm, Model model) {
+    List<PlayersEntity> players;
+
+    // Check if a search term is provided
+    if (searchTerm != null && !searchTerm.isEmpty()) {
+        players = playerService.searchPlayersByUsernameOrPhoneNumber(searchTerm);
+    } else {
+        players = playerService.getAllPlayers();
+    }
+
+    model.addAttribute("players", players);
+
+    return "adminPages/allplayers";
+}
+
+
 
 }
