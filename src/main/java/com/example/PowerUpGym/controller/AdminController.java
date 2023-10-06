@@ -144,7 +144,7 @@ public class AdminController {
     public String getSignupPlayer(Model model) {
         List<PackagesEntity> availablePackages = packageService.getAllPackages();
         model.addAttribute("availablePackages", availablePackages);
-        model.addAttribute("paymentMethods", Arrays.asList("Cash", "Visa")); // Add payment methods
+        model.addAttribute("paymentMethods", Arrays.asList("Cash", "Visa"));
         return "adminPages/signupPlayer";
     }
 
@@ -172,16 +172,16 @@ public class AdminController {
                     .accountEnabled(true)
                     .build();
 
-            // Save the player
+
             playerService.signupPlayer(player);
 
-            // Create and save the payment
+
             PaymentsEntity payment = PaymentsEntity.builder()
-                    .userEntity(player.getUser()) // Set the user associated with the player
+                    .userEntity(player.getUser())
                     .amount(selectedPackage.getPrice())
                     .paymentMethod(paymentMethod)
                     .paymentDate(LocalDate.now())
-                    .paymentStatus(true) // You can set the status as needed
+                    .paymentStatus(true)
                     .build();
 
             paymentService.savePayment(payment);
