@@ -132,19 +132,20 @@ public class TrainerController {
                                              @RequestParam("password") String password,
                                              @RequestParam("age") int age,
                                              @RequestParam("experience") String experience,
-                                             @RequestParam("adminId") Long adminId)
-    {
+                                             @RequestParam("adminId") Long adminId,
+                                             @RequestParam("image") String image) {
 
         UserEntity userEntity = userService.getUserById(userId);
 
-        UserEntity updateUser = UpdateTrainer(userId, fullName, username, email, phoneNumber, password, userEntity, age, experience , adminId);
+        UserEntity updateUser = UpdateTrainer(userId, fullName, username, email, phoneNumber, password, userEntity, age, experience , adminId, image);
 
         userService.saveUser(updateUser);
 
         return new RedirectView("/trainerPage/trainerProfile");
     }
 
-    private UserEntity UpdateTrainer(Long userId, String fullName, String username, String email, String phoneNumbeer, String password, UserEntity userEntity, int age, String experience,Long adminId) {
+
+    private UserEntity UpdateTrainer(Long userId, String fullName, String username, String email, String phoneNumbeer, String password, UserEntity userEntity, int age, String experience,Long adminId , String image) {
 
         AdminEntity admin = adminService.getAdminById(adminId);
         TrainerEntity trainer = TrainerEntity.builder()
@@ -167,16 +168,10 @@ public class TrainerController {
                 .role(userEntity.getRole())
                 .player(userEntity.getPlayer())
                 .trainer(userEntity.getTrainer())
+                .image(image)
                 .build();
     }
 
-    public void authWithHttpServletRequest(String username, String password) {
-        try {
-            request.login(username, password);
-        } catch (ServletException e) {
-            e.printStackTrace();
-        }
-    }
 
     @GetMapping("/allplayersenrollment/{id}")
     public String sendMessageToUser(@PathVariable Long id, Model model) {
