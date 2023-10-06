@@ -52,8 +52,8 @@ public class AdminController {
     PlayerService playerService;
     @Autowired
     UserRoleService userRoleService;
-   @Autowired
-   PaymentService paymentService;
+    @Autowired
+    PaymentService paymentService;
 
     @Autowired
     private NotificationsService notificationService;
@@ -99,14 +99,15 @@ public class AdminController {
 //    }
 
     private UserEntity createUser(String fullName, String username, String email,
-                                  String phoneNumber,String image, String password, Role role) {
+                                  String phoneNumber, String password, Role role) {
 
+        String defaultImage = "/assets/profileImg.png"; // Set the default image
         UserEntity user = UserEntity.builder()
                 .fullName(fullName)
                 .username(username)
                 .email(email)
                 .phoneNumber(phoneNumber)
-                .image(image)
+                .image(defaultImage) // Set the default image
                 .password(passwordEncoder.encode(password))
                 .role(userRoleService.getUserRoleByName(role))
                 .build();
@@ -125,7 +126,11 @@ public class AdminController {
     public RedirectView signupTrainer(String fullName, String username, String email, String phoneNumber,
                                       String image, String password, int age, String experience, Principal principal) {
 
-        UserEntity user = createUser(fullName, username, email, phoneNumber,image, password, Role.TRAINER);
+        if (image == null || image.isEmpty()) {
+            image = "/assets/profileImg.png"; // Set to your default image URL
+        }
+
+        UserEntity user = createUser(fullName, username, email, phoneNumber, password, Role.TRAINER);
 
         TrainerEntity trainerEntity = TrainerEntity.builder()
                 .age(age)
@@ -144,7 +149,7 @@ public class AdminController {
     public String getSignupPlayer(Model model) {
         List<PackagesEntity> availablePackages = packageService.getAllPackages();
         model.addAttribute("availablePackages", availablePackages);
-        model.addAttribute("paymentMethods", Arrays.asList("Cash", "Visa"));
+        model.addAttribute("paymentMethods", Arrays.asList("Cash", "Visa")); // Add payment methods
         return "adminPages/signupPlayer";
     }
 
@@ -152,44 +157,43 @@ public class AdminController {
     public RedirectView signupPlayer(
             String fullName, String username, String email, String phoneNumber, String image,
             String password, String address, int age, int height, int weight,
-            @RequestParam Long packageId,@RequestParam String paymentMethod, Principal principal) {
+            @RequestParam Long packageId, @RequestParam String paymentMethod,Principal principal) {
 
-        if (principal != null) {
-            UserEntity user = createUser(fullName, username, email, phoneNumber, image, password, Role.PLAYER);
-            PackagesEntity selectedPackage = packageService.getPackageById(packageId);
-            LocalDate startDate = LocalDate.now();
-            LocalDate endDate = startDate.plusMonths(selectedPackage.getDuration());
-            PlayersEntity player = PlayersEntity.builder()
-                    .admin(adminService.getAdminByUsername(principal.getName()))
-                    .user(user)
-                    .address(address)
-                    .age(age)
-                    .height(height)
-                    .weight(weight)
-                    .start_date(startDate)
-                    .end_date(endDate)
-                    .selectedPackage(selectedPackage)
-                    .accountEnabled(true)
-                    .build();
-
-
-            playerService.signupPlayer(player);
-
-
-            PaymentsEntity payment = PaymentsEntity.builder()
-                    .userEntity(player.getUser())
-                    .amount(selectedPackage.getPrice())
-                    .paymentMethod(paymentMethod)
-                    .paymentDate(LocalDate.now())
-                    .paymentStatus(true)
-                    .build();
-
-            paymentService.savePayment(payment);
-
-            return new RedirectView("/adminPage");
-        } else {
-            return new RedirectView("/error");
+        if (image.isEmpty()) {
+            image = "/assets/profileImg.png"; // Set to your default image
         }
+
+        UserEntity user = createUser(fullName, username, email, phoneNumber, password, Role.PLAYER);
+        PackagesEntity selectedPackage = packageService.getPackageById(packageId);
+        LocalDate startDate = LocalDate.now();
+        LocalDate endDate = startDate.plusMonths(selectedPackage.getDuration());
+
+        PlayersEntity player = PlayersEntity.builder()
+                .admin(adminService.getAdminByUsername(principal.getName()))
+                .user(user)
+                .address(address)
+                .age(age)
+                .height(height)
+                .weight(weight)
+                .start_date(startDate)
+                .end_date(endDate)
+                .selectedPackage(selectedPackage)
+                .accountEnabled(true)
+                .build();
+
+        playerService.signupPlayer(player);
+
+        PaymentsEntity payment = PaymentsEntity.builder()
+                .userEntity(player.getUser()) // Set the user associated with the player
+                .amount(selectedPackage.getPrice())
+                .paymentMethod(paymentMethod)
+                .paymentDate(LocalDate.now())
+                .paymentStatus(true) // You can set the status as needed
+                .build();
+
+        paymentService.savePayment(payment);
+
+        return new RedirectView("/adminPage");
     }
 
 
@@ -207,30 +211,30 @@ public class AdminController {
     }
 
 
-// ========== Resubscribe a player to a new package ====================
-@PostMapping("/renewSubscription")
-public RedirectView resubscribePlayer(@RequestParam(name = "playerId") Long playerId,
-                                      @RequestParam(name = "newPackageId") Long newPackageId) {
-    PlayersEntity player = playerService.getPlayerById(playerId);
-    PackagesEntity newPackage = packageService.getPackageById(newPackageId);
+    // ========== Resubscribe a player to a new package ====================
+    @PostMapping("/renewSubscription")
+    public RedirectView resubscribePlayer(@RequestParam(name = "playerId") Long playerId,
+                                          @RequestParam(name = "newPackageId") Long newPackageId) {
+        PlayersEntity player = playerService.getPlayerById(playerId);
+        PackagesEntity newPackage = packageService.getPackageById(newPackageId);
 
-    if (player != null && newPackage != null) {
-        LocalDate newEndDate = LocalDate.now().plusMonths(newPackage.getDuration());
+        if (player != null && newPackage != null) {
+            LocalDate newEndDate = LocalDate.now().plusMonths(newPackage.getDuration());
 
-        player.setSelectedPackage(newPackage);
-        player.setEnd_date(newEndDate);
-        player.setAccountEnabled(true);
-        playerService.signupPlayer(player);
+            player.setSelectedPackage(newPackage);
+            player.setEnd_date(newEndDate);
+            player.setAccountEnabled(true);
+            playerService.signupPlayer(player);
 
-        return new RedirectView("/adminPage/allplayers");
-    } else {
-        return new RedirectView("/error");
+            return new RedirectView("/adminPage/allplayers");
+        } else {
+            return new RedirectView("/error");
+        }
     }
-}
 // ========== Resubscribe a player to a new package ====================
 
 
-// ==========  Update the player's account status  ====================
+    // ==========  Update the player's account status  ====================
     @GetMapping("/updateAccountStatus")
     public String getUpdateAccountStatusForm(Model model) {
         List<PlayersEntity> players = playerService.getAllPlayers();

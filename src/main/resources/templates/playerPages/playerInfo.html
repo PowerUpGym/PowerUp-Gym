@@ -9,13 +9,13 @@
 
 <div th:if="${player != null}">
     <h2>Player Details</h2>
-<!--    <p><strong>Player ID:</strong> <span th:text="${player.id}" hidden="hidden"></span></p>-->
     <p><strong>Address:</strong> <span th:text="${player.address}"></span></p>
     <p><strong>Age:</strong> <span th:text="${player.age}"></span></p>
     <p><strong>Height:</strong> <span th:text="${player.height}"></span></p>
     <p><strong>Weight:</strong> <span th:text="${player.weight}"></span></p>
     <p><strong>Start Date:</strong> <span th:text="${player.start_date}"></span></p>
     <p><strong>End Date:</strong> <span th:text="${player.end_date}"></span></p>
+
 </div>
 
 <div th:if="${user != null}">
@@ -24,7 +24,7 @@
     <p><strong>Username:</strong> <span th:text="${user.username}"></span></p>
     <p><strong>Email:</strong> <span th:text="${user.email}"></span></p>
     <p><strong>Phone Number:</strong> <span th:text="${user.phoneNumber}"></span></p>
-    <p><strong>Image:</strong> <span th:text="${user.image}"></span></p>
+    <img th:src="${user.image}" alt="Player Image" width="150" height="150">
 
     <a th:href="@{/playerPage/updatePlayerProfile}">Edit Profile</a>
 
