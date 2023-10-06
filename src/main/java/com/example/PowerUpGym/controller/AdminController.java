@@ -141,8 +141,6 @@ public class AdminController {
     }
 
 
-
-
     @GetMapping("/signupPlayer")
     public String getSignupPlayer(Model model) {
         List<PackagesEntity> availablePackages = packageService.getAllPackages();
