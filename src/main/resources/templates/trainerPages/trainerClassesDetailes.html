@@ -24,7 +24,7 @@
 
 <div th:if="${classDetails != null}">
   <p><span th:text="${classDetails.id}" hidden="hidden"></span></p>
-  <p><strong>Schedule:</strong> <span th:text="${classDetails.schedule}"></span></p>
+  <p><strong>Schedule:</strong> <span th:text="${classDetails.scheduleDescription}"></span></p>
   <p><strong>Description:</strong> <span th:text="${classDetails.description}"></span></p>
   <p><strong>Class Name:</strong> <span th:text="${classDetails.className}"></span></p>
 
@@ -33,7 +33,6 @@
     <li th:each="enrollment : ${enrolledPlayers}">
       <p><strong></strong> <span th:text="${enrollment.player.id}" hidden="hidden"></span></p>
       <p><strong>Player Name:</strong> <span th:text="${enrollment.player.user.fullName}"></span></p>
-      <!-- Add a "Send" button with a link to the sendMessageToUser endpoint -->
       <a th:href="@{/trainerPage/allplayersenrollment/{id}(id=${enrollment.player.user.id})}" class="btn btn-primary">Send</a>
     </li>
   </ul>

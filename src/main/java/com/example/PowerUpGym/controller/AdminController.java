@@ -304,24 +304,24 @@ public class AdminController {
     }
 
     @PostMapping("/addClass")
-    public RedirectView addClass(String className, @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate schedule
+    public RedirectView addClass(String className,String scheduleDescription
             , String description, Long trainerId, Principal principal) {
 
         TrainerEntity trainer = trainerService.getTrainerById(trainerId);
         AdminEntity admin = adminService.getAdminByUsername(principal.getName());
-        ClassesEntity classEntity = createClass(className, schedule, description, trainer, admin);
+        ClassesEntity classEntity = createClass(className, scheduleDescription, description, trainer, admin);
 
         classService.addClass(classEntity);
 
         return new RedirectView("/adminPage");
     }
 
-    private ClassesEntity createClass(String className, LocalDate schedule, String description,
+    private ClassesEntity createClass(String className, String scheduleDescription, String description,
                                       TrainerEntity trainer, AdminEntity admin) {
 
         return ClassesEntity.builder()
                 .className(className)
-                .schedule(schedule)
+                .scheduleDescription(scheduleDescription)
                 .description(description)
                 .trainer(trainer)
                 .admin(admin)

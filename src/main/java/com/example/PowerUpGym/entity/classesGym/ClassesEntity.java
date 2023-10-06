@@ -28,7 +28,7 @@ public class ClassesEntity {
 
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     @Column(name = "schedule", nullable = false)
-    private LocalDate schedule; // make it string
+    private String scheduleDescription;
 
     @Column(name = "description", nullable = false)
     private String description;
