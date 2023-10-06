@@ -33,10 +33,8 @@ import java.util.stream.Collectors;
 public class AdminController {
     @Autowired
     AdminService adminService;
-
     @Autowired
     ClassService classService;
-
     @Autowired
     PackageService packageService;
     @Autowired
@@ -98,13 +96,13 @@ public class AdminController {
     private UserEntity createUser(String fullName, String username, String email,
                                   String phoneNumber, String password, Role role) {
 
-        String defaultImage = "/assets/profileImg.png"; // Set the default image
+        String defaultImage = "/assets/profileImg.png";
         UserEntity user = UserEntity.builder()
                 .fullName(fullName)
                 .username(username)
                 .email(email)
                 .phoneNumber(phoneNumber)
-                .image(defaultImage) // Set the default image
+                .image(defaultImage)
                 .password(passwordEncoder.encode(password))
                 .role(userRoleService.getUserRoleByName(role))
                 .build();
@@ -124,7 +122,7 @@ public class AdminController {
                                       String image, String password, int age, String experience, Principal principal) {
 
         if (image == null || image.isEmpty()) {
-            image = "/assets/profileImg.png"; // Set to your default image URL
+            image = "/assets/profileImg.png";
         }
 
         UserEntity user = createUser(fullName, username, email, phoneNumber, password, Role.TRAINER);
@@ -146,7 +144,7 @@ public class AdminController {
     public String getSignupPlayer(Model model) {
         List<PackagesEntity> availablePackages = packageService.getAllPackages();
         model.addAttribute("availablePackages", availablePackages);
-        model.addAttribute("paymentMethods", Arrays.asList("Cash", "Visa")); // Add payment methods
+        model.addAttribute("paymentMethods", Arrays.asList("Cash", "Visa"));
         return "adminPages/signupPlayer";
     }
 
@@ -157,7 +155,7 @@ public class AdminController {
             @RequestParam Long packageId, @RequestParam String paymentMethod,Principal principal) {
 
         if (image.isEmpty()) {
-            image = "/assets/profileImg.png"; // Set to your default image
+            image = "/assets/profileImg.png"; 
         }
 
         UserEntity user = createUser(fullName, username, email, phoneNumber, password, Role.PLAYER);
@@ -182,7 +180,7 @@ public class AdminController {
 
         PaymentsEntity payment = PaymentsEntity.builder()
                 .userEntity(player.getUser())
-                .amount(selectedPackage.getPrice())
+                .amount(player.getSelectedPackage().getPrice())
                 .paymentMethod(paymentMethod)
                 .paymentDate(LocalDate.now())
                 .paymentStatus(true)
@@ -193,9 +191,6 @@ public class AdminController {
         return new RedirectView("/adminPage");
     }
 
-
-
-////////////////////////////////////////////////////////////////////////////////
 
     @GetMapping("/renewSubscription")
     public String getRenewSubscriptionForm(Model model) {
@@ -208,30 +203,41 @@ public class AdminController {
     }
 
 
-// ========== Resubscribe a player to a new package ====================
-@PostMapping("/renewSubscription")
-public RedirectView resubscribePlayer(@RequestParam(name = "playerId") Long playerId,
-                                      @RequestParam(name = "newPackageId") Long newPackageId) {
-    PlayersEntity player = playerService.getPlayerById(playerId);
-    PackagesEntity newPackage = packageService.getPackageById(newPackageId);
+    // ========== Resubscribe a player to a new package ====================
+    @PostMapping("/renewSubscription")
+    public RedirectView renewSubscription(@RequestParam(name = "playerId") Long playerId,
+                                          @RequestParam(name = "newPackageId") Long newPackageId) {
+        PlayersEntity player = playerService.getPlayerById(playerId);
+        PackagesEntity newPackage = packageService.getPackageById(newPackageId);
 
-    if (player != null && newPackage != null) {
-        LocalDate newEndDate = LocalDate.now().plusMonths(newPackage.getDuration());
+        if (player != null && newPackage != null) {
+            // Calculate the new amount based on the selected package
+            int newAmount = newPackage.getPrice();
 
-        player.setSelectedPackage(newPackage);
-        player.setEnd_date(newEndDate);
-        player.setAccountEnabled(true);
-        playerService.signupPlayer(player);
+            // Update the player's selected package and end date
+            player.setSelectedPackage(newPackage);
+            LocalDate newEndDate = LocalDate.now().plusMonths(newPackage.getDuration());
+            player.setEnd_date(newEndDate);
 
-        return new RedirectView("/adminPage/allplayers");
-    } else {
-        return new RedirectView("/error");
+            playerService.signupPlayer(player);
+            PaymentsEntity payment = paymentService.getPaymentByPlayer(player);
+            if (payment != null) {
+                payment.setAmount(newAmount);
+                paymentService.savePayment(payment);
+            } else {
+
+            }
+
+            return new RedirectView("/adminPage/allplayers");
+        } else {
+            return new RedirectView("/error");
+        }
     }
-}
+
 // ========== Resubscribe a player to a new package ====================
 
 
-// ==========  Update the player's account status  ====================
+    // ==========  Update the player's account status  ====================
     @GetMapping("/updateAccountStatus")
     public String getUpdateAccountStatusForm(Model model) {
         List<PlayersEntity> players = playerService.getAllPlayers();
@@ -384,12 +390,6 @@ public RedirectView resubscribePlayer(@RequestParam(name = "playerId") Long play
         return "adminPages/classDetails";
     }
 
-    @GetMapping("/allplayers")
-    public String getManagePlayer(Model model) {
-        List<PlayersEntity> players = playerService.getAllPlayers();
-        model.addAttribute("players", players);
-        return "adminPages/allplayers";
-    }
 
     @GetMapping("/allplayers/{id}")
     public String sendMessageToUser(@PathVariable Long id, Model model) {
@@ -419,5 +419,21 @@ public RedirectView resubscribePlayer(@RequestParam(name = "playerId") Long play
         notificationService.saveNotification(notification);
         return new RedirectView("/adminPage/allplayers");
     }
+
+
+@GetMapping("/allplayers")
+public String searchPlayers(@RequestParam(value = "search", required = false) String searchTerm, Model model) {
+    List<PlayersEntity> players;
+
+    if (searchTerm != null && !searchTerm.isEmpty()) {
+        players = playerService.searchPlayersByUsernameOrPhoneNumber(searchTerm);
+    } else {
+        players = playerService.getAllPlayers();
+    }
+
+    model.addAttribute("players", players);
+
+    return "adminPages/allplayers";
+}
 
 }

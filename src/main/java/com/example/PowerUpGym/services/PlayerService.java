@@ -61,4 +61,8 @@ public class PlayerService {
         return enrolledClasses;
     }
 
+    public List<PlayersEntity> searchPlayersByUsernameOrPhoneNumber(String searchTerm) {
+        return playerRepository.findByUserUsernameContainingIgnoreCaseOrUserPhoneNumberContainingIgnoreCase(searchTerm, searchTerm);
+    }
+
 }
