@@ -10,7 +10,6 @@ import com.example.PowerUpGym.entity.users.PlayersEntity;
 import com.example.PowerUpGym.entity.users.TrainerEntity;
 import com.example.PowerUpGym.entity.users.UserEntity;
 import com.example.PowerUpGym.enums.Role;
-import com.example.PowerUpGym.repositories.UserEntityRepositories;
 import com.example.PowerUpGym.services.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -41,8 +40,6 @@ public class AdminController {
     @Autowired
     PackageService packageService;
     @Autowired
-    UserEntityRepositories userEntityRepositories;
-    @Autowired
     PasswordEncoder passwordEncoder;
     @Autowired
     UserService userService;
@@ -56,7 +53,7 @@ public class AdminController {
     PaymentService paymentService;
 
     @Autowired
-    private NotificationsService notificationService;
+    NotificationsService notificationService;
 
     @GetMapping("")
     public String getLoginPageAdmin() {
@@ -184,11 +181,11 @@ public class AdminController {
         playerService.signupPlayer(player);
 
         PaymentsEntity payment = PaymentsEntity.builder()
-                .userEntity(player.getUser()) // Set the user associated with the player
+                .userEntity(player.getUser())
                 .amount(selectedPackage.getPrice())
                 .paymentMethod(paymentMethod)
                 .paymentDate(LocalDate.now())
-                .paymentStatus(true) // You can set the status as needed
+                .paymentStatus(true)
                 .build();
 
         paymentService.savePayment(payment);
@@ -345,9 +342,10 @@ public RedirectView resubscribePlayer(@RequestParam(name = "playerId") Long play
     }
 
     @PostMapping("/addPlayerToClass")
-    public RedirectView addPlayerToClass(@RequestParam Long playerId, @RequestParam Long classId) {
+    public RedirectView addPlayerToClass(@RequestParam String playerId, @RequestParam Long classId) {
+        Long selectedPlayerId = Long.parseLong(playerId);
 
-        PlayersEntity player = playerService.getPlayerById(playerId);
+        PlayersEntity player = playerService.getPlayerById(selectedPlayerId);
         ClassesEntity classEntity = classService.getClassById(classId);
 
         PlayerClassEnrollment enrollment = PlayerClassEnrollment.builder()
@@ -360,13 +358,6 @@ public RedirectView resubscribePlayer(@RequestParam(name = "playerId") Long play
         return new RedirectView("/adminPage/allClasses");
     }
 
-//    private PlayerClassEnrollment createPlayerClassEnrollment(PlayersEntity player, ClassesEntity classEntity) {
-//        PlayerClassEnrollment enrollment = new PlayerClassEnrollment();
-//        enrollment.setPlayer(player);
-//        enrollment.setEnrolledClass(classEntity);
-//        enrollment.setEnrollmentDateTime(LocalDate.now());
-//        return enrollment;
-//    }
 
     @GetMapping("/allClasses")
     public String getAllClasses(Model model) {
@@ -428,14 +419,5 @@ public RedirectView resubscribePlayer(@RequestParam(name = "playerId") Long play
         notificationService.saveNotification(notification);
         return new RedirectView("/adminPage/allplayers");
     }
-
-//    private NotificationsEntity createNotification(String message, UserEntity sender, UserEntity receiver) {
-//        NotificationsEntity notification = new NotificationsEntity();
-//        notification.setMessage(message);
-//        notification.setSender(sender);
-//        notification.setReceiver(receiver);
-//        notification.setTimeStamp(LocalDate.now());
-//        return notification;
-//    }
 
 }
