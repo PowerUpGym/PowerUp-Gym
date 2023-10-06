@@ -4,6 +4,7 @@ import com.example.PowerUpGym.entity.classesGym.ClassesEntity;
 import com.example.PowerUpGym.entity.classesGym.PlayerClassEnrollment;
 import com.example.PowerUpGym.entity.notifications.NotificationsEntity;
 import com.example.PowerUpGym.entity.packagesGym.PackagesEntity;
+import com.example.PowerUpGym.entity.payments.PaymentsEntity;
 import com.example.PowerUpGym.entity.users.AdminEntity;
 import com.example.PowerUpGym.entity.users.PlayersEntity;
 import com.example.PowerUpGym.entity.users.TrainerEntity;
@@ -22,6 +23,7 @@ import org.springframework.web.servlet.view.RedirectView;
 import java.security.Principal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -50,6 +52,8 @@ public class AdminController {
     PlayerService playerService;
     @Autowired
     UserRoleService userRoleService;
+   @Autowired
+   PaymentService paymentService;
 
     @Autowired
     private NotificationsService notificationService;
@@ -147,6 +151,7 @@ public class AdminController {
     public String getSignupPlayer(Model model) {
         List<PackagesEntity> availablePackages = packageService.getAllPackages();
         model.addAttribute("availablePackages", availablePackages);
+        model.addAttribute("paymentMethods", Arrays.asList("Cash", "Visa")); // Add payment methods
         return "adminPages/signupPlayer";
     }
 
@@ -154,12 +159,30 @@ public class AdminController {
     public RedirectView signupPlayer(
             String fullName, String username, String email, String phoneNumber, String image,
             String password, String address, int age, int height, int weight,
-            @RequestParam Long packageId, Principal principal) {
+            @RequestParam Long packageId,@RequestParam String paymentMethod, Principal principal) {
 
         if (image.isEmpty()) {
             image = "/assets/profileImg.png"; // Set to your default image
         }
 
+            // Save the player
+            playerService.signupPlayer(player);
+
+            // Create and save the payment
+            PaymentsEntity payment = PaymentsEntity.builder()
+                    .userEntity(player.getUser()) // Set the user associated with the player
+                    .amount(selectedPackage.getPrice())
+                    .paymentMethod(paymentMethod)
+                    .paymentDate(LocalDate.now())
+                    .paymentStatus(true) // You can set the status as needed
+                    .build();
+
+            paymentService.savePayment(payment);
+
+            return new RedirectView("/adminPage");
+        } else {
+            return new RedirectView("/error");
+        }
         UserEntity user = createUser(fullName, username, email, phoneNumber, password, Role.PLAYER);
         PackagesEntity selectedPackage = packageService.getPackageById(packageId);
         LocalDate startDate = LocalDate.now();
