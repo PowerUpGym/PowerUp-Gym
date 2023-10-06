@@ -44,9 +44,6 @@
     <input type="number" id="weight" name="weight" required>
     <br>
 
-<!--    <label for="image">Image URL:</label>-->
-<!--    <input type="text" id="image" name="image">-->
-<!--    <br>-->
     <input type="hidden" id="image" name="image" value="">
 
 
@@ -54,6 +51,13 @@
     <select id="packageId" name="packageId">
         <option value="">Select a Package</option>
         <option th:each="package : ${availablePackages}" th:value="${package.id}" th:text="${package.packageName + ' (' + package.duration + ' Months for $' + package.price + ')'}"></option>
+    </select>
+    <br>
+
+    <label for="paymentMethod">Select Payment Method:</label>
+    <select id="paymentMethod" name="paymentMethod">
+        <option value="Cash">Cash</option>
+        <option value="Visa">Visa</option>
     </select>
     <br>
 
