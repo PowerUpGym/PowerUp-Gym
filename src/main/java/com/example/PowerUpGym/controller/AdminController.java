@@ -10,7 +10,6 @@ import com.example.PowerUpGym.entity.users.PlayersEntity;
 import com.example.PowerUpGym.entity.users.TrainerEntity;
 import com.example.PowerUpGym.entity.users.UserEntity;
 import com.example.PowerUpGym.enums.Role;
-import com.example.PowerUpGym.repositories.UserEntityRepositories;
 import com.example.PowerUpGym.services.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -34,14 +33,10 @@ import java.util.stream.Collectors;
 public class AdminController {
     @Autowired
     AdminService adminService;
-
     @Autowired
     ClassService classService;
-
     @Autowired
     PackageService packageService;
-    @Autowired
-    UserEntityRepositories userEntityRepositories;
     @Autowired
     PasswordEncoder passwordEncoder;
     @Autowired
@@ -56,7 +51,7 @@ public class AdminController {
     PaymentService paymentService;
 
     @Autowired
-    private NotificationsService notificationService;
+    NotificationsService notificationService;
 
     @GetMapping("")
     public String getLoginPageAdmin() {
@@ -101,13 +96,13 @@ public class AdminController {
     private UserEntity createUser(String fullName, String username, String email,
                                   String phoneNumber, String password, Role role) {
 
-        String defaultImage = "/assets/profileImg.png"; // Set the default image
+        String defaultImage = "/assets/profileImg.png";
         UserEntity user = UserEntity.builder()
                 .fullName(fullName)
                 .username(username)
                 .email(email)
                 .phoneNumber(phoneNumber)
-                .image(defaultImage) // Set the default image
+                .image(defaultImage)
                 .password(passwordEncoder.encode(password))
                 .role(userRoleService.getUserRoleByName(role))
                 .build();
@@ -127,7 +122,7 @@ public class AdminController {
                                       String image, String password, int age, String experience, Principal principal) {
 
         if (image == null || image.isEmpty()) {
-            image = "/assets/profileImg.png"; // Set to your default image URL
+            image = "/assets/profileImg.png";
         }
 
         UserEntity user = createUser(fullName, username, email, phoneNumber, password, Role.TRAINER);
@@ -149,7 +144,7 @@ public class AdminController {
     public String getSignupPlayer(Model model) {
         List<PackagesEntity> availablePackages = packageService.getAllPackages();
         model.addAttribute("availablePackages", availablePackages);
-        model.addAttribute("paymentMethods", Arrays.asList("Cash", "Visa")); // Add payment methods
+        model.addAttribute("paymentMethods", Arrays.asList("Cash", "Visa"));
         return "adminPages/signupPlayer";
     }
 
@@ -160,7 +155,7 @@ public class AdminController {
             @RequestParam Long packageId, @RequestParam String paymentMethod,Principal principal) {
 
         if (image.isEmpty()) {
-            image = "/assets/profileImg.png"; // Set to your default image
+            image = "/assets/profileImg.png"; 
         }
 
         UserEntity user = createUser(fullName, username, email, phoneNumber, password, Role.PLAYER);
@@ -184,11 +179,11 @@ public class AdminController {
         playerService.signupPlayer(player);
 
         PaymentsEntity payment = PaymentsEntity.builder()
-                .userEntity(player.getUser()) // Set the user associated with the player
+                .userEntity(player.getUser())
                 .amount(player.getSelectedPackage().getPrice())
                 .paymentMethod(paymentMethod)
                 .paymentDate(LocalDate.now())
-                .paymentStatus(true) // You can set the status as needed
+                .paymentStatus(true)
                 .build();
 
         paymentService.savePayment(payment);
@@ -196,9 +191,6 @@ public class AdminController {
         return new RedirectView("/adminPage");
     }
 
-
-
-////////////////////////////////////////////////////////////////////////////////
 
     @GetMapping("/renewSubscription")
     public String getRenewSubscriptionForm(Model model) {
@@ -356,9 +348,10 @@ public class AdminController {
     }
 
     @PostMapping("/addPlayerToClass")
-    public RedirectView addPlayerToClass(@RequestParam Long playerId, @RequestParam Long classId) {
+    public RedirectView addPlayerToClass(@RequestParam String playerId, @RequestParam Long classId) {
+        Long selectedPlayerId = Long.parseLong(playerId);
 
-        PlayersEntity player = playerService.getPlayerById(playerId);
+        PlayersEntity player = playerService.getPlayerById(selectedPlayerId);
         ClassesEntity classEntity = classService.getClassById(classId);
 
         PlayerClassEnrollment enrollment = PlayerClassEnrollment.builder()
@@ -371,13 +364,6 @@ public class AdminController {
         return new RedirectView("/adminPage/allClasses");
     }
 
-//    private PlayerClassEnrollment createPlayerClassEnrollment(PlayersEntity player, ClassesEntity classEntity) {
-//        PlayerClassEnrollment enrollment = new PlayerClassEnrollment();
-//        enrollment.setPlayer(player);
-//        enrollment.setEnrolledClass(classEntity);
-//        enrollment.setEnrollmentDateTime(LocalDate.now());
-//        return enrollment;
-//    }
 
     @GetMapping("/allClasses")
     public String getAllClasses(Model model) {
@@ -404,12 +390,6 @@ public class AdminController {
         return "adminPages/classDetails";
     }
 
-//    @GetMapping("/allplayers")
-//    public String getManagePlayer(Model model) {
-//        List<PlayersEntity> players = playerService.getAllPlayers();
-//        model.addAttribute("players", players);
-//        return "adminPages/allplayers";
-//    }
 
     @GetMapping("/allplayers/{id}")
     public String sendMessageToUser(@PathVariable Long id, Model model) {
@@ -440,20 +420,11 @@ public class AdminController {
         return new RedirectView("/adminPage/allplayers");
     }
 
-//    private NotificationsEntity createNotification(String message, UserEntity sender, UserEntity receiver) {
-//        NotificationsEntity notification = new NotificationsEntity();
-//        notification.setMessage(message);
-//        notification.setSender(sender);
-//        notification.setReceiver(receiver);
-//        notification.setTimeStamp(LocalDate.now());
-//        return notification;
-//    }
-//---------------------------------------/////////////////////////////////////
+
 @GetMapping("/allplayers")
 public String searchPlayers(@RequestParam(value = "search", required = false) String searchTerm, Model model) {
     List<PlayersEntity> players;
 
-    // Check if a search term is provided
     if (searchTerm != null && !searchTerm.isEmpty()) {
         players = playerService.searchPlayersByUsernameOrPhoneNumber(searchTerm);
     } else {
@@ -464,7 +435,5 @@ public String searchPlayers(@RequestParam(value = "search", required = false) St
 
     return "adminPages/allplayers";
 }
-
-
 
 }
