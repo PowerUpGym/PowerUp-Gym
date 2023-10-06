@@ -26,6 +26,8 @@
     <p><strong>Username: </strong><span th:text="${user.username}"></span></p>
     <p><strong>Email: </strong><span th:text="${user.email}"></span></p>
     <p><strong>Phone Number: </strong><span th:text="${user.phoneNumber}"></span></p>
+    <p><strong>Image:</strong></p>
+    <img th:src="${user.image}" alt="Trainer Image" width="150" height="150">
 </div>
 
 <div th:if="${trainer != null}">
