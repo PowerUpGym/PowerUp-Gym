@@ -12,7 +12,6 @@ import com.example.PowerUpGym.entity.users.UserEntity;
 import com.example.PowerUpGym.enums.Role;
 import com.example.PowerUpGym.services.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
