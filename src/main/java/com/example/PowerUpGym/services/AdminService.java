@@ -1,16 +1,20 @@
 package com.example.PowerUpGym.services;
 
 import com.example.PowerUpGym.entity.users.AdminEntity;
+import com.example.PowerUpGym.entity.users.UserEntity;
 import com.example.PowerUpGym.repositories.AdminEntityRepository;
+import com.example.PowerUpGym.repositories.UserEntityRepositories;
 import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
 public class AdminService {
     private final AdminEntityRepository adminEntityRepository;
+    private final UserEntityRepositories userEntityRepositories;
 
-    public AdminService(AdminEntityRepository adminEntityRepository) {
+    public AdminService(AdminEntityRepository adminEntityRepository, UserEntityRepositories userEntityRepositories) {
         this.adminEntityRepository = adminEntityRepository;
+        this.userEntityRepositories = userEntityRepositories;
     }
 
     public List<AdminEntity> getAllAdmins(){
@@ -28,5 +32,9 @@ public class AdminService {
 
     public AdminEntity getAdminByUsername(String username) {
         return adminEntityRepository.findByUserUsername(username);
+    }
+
+    public UserEntity findAdminByUsername(String username) {
+        return userEntityRepositories.findByUsername(username);
     }
 }

@@ -50,6 +50,8 @@ public class UserEntity implements UserDetails {
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     private TrainerEntity trainer;
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    private AdminEntity admin;
 
 
     @Override

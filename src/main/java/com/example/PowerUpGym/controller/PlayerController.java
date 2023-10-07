@@ -82,7 +82,7 @@ public class PlayerController {
                 model.addAttribute("user", userEntity);
                 PlayersEntity player = userEntity.getPlayer();
                 model.addAttribute("player", player);
-                return "playerPages/editprofile.html";
+                return "playerPages/updateAdmin.html";
 
             }
         }
