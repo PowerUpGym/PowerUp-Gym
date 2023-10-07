@@ -17,5 +17,8 @@ public class UserRoleService {
     public UserRoleEntity getUserRoleByName(Role roleName) {
         return userRoleRepository.findByRole(roleName);
     }
+    public UserRoleEntity saveUserRole(UserRoleEntity userRole) {
+        return userRoleRepository.save(userRole);
+    }
 
 }

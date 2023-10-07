@@ -82,12 +82,13 @@ public class UserEntity implements UserDetails {
 
 
     @Builder
-    public UserEntity(String fullName, String username, String email, String phoneNumber, String password, UserRoleEntity role, PlayersEntity player, TrainerEntity trainer) {
+    public UserEntity(String fullName, String username, String email, String phoneNumber, String password, String image ,UserRoleEntity role, PlayersEntity player, TrainerEntity trainer) {
         this.fullName = fullName;
         this.username = username;
         this.email = email;
         this.phoneNumber = phoneNumber;
         this.password = password;
+        this.image = image;
         this.role = role;
         this.player = player;
         this.trainer = trainer;
