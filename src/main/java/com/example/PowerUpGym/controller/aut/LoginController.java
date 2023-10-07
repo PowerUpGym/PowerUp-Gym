@@ -1,18 +1,13 @@
 package com.example.PowerUpGym.controller.aut;
 
 import com.example.PowerUpGym.bo.auth.LoginRequest;
-import com.example.PowerUpGym.entity.users.AdminEntity;
 import com.example.PowerUpGym.entity.users.UserEntity;
 import com.example.PowerUpGym.entity.users.UserRoleEntity;
 import com.example.PowerUpGym.enums.Role;
 import com.example.PowerUpGym.repositories.UserEntityRepositories;
-import com.example.PowerUpGym.services.AdminService;
-import com.example.PowerUpGym.services.UserRoleService;
-import com.example.PowerUpGym.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,18 +19,9 @@ import javax.servlet.http.HttpServletRequest;
 public class LoginController {
 
     @Autowired
-    private UserService userService;
-    @Autowired
-    AdminService adminService;
-    @Autowired
     UserEntityRepositories userEntityRepositories;
     @Autowired
     private HttpServletRequest request;
-    @Autowired
-    PasswordEncoder passwordEncoder;
-
-    @Autowired
-    UserRoleService userRoleService;
 
 /*
 I check if the user is authenticated and has authorities
@@ -45,30 +31,21 @@ If the user has the role of PLAYER, I redirect to /playerPage
 If the user has the role of TRAINER, I redirect to /trainerPage
 If none of this match, I return the login page
 */
-    @GetMapping("/login")
-    public String getLoginPage() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication != null && authentication.isAuthenticated()) {
-            if (authentication.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ADMIN"))) {
-                return "redirect:/adminPage";
-            } else if (authentication.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("PLAYER"))) {
-                return "redirect:/playerPage";
-            } else if (authentication.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("TRAINER"))) {
-                return "redirect:/trainerPage";
-            }
+@GetMapping("/login")
+public String getLoginPage() {
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    if (authentication != null && authentication.isAuthenticated()) {
+        if (authentication.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ADMIN") || a.getAuthority().equals("SUPER_ADMIN"))) {
+            return "redirect:/adminPage";
+        } else if (authentication.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("PLAYER"))) {
+            return "redirect:/playerPage";
+        } else if (authentication.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("TRAINER"))) {
+            return "redirect:/trainerPage";
         }
-        return "login.html";
     }
-
-    @GetMapping("/logout")
-    public String getLogoutPage() {
-        return "login.html";
-    }
-
-    @GetMapping("/signupAdmin")
-    public String getSignupAdmin(){
-        return "signupAdmin";
-    }
+    return "login.html";
+}
 
     @PostMapping("/login")
     public RedirectView login(LoginRequest loginRequest) {
@@ -87,7 +64,7 @@ If none of this match, I return the login page
                 return new RedirectView("/playerPage"); // Redirect to the player page
             } else if (userRole.getRole() == Role.TRAINER) {
                 return new RedirectView("/trainerPage"); // Redirect to the trainer page
-            } else if (userRole.getRole() == Role.ADMIN) {
+            } else if (userRole.getRole() == Role.ADMIN || userRole.getRole() == Role.SUPER_ADMIN ) {
                 return new RedirectView("/adminPage"); // Redirect to the trainer page
             }
         }
@@ -95,30 +72,10 @@ If none of this match, I return the login page
         return new RedirectView("/login?error=Invalid Role");
     }
 
-    @PostMapping("/signupAdmin")
-    public RedirectView postSignupAdmin(String fullName, String username, String password, String email, String phoneNumber) {
-        UserEntity user = UserEntity.builder()
-                .fullName(fullName)
-                .username(username)
-                .email(email)
-                .phoneNumber(phoneNumber)
-                .password(passwordEncoder.encode(password))
-                .role(userRoleService.getUserRoleByName(Role.ADMIN))
-                .build();
-
-        userService.signupUser(user);
-
-        AdminEntity admin = AdminEntity.builder()
-                .user(user)
-                .build();
-
-        adminService.signupAdmin(admin);
-
-        authWithHttpServletRequest(username, password);
-
-        return new RedirectView("/index");
+    @GetMapping("/logout")
+    public String getLogoutPage() {
+        return "login.html";
     }
-
 
     public void authWithHttpServletRequest(String username, String password) {
         try {
