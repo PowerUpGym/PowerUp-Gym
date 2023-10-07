@@ -3,7 +3,6 @@ package com.example.PowerUpGym.controller;
 import com.example.PowerUpGym.bo.auth.AddClassRequest;
 import com.example.PowerUpGym.bo.auth.AddPackageRequest;
 import com.example.PowerUpGym.bo.auth.AddPlayerToClassRequest;
-import com.example.PowerUpGym.bo.auth.update.AdminUpdateRequest;
 import com.example.PowerUpGym.bo.auth.update.UserUpdateRequest;
 import com.example.PowerUpGym.bo.auth.users.PlayerRegistrationRequest;
 import com.example.PowerUpGym.bo.auth.users.TrainerRegistrationRequest;
@@ -461,6 +460,7 @@ public class AdminController {
 
     @PostMapping("/updateAdmin")
     public RedirectView getUpdateAdmin(UserUpdateRequest userUpdateRequest) {
+
         UserEntity existingUser = userService.findUserById(userUpdateRequest.getUserId());
 
         UserEntity updatedUser = updateUser(existingUser, userUpdateRequest);
