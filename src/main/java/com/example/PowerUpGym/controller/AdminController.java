@@ -69,12 +69,14 @@ public class AdminController {
     }
 
     // ============== Helper Method To Create User From UserRegistrationRequest ==============
-    private UserEntity createUserFromRequest(UserRegistrationRequest userRequest, UserRoleEntity role) {
-        // Create and save UserRoleEntity
-        UserRoleEntity userRole = UserRoleEntity.builder().role(role.getRole()).build();
-        userRoleService.saveUserRole(userRole);
+    private UserEntity createUserFromRequest(UserRegistrationRequest userRequest, Role role) {
+        UserRoleEntity userRole = userRoleService.findRoleByRole(role);
 
-        // Create UserEntity with the saved UserRoleEntity
+        if (userRole == null) {
+            // Handle the case where the role doesn't exist in the database
+            throw new RuntimeException("Role not found: " + role);
+        }
+
         return UserEntity.builder()
                 .fullName(userRequest.getFullName())
                 .username(userRequest.getUsername())
@@ -85,6 +87,7 @@ public class AdminController {
                 .image(userRequest.getImage())
                 .build();
     }
+
 
     // ============== Helper Method To Create Trainer From TrainerRegistrationRequest ==============
     private TrainerEntity createTrainerFromRequest(TrainerRegistrationRequest trainerRequest, UserEntity user, String adminUsername) {
@@ -109,8 +112,9 @@ public class AdminController {
             userRequest.setImage("/assets/profileImg.png");
         }
 
-        UserRoleEntity trainerRole = UserRoleEntity.builder().role(Role.TRAINER).build();
-        UserEntity user = createUserFromRequest(userRequest, trainerRole);
+        UserRoleEntity trainerRole = userRoleService.findRoleByRole(Role.TRAINER);
+        UserEntity user = createUserFromRequest(userRequest, trainerRole.getRole());
+
         userService.signupUser(user);
 
         TrainerEntity trainerEntity = createTrainerFromRequest(trainerRequest, user, principal.getName());
@@ -171,7 +175,7 @@ public class AdminController {
         }
 
         UserRoleEntity playerRole = UserRoleEntity.builder().role(Role.PLAYER).build();
-        UserEntity user = createUserFromRequest(userRequest, playerRole);
+        UserEntity user = createUserFromRequest(userRequest, playerRole.getRole());
         PlayersEntity player = createPlayerFromRequest(playerRequest, user, principal.getName());
         PaymentsEntity payment = createPaymentForPlayer(player, playerRequest.getPaymentMethod());
 
