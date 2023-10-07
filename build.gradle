@@ -38,6 +38,7 @@ dependencies {
 	implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity5'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
     implementation 'org.flywaydb:flyway-core'
+	implementation "com.twilio.sdk:twilio:9.0.0"
 }
 
 tasks.named('test') {
