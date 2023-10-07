@@ -59,10 +59,12 @@ public class AdminController {
     @Autowired
     NotificationsService notificationService;
 
+
     @GetMapping("")
-    public String getAdmin(){
+    public String getAdminPage() {
         return "adminPages/adminPage.html";
     }
+
     // ============== Helper Method To Create User From UserRegistrationRequest ==============
     private UserEntity createUserFromRequest(UserRegistrationRequest userRequest, UserRoleEntity role) {
         // Create and save UserRoleEntity
@@ -173,7 +175,7 @@ public class AdminController {
         userService.signupUser(user);
         playerService.signupPlayer(player);
         paymentService.savePayment(payment);
-        sendPasswordViaSMS(playerRequest.getPhoneNumber(), playerRequest.getPassword());
+    //    sendPasswordViaSMS(playerRequest.getPhoneNumber(), playerRequest.getPassword());
 
         return new RedirectView("/adminPage");
     }
@@ -403,7 +405,7 @@ public class AdminController {
     }
 
 
-    // ========== Helper method to send password via SMS using Twilio ============
+    // ========== Method to send password via SMS using Twilio ============
     private void sendPasswordViaSMS(String phoneNumber, String password) {
         // Your Twilio Account SID and Auth Token
         String ACCOUNT_SID = "AC406561e7beb7c929d6719c7236d85bed";
