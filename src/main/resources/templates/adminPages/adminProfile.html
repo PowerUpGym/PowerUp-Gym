@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<h1>Player Information</h1>
+
+
+
+<div th:if="${admin != null}">
+  <p><strong>Full Name:</strong> <span th:text="${admin.user.fullName}"></span></p>
+  <p><strong>Username:</strong> <span th:text="${admin.user.username}"></span></p>
+  <p><strong>Email:</strong> <span th:text="${admin.user.email}"></span></p>
+  <p><strong>Phone Number:</strong> <span th:text="${admin.user.phoneNumber}"></span></p>
+  <img th:src="${admin.user.image}" alt="Player Image" width="150" height="150">
+
+
+  <a th:href="@{/adminPage/updateAdmin}">Edit Profile</a>
+</div>
+</body>
+</html>

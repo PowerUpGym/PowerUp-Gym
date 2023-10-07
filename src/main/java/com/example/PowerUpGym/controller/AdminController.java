@@ -421,4 +421,76 @@ public class AdminController {
         System.out.println("Password sent via SMS. Message SID: " + message.getSid());
     }
 
+    @GetMapping("/adminProfile")
+    private String adminProfile(Principal principal, Model model){
+        if (principal == null) {
+            return "redirect:/login";
+        }
+        String username = principal.getName();
+        UserEntity userEntity= adminService.findAdminByUsername(username);
+        if (userEntity == null || userEntity.getRole() == null) {
+            return "redirect:/error";
+        }
+        AdminEntity adminEntity=userEntity.getAdmin();
+        model.addAttribute("admin",adminEntity);
+        return "adminPages/adminProfile.html";
+    }
+    @GetMapping("/updateAdmin")
+    public String getEditAdminProfile(Principal principal, Model model) {
+        if (principal != null) {
+            String username = principal.getName();
+            UserEntity userEntity = adminService.findAdminByUsername(username);
+
+            if (userEntity != null) {
+                model.addAttribute("user", userEntity);
+                AdminEntity admin = userEntity.getAdmin();
+                model.addAttribute("admin", admin);
+                return "adminPages/updateAdmin.html";
+
+            }
+        }
+        return "adminPages/adminProfile.html";
+    }
+    @PostMapping("/updateAdmin")
+    public RedirectView updateAdmin(@RequestParam("userId") Long userId,
+                                    @RequestParam("adminId") Long adminId,
+                                    @RequestParam("fullName") String fullName,
+                                    @RequestParam("username") String username,
+                                    @RequestParam("email") String email,
+                                    @RequestParam("phoneNumber") String phoneNumber,
+                                    @RequestParam(value = "password", required = false) String password) {
+
+        // Check if adminId and userId are not null
+        if (adminId == null || userId == null) {
+            // Handle the error, e.g., by redirecting to an error page
+            return new RedirectView("/error");
+        }
+
+        AdminEntity existingAdmin = adminService.getAdminById(adminId);
+        UserEntity existingUser = userService.findUserById(userId);
+
+        String newPassword = (password != null && !password.isEmpty()) ? passwordEncoder.encode(password) : existingUser.getPassword();
+
+        UserEntity updatedUser = updateUser(existingUser, fullName, username, email, phoneNumber, newPassword);
+        userService.saveUser(updatedUser);
+
+        return new RedirectView("/adminPage/updateAdmin");
+    }
+
+    private UserEntity updateUser(UserEntity existingUser, String fullName, String username, String email, String phoneNumber, String password) {
+        return UserEntity.builder()
+                .id(existingUser.getId())
+                .fullName(fullName)
+                .username(username)
+                .email(email)
+                .phoneNumber(phoneNumber)
+                .password(password)
+                .role(existingUser.getRole())
+                .image(existingUser.getImage())
+                .build();
+    }
+
+
+
+
 }
