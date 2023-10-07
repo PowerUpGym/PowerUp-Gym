@@ -1,5 +1,13 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Update Player Information</title>
+</head>
+<body>
+<h1>Update Player Information</h1>
+
 <div th:if="${player != null}" xmlns:th="http://www.w3.org/1999/xhtml">
-  <h2>Player Details</h2>
   <form th:action="@{/playerPage/updatePlayer}" method="post">
     <input type="hidden" th:name="userId" th:value="${user.id}" />
     <input type="hidden" th:name="playerId" th:value="${player.id}" />
@@ -34,3 +42,6 @@
     <button type="submit">Update</button>
   </form>
 </div>
+
+</body>
+</html>
