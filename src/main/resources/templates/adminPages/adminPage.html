@@ -1,25 +1,36 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Admin Dashboard</title>
+    <link rel="stylesheet" type="text/css" href="/Css/admin/adminPage.css">
 </head>
 <body>
+<div class="container">
+    <table>
+        <tr>
+            <td colspan="3">
+                <h1>Welcome to the Admin Dashboard</h1>
+            </td>
+        </tr>
+        <tr>
+            <td> <a href="/adminPage/signupPlayer">Add Player</a> </td>
+            <td> <a href="/adminPage/signupTrainer">Add Trainer</a> </td>
+            <td> <a href="/adminPage/addPackage">Add Package</a> </td>
+        </tr>
+        <tr>
+            <td> <a href="/adminPage/addClass">Add Class</a> </td>
+            <td> <a href="/adminPage/addPlayerToClass">Add User To Class</a> </td>
+            <td> <a href="/adminPage/allClasses">Get All Class</a> </td>
+        </tr>
+        <tr>
+            <td> <a href="/adminPage/allplayers">All Player</a> </td>
+            <td> <a href="/adminPage/renewSubscription">Renew Subscription</a> </td>
+            <td> <a href="/adminPage/updateAccountStatus">Update Account Status</a> </td>
+        </tr>
+    </table>
 
-<a href="/adminPage/signupPlayer">Add Player</a>
-<a href="/adminPage/signupTrainer">Add Trainer</a>
-<a href="/adminPage/addPackage">Add Package</a>
-<a href="/adminPage/addClass">Add Class</a>
-<a href="/adminPage/addPlayerToClass">Add User To Class</a>
-<a href="/adminPage/allClasses">Get All Class</a>
-<a href="/adminPage/allplayers">All Player</a>
-<a href="/adminPage/renewSubscription">Renew Subscription</a>
-<a href="/adminPage/updateAccountStatus">Update Account Status</a>
-
-
-<h1>Welcome to the Admin Dashboard</h1>
-<p>This is the admin's dashboard. You can manage admin-specific tasks here.</p>
-<a href="/logout">Log Out</a>
-
+    <a href="/logout" class="logout">Log Out</a>
+</div>
 </body>
 </html>

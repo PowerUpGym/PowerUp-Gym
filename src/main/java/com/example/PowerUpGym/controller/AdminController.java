@@ -1,18 +1,20 @@
 package com.example.PowerUpGym.controller;
 
+import com.example.PowerUpGym.bo.auth.AddClassRequest;
+import com.example.PowerUpGym.bo.auth.AddPackageRequest;
+import com.example.PowerUpGym.bo.auth.AddPlayerToClassRequest;
+import com.example.PowerUpGym.bo.auth.users.PlayerRegistrationRequest;
+import com.example.PowerUpGym.bo.auth.users.TrainerRegistrationRequest;
+import com.example.PowerUpGym.bo.auth.users.UserRegistrationRequest;
 import com.example.PowerUpGym.entity.classesGym.ClassesEntity;
 import com.example.PowerUpGym.entity.classesGym.PlayerClassEnrollment;
 import com.example.PowerUpGym.entity.notifications.NotificationsEntity;
 import com.example.PowerUpGym.entity.packagesGym.PackagesEntity;
-import com.example.PowerUpGym.entity.users.AdminEntity;
-import com.example.PowerUpGym.entity.users.PlayersEntity;
-import com.example.PowerUpGym.entity.users.TrainerEntity;
-import com.example.PowerUpGym.entity.users.UserEntity;
+import com.example.PowerUpGym.entity.payments.PaymentsEntity;
+import com.example.PowerUpGym.entity.users.*;
 import com.example.PowerUpGym.enums.Role;
-import com.example.PowerUpGym.repositories.UserEntityRepositories;
 import com.example.PowerUpGym.services.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
@@ -20,10 +22,10 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.view.RedirectView;
 
-import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -34,14 +36,10 @@ import java.util.stream.Collectors;
 public class AdminController {
     @Autowired
     AdminService adminService;
-
     @Autowired
     ClassService classService;
-
     @Autowired
     PackageService packageService;
-    @Autowired
-    UserEntityRepositories userEntityRepositories;
     @Autowired
     PasswordEncoder passwordEncoder;
     @Autowired
@@ -52,134 +50,129 @@ public class AdminController {
     PlayerService playerService;
     @Autowired
     UserRoleService userRoleService;
+    @Autowired
+    PaymentService paymentService;
 
     @Autowired
-    private NotificationsService notificationService;
-
-    @GetMapping("")
-    public String getLoginPageAdmin() {
-        return "adminPages/adminPage.html";
-    }
-
-//    @GetMapping("/signupAdmin")
-//    public String getSignupAdmin(){
-//        return "signupAdmin";
-//    }
+    NotificationsService notificationService;
 
 
-//    @PostMapping("/signupAdmin")
-//    public RedirectView getSignupTrainer(String fullName, String username, String password, String email, String phoneNumber){
-//        // Create a new Admin object
-//        AdminEntity admin = new AdminEntity();
-//
-//        // Create a new UserEntity object and set its properties
-//        UserEntity user = new UserEntity();
-//        user.setFullName(fullName);
-//        user.setUsername(username);
-//        user.setEmail(email);
-//        user.setPhoneNumber(phoneNumber);
-//        String encryptedPassword = passwordEncoder.encode(password);
-//        user.setPassword(encryptedPassword);
-//
-//        // Set the user role to "ADMIN"
-//        UserRoleEntity adminRole = new UserRoleEntity();
-//        adminRole.setId(2L); // Set the ID of the "ADMIN" role
-//        user.setRole(adminRole);
-//
-//        userService.signupUser(user);
-//
-//        admin.setUser(user);
-//
-//        adminService.signupAdmin(admin);
-//        authWithHttpServletRequest(username , password);
-//
-//        return new RedirectView("/index");
-//    }
+    // ============== Helper Method To Create User From UserRegistrationRequest ==============
+    private UserEntity createUserFromRequest(UserRegistrationRequest userRequest, UserRoleEntity role) {
+        // Create and save UserRoleEntity
+        UserRoleEntity userRole = UserRoleEntity.builder().role(role.getRole()).build();
+        userRoleService.saveUserRole(userRole);
 
-    private UserEntity createUser(String fullName, String username, String email,
-                                  String phoneNumber,String image, String password, Role role) {
-
-        UserEntity user = UserEntity.builder()
-                .fullName(fullName)
-                .username(username)
-                .email(email)
-                .phoneNumber(phoneNumber)
-                .image(image)
-                .password(passwordEncoder.encode(password))
-                .role(userRoleService.getUserRoleByName(role))
+        // Create UserEntity with the saved UserRoleEntity
+        return UserEntity.builder()
+                .fullName(userRequest.getFullName())
+                .username(userRequest.getUsername())
+                .email(userRequest.getEmail())
+                .phoneNumber(userRequest.getPhoneNumber())
+                .password(passwordEncoder.encode(userRequest.getPassword()))
+                .role(userRole)
+                .image(userRequest.getImage())
                 .build();
-
-        userService.signupUser(user);
-
-        return user;
     }
 
+    // ============== Helper Method To Create Trainer From TrainerRegistrationRequest ==============
+    private TrainerEntity createTrainerFromRequest(TrainerRegistrationRequest trainerRequest, UserEntity user, String adminUsername) {
+        return TrainerEntity.builder()
+                .age(trainerRequest.getAge())
+                .experience(trainerRequest.getExperience())
+                .admin(adminService.getAdminByUsername(adminUsername))
+                .user(user)
+                .build();
+    }
+
+    // ============== Add Trainer To The Database  ==============
     @GetMapping("/signupTrainer")
     public String getSignupTrainer() {
         return "adminPages/signupTrainer.html";
     }
 
     @PostMapping("/signupTrainer")
-    public RedirectView signupTrainer(String fullName, String username, String email, String phoneNumber,
-                                      String image, String password, int age, String experience, Principal principal) {
+    public RedirectView signupTrainer(@ModelAttribute UserRegistrationRequest userRequest, @ModelAttribute TrainerRegistrationRequest trainerRequest, Principal principal) {
 
-        UserEntity user = createUser(fullName, username, email, phoneNumber,image, password, Role.TRAINER);
+        if (userRequest.getImage().isEmpty()) {
+            userRequest.setImage("/assets/profileImg.png");
+        }
 
-        TrainerEntity trainerEntity = TrainerEntity.builder()
-                .age(age)
-                .experience(experience)
-                .admin(adminService.getAdminByUsername(principal.getName()))
-                .user(user)
-                .build();
+        UserRoleEntity trainerRole = UserRoleEntity.builder().role(Role.TRAINER).build();
+        UserEntity user = createUserFromRequest(userRequest, trainerRole);
+        userService.signupUser(user);
+
+        TrainerEntity trainerEntity = createTrainerFromRequest(trainerRequest, user, principal.getName());
 
         trainerService.signupTrainer(trainerEntity);
 
         return new RedirectView("/adminPage");
     }
 
+    // ============== Helper Method To Create Player From PlayerRegistrationRequest ==============
+    private PlayersEntity createPlayerFromRequest(PlayerRegistrationRequest playerRequest, UserEntity user, String adminUsername) {
+        PackagesEntity selectedPackage = packageService.getPackageById(playerRequest.getPackageId());
+        LocalDate startDate = LocalDate.now();
+        LocalDate endDate = startDate.plusMonths(selectedPackage.getDuration());
 
+        return PlayersEntity.builder()
+                .admin(adminService.getAdminByUsername(adminUsername))
+                .user(user)
+                .address(playerRequest.getAddress())
+                .age(playerRequest.getAge())
+                .height(playerRequest.getHeight())
+                .weight(playerRequest.getWeight())
+                .start_date(startDate)
+                .end_date(endDate)
+                .selectedPackage(selectedPackage)
+                .accountEnabled(true)
+                .build();
+    }
+
+    // ============== Helper Method To Create Payment ==============
+    private PaymentsEntity createPaymentForPlayer(PlayersEntity player, String paymentMethod) {
+        return PaymentsEntity.builder()
+                .userEntity(player.getUser())
+                .amount(player.getSelectedPackage().getPrice())
+                .paymentMethod(paymentMethod) // Use the parameter
+                .paymentDate(LocalDate.now())
+                .paymentStatus(true)
+                .build();
+    }
+
+    // ============== Add Player To The Database  ==============
     @GetMapping("/signupPlayer")
     public String getSignupPlayer(Model model) {
         List<PackagesEntity> availablePackages = packageService.getAllPackages();
         model.addAttribute("availablePackages", availablePackages);
+        model.addAttribute("paymentMethods", Arrays.asList("Cash", "Visa"));
         return "adminPages/signupPlayer";
     }
 
     @PostMapping("/signupPlayer")
     public RedirectView signupPlayer(
-            String fullName, String username, String email, String phoneNumber, String image,
-            String password, String address, int age, int height, int weight,
-            @RequestParam Long packageId, Principal principal) {
+            @ModelAttribute PlayerRegistrationRequest playerRequest,
+            @ModelAttribute UserRegistrationRequest userRequest,
+            Principal principal) {
 
-        if (principal != null) {
-            UserEntity user = createUser(fullName, username, email, phoneNumber, image, password, Role.PLAYER);
-            PackagesEntity selectedPackage = packageService.getPackageById(packageId);
-            LocalDate startDate = LocalDate.now();
-            LocalDate endDate = startDate.plusMonths(selectedPackage.getDuration());
-            PlayersEntity player = PlayersEntity.builder()
-                    .admin(adminService.getAdminByUsername(principal.getName()))
-                    .user(user)
-                    .address(address)
-                    .age(age)
-                    .height(height)
-                    .weight(weight)
-                    .start_date(startDate)
-                    .end_date(endDate)
-                    .selectedPackage(selectedPackage)
-                    .accountEnabled(true)
-                    .build();
-
-            playerService.signupPlayer(player);
-
-            return new RedirectView("/adminPage");
-        } else {
-            return new RedirectView("/error");
+        if (userRequest.getImage().isEmpty()) {
+            userRequest.setImage("/assets/profileImg.png");
         }
+
+        UserRoleEntity playerRole = UserRoleEntity.builder().role(Role.PLAYER).build();
+        UserEntity user = createUserFromRequest(userRequest, playerRole);
+        PlayersEntity player = createPlayerFromRequest(playerRequest, user, principal.getName());
+        PaymentsEntity payment = createPaymentForPlayer(player, playerRequest.getPaymentMethod());
+
+        userService.signupUser(user);
+        playerService.signupPlayer(player);
+        paymentService.savePayment(payment);
+
+        return new RedirectView("/adminPage");
     }
 
 
-////////////////////////////////////////////////////////////////////////////////
-
+    // ========== Resubscribe a player to a new package (OR The Same Package) ====================
     @GetMapping("/renewSubscription")
     public String getRenewSubscriptionForm(Model model) {
         List<PlayersEntity> players = playerService.getAllPlayers();
@@ -190,31 +183,34 @@ public class AdminController {
         return "adminPages/renewSubscription";
     }
 
+    @PostMapping("/renewSubscription")
+    public RedirectView renewSubscription(@RequestParam(name = "playerId") Long playerId,
+                                          @RequestParam(name = "newPackageId") Long newPackageId) {
+        PlayersEntity player = playerService.getPlayerById(playerId);
+        PackagesEntity newPackage = packageService.getPackageById(newPackageId);
 
-// ========== Resubscribe a player to a new package ====================
-@PostMapping("/renewSubscription")
-public RedirectView resubscribePlayer(@RequestParam(name = "playerId") Long playerId,
-                                      @RequestParam(name = "newPackageId") Long newPackageId) {
-    PlayersEntity player = playerService.getPlayerById(playerId);
-    PackagesEntity newPackage = packageService.getPackageById(newPackageId);
+        if (player != null && newPackage != null) {
+            int newAmount = newPackage.getPrice();
+            player.setSelectedPackage(newPackage);
+            LocalDate newEndDate = LocalDate.now().plusMonths(newPackage.getDuration());
+            player.setEnd_date(newEndDate);
+            playerService.signupPlayer(player);
+            PaymentsEntity payment = paymentService.getPaymentByPlayer(player);
 
-    if (player != null && newPackage != null) {
-        LocalDate newEndDate = LocalDate.now().plusMonths(newPackage.getDuration());
-
-        player.setSelectedPackage(newPackage);
-        player.setEnd_date(newEndDate);
-        player.setAccountEnabled(true);
-        playerService.signupPlayer(player);
-
-        return new RedirectView("/adminPage/allplayers");
-    } else {
-        return new RedirectView("/error");
+            if (payment != null) {
+                payment.setAmount(newAmount);
+                paymentService.savePayment(payment);
+            } else {
+                return new RedirectView("/errorNullPayment");
+            }
+            return new RedirectView("/adminPage/allplayers");
+        } else {
+            return new RedirectView("/error");
+        }
     }
-}
-// ========== Resubscribe a player to a new package ====================
 
 
-// ==========  Update the player's account status  ====================
+    // ==========  Update the player's account status (And It Will Check Automatically Every Day In Midnight --> PlayerSubscriptionService ) ====================
     @GetMapping("/updateAccountStatus")
     public String getUpdateAccountStatusForm(Model model) {
         List<PlayersEntity> players = playerService.getAllPlayers();
@@ -243,35 +239,33 @@ public RedirectView resubscribePlayer(@RequestParam(name = "playerId") Long play
             return new RedirectView("/error");
         }
     }
-// ==========  Update the player's account status  ====================
 
+// ==========  Add New Package To Database  ====================
     @GetMapping("/addPackage")
     public String getAddPackageForm() {
         return "adminPages/addPackage";
     }
 
     @PostMapping("/addPackage")
-    public RedirectView addPackage(
-            String packageName, int price, int duration, String description, Principal principal) {
-
+    public RedirectView addPackage(@ModelAttribute AddPackageRequest packageRequest, Principal principal) {
         AdminEntity admin = adminService.getAdminByUsername(principal.getName());
-        PackagesEntity packageEntity = createPackage(packageName, price, duration, description, admin);
-
+        PackagesEntity packageEntity = createPackage(packageRequest, admin);
         packageService.addPackage(packageEntity);
-
         return new RedirectView("/adminPage");
     }
 
-    private PackagesEntity createPackage(String packageName, int price, int duration, String description, AdminEntity admin) {
+    // ==========  Helper Method To Create Package From AddPackageRequest  ====================
+    private PackagesEntity createPackage(AddPackageRequest packageRequest, AdminEntity admin) {
         return PackagesEntity.builder()
-                .packageName(packageName)
-                .price(price)
-                .duration(duration)
-                .description(description)
+                .packageName(packageRequest.getPackageName())
+                .price(packageRequest.getPrice())
+                .duration(packageRequest.getDuration())
+                .description(packageRequest.getDescription())
                 .admin(admin)
                 .build();
     }
 
+    // ==========  Add New Class To Database And Assign The Class To Specific Trainer  ====================
     @GetMapping("/addClass")
     public String getAddClassForm(Model model) {
         List<TrainerEntity> trainers = trainerService.getAllTrainer();
@@ -279,40 +273,27 @@ public RedirectView resubscribePlayer(@RequestParam(name = "playerId") Long play
         model.addAttribute("classEntity", new ClassesEntity());
         return "adminPages/addClass";
     }
-
     @PostMapping("/addClass")
-    public RedirectView addClass(String className, @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate schedule
-            , String description, Long trainerId, Principal principal) {
-
-        TrainerEntity trainer = trainerService.getTrainerById(trainerId);
+    public RedirectView addClass(@ModelAttribute AddClassRequest classRequest, Principal principal) {
+        TrainerEntity trainer = trainerService.getTrainerById(classRequest.getTrainerId());
         AdminEntity admin = adminService.getAdminByUsername(principal.getName());
-        ClassesEntity classEntity = createClass(className, schedule, description, trainer, admin);
-
+        ClassesEntity classEntity = createClass(classRequest, trainer, admin);
         classService.addClass(classEntity);
-
         return new RedirectView("/adminPage");
     }
 
-    private ClassesEntity createClass(String className, LocalDate schedule, String description,
-                                      TrainerEntity trainer, AdminEntity admin) {
-
+    // ==========  Helper Method To Create Class From AddClassRequest  ====================
+    private ClassesEntity createClass(AddClassRequest classRequest, TrainerEntity trainer, AdminEntity admin) {
         return ClassesEntity.builder()
-                .className(className)
-                .schedule(schedule)
-                .description(description)
+                .className(classRequest.getClassName())
+                .scheduleDescription(classRequest.getScheduleDescription())
+                .description(classRequest.getDescription())
                 .trainer(trainer)
                 .admin(admin)
                 .build();
     }
 
-//    @PostMapping("/addClass") // Way 2 :  Retrieve the form fields from Model Object
-//    public RedirectView addClass(@ModelAttribute("classEntity") ClassesEntity classEntity) {
-//        TrainerEntity trainer = trainerService.getTrainerById(classEntity.getTrainer().getId());
-//        classEntity.setTrainer(trainer);
-//        classService.addClass(classEntity);
-//        return new RedirectView("/adminPage");
-//    }
-
+    // ==========  Add Player To Specific Class ====================
     @GetMapping("/addPlayerToClass")
     public String getAddPlayerToClassForm(Model model) {
         List<PlayersEntity> players = playerService.getAllPlayers();
@@ -325,10 +306,11 @@ public RedirectView resubscribePlayer(@RequestParam(name = "playerId") Long play
     }
 
     @PostMapping("/addPlayerToClass")
-    public RedirectView addPlayerToClass(@RequestParam Long playerId, @RequestParam Long classId) {
+    public RedirectView addPlayerToClass(@ModelAttribute AddPlayerToClassRequest request) {
+        Long selectedPlayerId = Long.parseLong(request.getPlayerId());
 
-        PlayersEntity player = playerService.getPlayerById(playerId);
-        ClassesEntity classEntity = classService.getClassById(classId);
+        PlayersEntity player = playerService.getPlayerById(selectedPlayerId);
+        ClassesEntity classEntity = classService.getClassById(request.getClassId());
 
         PlayerClassEnrollment enrollment = PlayerClassEnrollment.builder()
                 .player(player)
@@ -340,14 +322,8 @@ public RedirectView resubscribePlayer(@RequestParam(name = "playerId") Long play
         return new RedirectView("/adminPage/allClasses");
     }
 
-//    private PlayerClassEnrollment createPlayerClassEnrollment(PlayersEntity player, ClassesEntity classEntity) {
-//        PlayerClassEnrollment enrollment = new PlayerClassEnrollment();
-//        enrollment.setPlayer(player);
-//        enrollment.setEnrolledClass(classEntity);
-//        enrollment.setEnrollmentDateTime(LocalDate.now());
-//        return enrollment;
-//    }
 
+    // ==========  Get All Classes In The Database  ====================
     @GetMapping("/allClasses")
     public String getAllClasses(Model model) {
         List<ClassesEntity> classes = classService.getAllClasses();
@@ -355,6 +331,7 @@ public RedirectView resubscribePlayer(@RequestParam(name = "playerId") Long play
         return "adminPages/allClasses";
     }
 
+    // ==========  Get Details For Specific Class  ====================
     @GetMapping("/allClasses/classDetails/{id}")
     public String getClassDetails(@PathVariable Long id, Model model) {
         ClassesEntity classEntity = classService.getClassById(id);
@@ -373,10 +350,19 @@ public RedirectView resubscribePlayer(@RequestParam(name = "playerId") Long play
         return "adminPages/classDetails";
     }
 
+    // ==========  Get All Players In The Database (And Can Search  By UserName OR PhoneNumber) ====================
     @GetMapping("/allplayers")
-    public String getManagePlayer(Model model) {
-        List<PlayersEntity> players = playerService.getAllPlayers();
+    public String searchPlayers(@RequestParam(value = "search", required = false) String searchTerm, Model model) {
+        List<PlayersEntity> players;
+
+        if (searchTerm != null && !searchTerm.isEmpty()) {
+            players = playerService.searchPlayersByUsernameOrPhoneNumber(searchTerm);
+        } else {
+            players = playerService.getAllPlayers();
+        }
+
         model.addAttribute("players", players);
+
         return "adminPages/allplayers";
     }
 
@@ -386,12 +372,12 @@ public RedirectView resubscribePlayer(@RequestParam(name = "playerId") Long play
         return "adminPages/sendMessage";
     }
 
+    // ==========  Admin Can Send Notification (OR Message) To Specific Player  ====================
     @GetMapping("/sendMessage")
     public String getSendMessageForm(@RequestParam Long receiverId, Model model) {
         model.addAttribute("receiverId", receiverId);
         return "adminPages/sendMessage";
     }
-
 
     @PostMapping("/sendMessage")
     public RedirectView sendMessage(@RequestParam Long receiverId, @RequestParam String message, Principal principal) {
@@ -408,14 +394,5 @@ public RedirectView resubscribePlayer(@RequestParam(name = "playerId") Long play
         notificationService.saveNotification(notification);
         return new RedirectView("/adminPage/allplayers");
     }
-
-//    private NotificationsEntity createNotification(String message, UserEntity sender, UserEntity receiver) {
-//        NotificationsEntity notification = new NotificationsEntity();
-//        notification.setMessage(message);
-//        notification.setSender(sender);
-//        notification.setReceiver(receiver);
-//        notification.setTimeStamp(LocalDate.now());
-//        return notification;
-//    }
 
 }

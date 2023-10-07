@@ -1,0 +1,68 @@
+/* adminPage.css */
+
+body {
+    background-color: #DBDBDB; /* Light Gray */
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 30px;
+    text-align: center;
+}
+
+th, td {
+    padding: 20px;
+    color: #000000; /* Black */
+    border: 1px solid #DBDBDB; /* Light Gray */
+    font-size: 20px;
+    background: #F0A500; /* Orange */
+    transition: background-color 0.3s ease; /* Smooth hover transition */
+}
+
+th:hover, td:hover {
+    background: #CF7500; /* Darker Orange on Hover */
+}
+
+a {
+    text-decoration: none;
+    padding: 10px 20px;
+    background-color: #CF7500; /* Darker Orange */
+    color: #fff; /* White */
+    border-radius: 5px;
+    transition: background-color 0.3s ease; /* Smooth hover transition */
+    margin: 10px;
+    display: inline-block;
+    font-weight: bold;
+}
+
+a:hover {
+    background-color: #F0A500; /* Orange on Hover */
+}
+
+a.logout {
+    background-color: #000000; /* Black */
+    color: #fff; /* White */
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-weight: bold;
+    text-decoration: none;
+    display: inline-block;
+    margin-top: 20px;
+    transition: background-color 0.3s ease; /* Smooth hover transition */
+}
+
+a.logout:hover {
+    background-color: #F0A500; /* Orange on Hover */
+}

@@ -3,59 +3,82 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>User Registration</title>
+    <title>Player Registration</title>
+    <link rel="stylesheet" type="text/css" href="/Css/admin/signupPlayer.css">
 </head>
 <body>
-<h1>User Registration</h1>
-<form action="/adminPage/signupPlayer" method="post">
-    <label for="fullName">Full Name:</label>
-    <input type="text" id="fullName" name="fullName" required>
-    <br>
+<div class="center-container">
+    <div class="form-container">
+        <h1>Player Registration</h1>
+        <form action="/adminPage/signupPlayer" method="post">
+            <div class="form-group">
+                <label for="fullName">Full Name:</label>
+                <input type="text" id="fullName" name="fullName" required>
+            </div>
 
-    <label for="username">Username:</label>
-    <input type="text" id="username" name="username" required>
-    <br>
+            <div class="form-group">
+                <label for="username">Username:</label>
+                <input type="text" id="username" name="username" required>
+            </div>
 
-    <label for="email">Email:</label>
-    <input type="email" id="email" name="email" required>
-    <br>
+            <div class="form-group">
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" required>
+            </div>
 
-    <label for="phoneNumber">Phone Number:</label>
-    <input type="text" id="phoneNumber" name="phoneNumber">
-    <br>
+            <div class="form-group">
+                <label for="phoneNumber">Phone Number:</label>
+                <input type="text" id="phoneNumber" name="phoneNumber">
+            </div>
 
-    <label for="password">Password:</label>
-    <input type="password" id="password" name="password" required>
-    <br>
+            <div class="form-group">
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="password" required>
+            </div>
 
-    <label for="address">Address:</label>
-    <input type="text" id="address" name="address" required>
-    <br>
+            <div class="form-group">
+                <label for="address">Address:</label>
+                <input type="text" id="address" name="address" required>
+            </div>
 
-    <label for="age">Age:</label>
-    <input type="text" id="age" name="age" required>
-    <br>
+            <div class="form-group">
+                <label for="age">Age:</label>
+                <input type="text" id="age" name="age" required>
+            </div>
 
-    <label for="height">Height (cm):</label>
-    <input type="number" id="height" name="height" required>
-    <br>
+            <div class="form-group">
+                <label for="height">Height (cm):</label>
+                <input type="number" id="height" name="height" required>
+            </div>
 
-    <label for="weight">Weight (kg):</label>
-    <input type="number" id="weight" name="weight" required>
-    <br>
+            <div class="form-group">
+                <label for="weight">Weight (kg):</label>
+                <input type="number" id="weight" name="weight" required>
+            </div>
 
-    <label for="image">Image URL:</label>
-    <input type="text" id="image" name="image" required>
-    <br>
+            <input type="hidden" id="image" name="image" value="">
 
-    <label for="packageId">Select Package:</label>
-    <select id="packageId" name="packageId">
-        <option value="">Select a Package</option>
-        <option th:each="package : ${availablePackages}" th:value="${package.id}" th:text="${package.packageName + ' (' + package.duration + ' Months for $' + package.price + ')'}"></option>
-    </select>
-    <br>
+            <div class="form-group">
+                <label for="packageId">Select Package:</label>
+                <select id="packageId" name="packageId">
+                    <option value="">Select a Package</option>
+                    <option th:each="package : ${availablePackages}" th:value="${package.id}" th:text="${package.packageName + ' (' + package.duration + ' Months for $' + package.price + ')'}"></option>
+                </select>
+            </div>
 
-    <input type="submit" value="Register">
-</form>
+            <div class="form-group">
+                <label for="paymentMethod">Select Payment Method:</label>
+                <select id="paymentMethod" name="paymentMethod">
+                    <option value="Cash">Cash</option>
+                    <option value="Visa">Visa</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <input type="submit" value="Register">
+            </div>
+        </form>
+    </div>
+</div>
 </body>
 </html>

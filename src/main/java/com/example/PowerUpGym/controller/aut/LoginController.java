@@ -10,6 +10,8 @@ import com.example.PowerUpGym.services.AdminService;
 import com.example.PowerUpGym.services.UserRoleService;
 import com.example.PowerUpGym.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -35,8 +37,26 @@ public class LoginController {
     @Autowired
     UserRoleService userRoleService;
 
+/*
+I check if the user is authenticated and has authorities
+I use authentication.getAuthorities().stream().anyMatch(...) to check if the user has a specific role (authority)
+If the user has the role of ADMIN, I redirect to /adminPage
+If the user has the role of PLAYER, I redirect to /playerPage
+If the user has the role of TRAINER, I redirect to /trainerPage
+If none of this match, I return the login page
+*/
     @GetMapping("/login")
     public String getLoginPage() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.isAuthenticated()) {
+            if (authentication.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ADMIN"))) {
+                return "redirect:/adminPage";
+            } else if (authentication.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("PLAYER"))) {
+                return "redirect:/playerPage";
+            } else if (authentication.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("TRAINER"))) {
+                return "redirect:/trainerPage";
+            }
+        }
         return "login.html";
     }
 
@@ -72,13 +92,11 @@ public class LoginController {
             }
         }
 
-        // If the role doesn't match the expected roles, show an error message
         return new RedirectView("/login?error=Invalid Role");
     }
 
     @PostMapping("/signupAdmin")
     public RedirectView postSignupAdmin(String fullName, String username, String password, String email, String phoneNumber) {
-        // Create a UserEntity first
         UserEntity user = UserEntity.builder()
                 .fullName(fullName)
                 .username(username)
