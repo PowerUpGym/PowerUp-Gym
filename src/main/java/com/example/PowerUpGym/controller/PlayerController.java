@@ -1,17 +1,19 @@
 package com.example.PowerUpGym.controller;
 
-//import com.example.PowerUpGym.entity.classesGym.PlayerClassEnrollment;
-
+import com.example.PowerUpGym.bo.auth.update.PlayerUpdateRequest;
+import com.example.PowerUpGym.bo.auth.update.UserUpdateRequest;
 import com.example.PowerUpGym.entity.classesGym.ClassesEntity;
 import com.example.PowerUpGym.entity.notifications.NotificationsEntity;
 import com.example.PowerUpGym.entity.users.PlayersEntity;
 import com.example.PowerUpGym.entity.users.UserEntity;
-import com.example.PowerUpGym.repositories.UserEntityRepositories;
 import com.example.PowerUpGym.services.NotificationsService;
 import com.example.PowerUpGym.services.PlayerService;
 import com.example.PowerUpGym.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -19,7 +21,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.view.RedirectView;
-import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
 import java.util.List;
 
@@ -33,45 +34,75 @@ public class PlayerController {
     @Autowired
     UserService userService;
     @Autowired
-    UserEntityRepositories userEntityRepositories;
-    @Autowired
     PasswordEncoder passwordEncoder;
     @Autowired
     private NotificationsService notificationService;
-    @Autowired
-    private HttpServletRequest request;
 
     @GetMapping("")  // Home Page ("/playerPage")
     public String getLoginPagePlayer() {
         return "playerPages/playerPage.html";
     }
 
-
     @GetMapping("/index")
     public String index() {
         return "index.html";
     }
 
-
+    // ========== Method to Get All Player Information's ==========
     @GetMapping("/playerInfo")
-    public String getMyInfo(Principal principal, Model model) {
-        if (principal == null) {
-            return "redirect:/login";
-        }
-        String username = principal.getName();
-        UserEntity userEntity = playerService.findUserByUsername(username);
+    public String getPlayerInfo(Principal principal, Model model) {
+        if (principal != null) {
+            String username = principal.getName();
+            UserEntity userEntity = playerService.findUserByUsername(username);
 
-        if (userEntity == null || userEntity.getRole() == null) {
-            return "redirect:/error";
+            if (userEntity != null) {
+                model.addAttribute("user", userEntity);
+                PlayersEntity player = userEntity.getPlayer();
+                model.addAttribute("player", player);
+                return "playerPages/playerInfo.html";
+            }
         }
-        model.addAttribute("user", userEntity);
-        PlayersEntity player = userEntity.getPlayer();
-        model.addAttribute("player", player);
-
-        return "playerPages/playerInfo.html";
+        return "redirect:/login";
     }
 
 
+
+    // ========== Helper Method to update UserEntity Using UserUpdateRequest ==========
+    private UserEntity updateUser(UserEntity existingUser, UserUpdateRequest userUpdateRequest) {
+        String newPassword = (userUpdateRequest.getPassword() != null && !userUpdateRequest.getPassword().isEmpty())
+                ? passwordEncoder.encode(userUpdateRequest.getPassword())
+                : existingUser.getPassword();
+
+        return UserEntity.builder()
+                .id(existingUser.getId())
+                .fullName(userUpdateRequest.getFullName())
+                .username(userUpdateRequest.getUsername())
+                .email(userUpdateRequest.getEmail())
+                .phoneNumber(userUpdateRequest.getPhoneNumber())
+                .password(newPassword)
+                .role(existingUser.getRole())
+                .image(existingUser.getImage())
+                .build();
+    }
+
+    // ========== Helper Method to update PlayersEntity Using PlayerUpdateRequest ==========
+    private PlayersEntity updatePlayer(PlayersEntity existingPlayer, PlayerUpdateRequest playerUpdateRequest, UserEntity updatedUser) {
+        return PlayersEntity.builder()
+                .id(existingPlayer.getId())
+                .address(playerUpdateRequest.getAddress())
+                .age(playerUpdateRequest.getAge())
+                .height(playerUpdateRequest.getHeight())
+                .weight(playerUpdateRequest.getWeight())
+                .start_date(existingPlayer.getStart_date())
+                .end_date(existingPlayer.getEnd_date())
+                .user(updatedUser)
+                .admin(existingPlayer.getAdmin())
+                .selectedPackage(existingPlayer.getSelectedPackage())
+                .accountEnabled(existingPlayer.isAccountEnabled())
+                .build();
+    }
+
+    // ==========  Method To Update Player From playerUpdateRequest  ====================
     @GetMapping("/updatePlayerProfile")
     public String getEditPlayerProfile(Principal principal, Model model) {
         if (principal != null) {
@@ -83,60 +114,32 @@ public class PlayerController {
                 PlayersEntity player = userEntity.getPlayer();
                 model.addAttribute("player", player);
                 return "playerPages/editprofile.html";
-
             }
         }
         return "playerPages/playerInfo.html";
     }
 
     @PostMapping("/updatePlayer")
-    public RedirectView updatePlayer(Long userId, Long playerId, String address, Integer age, Integer height, Integer weight,
-                                     String fullName, String username, String email, String phoneNumber, String password) {
+    public RedirectView updatePlayer(PlayerUpdateRequest playerUpdateRequest, UserUpdateRequest userUpdateRequest) {
 
-        PlayersEntity existingPlayer = playerService.getPlayerById(playerId);
-        UserEntity existingUser = userService.findUserById(userId);
+        PlayersEntity existingPlayer = playerService.getPlayerById(playerUpdateRequest.getPlayerId());
+        UserEntity existingUser = userService.findUserById(userUpdateRequest.getUserId());
 
-        String newPassword = (password != null && !password.isEmpty()) ? passwordEncoder.encode(password) : existingUser.getPassword();
-
-        UserEntity updatedUser = updateUser(existingUser, fullName, username, email, phoneNumber, newPassword);
+        UserEntity updatedUser = updateUser(existingUser, userUpdateRequest);
         userService.saveUser(updatedUser);
 
-        PlayersEntity updatedPlayer = updatePlayer(existingPlayer, address, age, height, weight, updatedUser);
+        // Update the username in the principal
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UsernamePasswordAuthenticationToken updatedAuthentication = new UsernamePasswordAuthenticationToken(updatedUser.getUsername(), authentication.getCredentials(), authentication.getAuthorities());
+        SecurityContextHolder.getContext().setAuthentication(updatedAuthentication);
+
+        PlayersEntity updatedPlayer = updatePlayer(existingPlayer, playerUpdateRequest, updatedUser);
         playerService.signupPlayer(updatedPlayer);
 
         return new RedirectView("playerInfo");
     }
 
-    private UserEntity updateUser(UserEntity existingUser, String fullName, String username, String email, String phoneNumber, String password) {
-        return UserEntity.builder()
-                .id(existingUser.getId())
-                .fullName(fullName)
-                .username(username)
-                .email(email)
-                .phoneNumber(phoneNumber)
-                .password(password)
-                .role(existingUser.getRole())
-                .image(existingUser.getImage())
-                .build();
-    }
-
-    private PlayersEntity updatePlayer(PlayersEntity existingPlayer, String address, Integer age, Integer height, Integer weight, UserEntity updatedUser) {
-        return PlayersEntity.builder()
-                .id(existingPlayer.getId())
-                .address(address)
-                .age(age)
-                .height(height)
-                .weight(weight)
-                .start_date(existingPlayer.getStart_date())
-                .end_date(existingPlayer.getEnd_date())
-                .user(updatedUser)
-                .admin(existingPlayer.getAdmin())
-                .selectedPackage(existingPlayer.getSelectedPackage())
-                .accountEnabled(existingPlayer.isAccountEnabled())
-                .build();
-    }
-
-
+    // ========== Method To Get Classes(With Details) That The Player Enrolment In ====================
     @GetMapping("/enrollments")
     public String getMyClasses(Principal principal, Model model) {
         if (principal != null) {
@@ -144,16 +147,28 @@ public class PlayerController {
             UserEntity userEntity = playerService.findUserByUsername(userName);
             if (userEntity != null && userEntity.getRole() != null) {
                 PlayersEntity player = userEntity.getPlayer();
-
                 List<ClassesEntity> enrollments = playerService.getPlayerEnrolment(player);
-
                 model.addAttribute("enrollments", enrollments);
-
                 return "playerPages/enrollments.html";
             }
         }
         return "index.html";
     }
+
+    // ========== Method To Get All The Notifications (From Admin and Trainer) ====================
+    @GetMapping("/notifications")
+    public String getNotifications(Principal principal, Model model) {
+        String userName = principal.getName();
+        UserEntity userEntity = userService.findUserByUsername(userName);
+
+        if (userEntity != null && userEntity.getPlayer() != null) {
+            Long playerId = userEntity.getId();
+            List<NotificationsEntity> notifications = notificationService.getNotificationsForPlayer(playerId);
+            model.addAttribute("notifications", notifications);
+        }
+        return "playerPages/notifications.html";
+    }
+
 
 
 //    @GetMapping("/calculateBMI")
@@ -183,19 +198,5 @@ public class PlayerController {
 //
 //        return "playerInfo";
 //    }
-
-    @GetMapping("/notifications")
-    public String getNotifications(Principal principal, Model model) {
-        String userName = principal.getName();
-        UserEntity userEntity = userService.findUserByUsername(userName);
-
-        if (userEntity != null && userEntity.getPlayer() != null) {
-            Long playerId = userEntity.getId();
-            List<NotificationsEntity> notifications = notificationService.getNotificationsForPlayer(playerId);
-            model.addAttribute("notifications", notifications);
-        }
-        return "playerPages/notifications.html";
-    }
-
 
 }
