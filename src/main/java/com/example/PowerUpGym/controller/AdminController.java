@@ -29,6 +29,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import com.twilio.Twilio;
+import com.twilio.rest.api.v2010.account.Message;
+import com.twilio.type.PhoneNumber;
 
 @Controller
 @Secured("ADMIN") // define a list of security configuration attributes for business methods
@@ -56,7 +59,10 @@ public class AdminController {
     @Autowired
     NotificationsService notificationService;
 
-
+    @GetMapping("")
+    public String getAdmin(){
+        return "adminPages/adminPage.html";
+    }
     // ============== Helper Method To Create User From UserRegistrationRequest ==============
     private UserEntity createUserFromRequest(UserRegistrationRequest userRequest, UserRoleEntity role) {
         // Create and save UserRoleEntity
@@ -167,6 +173,7 @@ public class AdminController {
         userService.signupUser(user);
         playerService.signupPlayer(player);
         paymentService.savePayment(payment);
+        sendPasswordViaSMS(playerRequest.getPhoneNumber(), playerRequest.getPassword());
 
         return new RedirectView("/adminPage");
     }
@@ -393,6 +400,23 @@ public class AdminController {
                 .build();
         notificationService.saveNotification(notification);
         return new RedirectView("/adminPage/allplayers");
+    }
+
+
+    // ========== Helper method to send password via SMS using Twilio ============
+    private void sendPasswordViaSMS(String phoneNumber, String password) {
+        // Your Twilio Account SID and Auth Token
+        String ACCOUNT_SID = "AC406561e7beb7c929d6719c7236d85bed";
+        String AUTH_TOKEN = "62c0fa1180daf3956b38c4c67e2b6d1f";
+        // Initialize Twilio with your credentials
+        Twilio.init(ACCOUNT_SID, AUTH_TOKEN);
+        // Create a message
+        Message message = Message.creator(
+                        new PhoneNumber(phoneNumber), // Player's phone number
+                        new PhoneNumber("+14345973383"), // Your Twilio phone number
+                        "Your password is: " + password)
+                .create();
+        System.out.println("Password sent via SMS. Message SID: " + message.getSid());
     }
 
 }
