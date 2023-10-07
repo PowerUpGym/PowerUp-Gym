@@ -57,6 +57,11 @@ public class AdminController {
     NotificationsService notificationService;
 
 
+    @GetMapping("")
+    public String getAdminPage() {
+        return "adminPages/adminPage.html";
+    }
+
     // ============== Helper Method To Create User From UserRegistrationRequest ==============
     private UserEntity createUserFromRequest(UserRegistrationRequest userRequest, UserRoleEntity role) {
         // Create and save UserRoleEntity

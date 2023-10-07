@@ -82,7 +82,7 @@
             <h2 class="title" th:text="${class.className}"></h2>
             <p class="copy" th:text="${class.description}" style="color: rgb(219, 219, 219)"></p>
             <p><strong>Trainer for the class: </strong><span th:if="${class.trainer != null}" th:text="${class.trainer.user.fullName}"></span></p>
-            <p><strong>Schedule: </strong><span th:text="${class.schedule}"></span></p>
+            <p><strong>Schedule: </strong><span th:text="${class.scheduleDescription}"></span></p>
         </div>
     </div>
 </main>
