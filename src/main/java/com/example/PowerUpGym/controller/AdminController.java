@@ -3,6 +3,8 @@ package com.example.PowerUpGym.controller;
 import com.example.PowerUpGym.bo.auth.AddClassRequest;
 import com.example.PowerUpGym.bo.auth.AddPackageRequest;
 import com.example.PowerUpGym.bo.auth.AddPlayerToClassRequest;
+import com.example.PowerUpGym.bo.auth.update.AdminUpdateRequest;
+import com.example.PowerUpGym.bo.auth.update.UserUpdateRequest;
 import com.example.PowerUpGym.bo.auth.users.PlayerRegistrationRequest;
 import com.example.PowerUpGym.bo.auth.users.TrainerRegistrationRequest;
 import com.example.PowerUpGym.bo.auth.users.UserRegistrationRequest;
@@ -14,14 +16,19 @@ import com.example.PowerUpGym.entity.payments.PaymentsEntity;
 import com.example.PowerUpGym.entity.users.*;
 import com.example.PowerUpGym.enums.Role;
 import com.example.PowerUpGym.services.*;
+import com.twilio.Twilio;
+import com.twilio.rest.api.v2010.account.Message;
+import com.twilio.type.PhoneNumber;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.view.RedirectView;
-
 import java.security.Principal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -29,9 +36,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-import com.twilio.Twilio;
-import com.twilio.rest.api.v2010.account.Message;
-import com.twilio.type.PhoneNumber;
 
 @Controller
 @Secured("ADMIN") // define a list of security configuration attributes for business methods
@@ -175,7 +179,7 @@ public class AdminController {
         userService.signupUser(user);
         playerService.signupPlayer(player);
         paymentService.savePayment(payment);
-    //    sendPasswordViaSMS(playerRequest.getPhoneNumber(), playerRequest.getPassword());
+        //    sendPasswordViaSMS(playerRequest.getPhoneNumber(), playerRequest.getPassword());
 
         return new RedirectView("/adminPage");
     }
@@ -249,7 +253,7 @@ public class AdminController {
         }
     }
 
-// ==========  Add New Package To Database  ====================
+    // ==========  Add New Package To Database  ====================
     @GetMapping("/addPackage")
     public String getAddPackageForm() {
         return "adminPages/addPackage";
@@ -282,6 +286,7 @@ public class AdminController {
         model.addAttribute("classEntity", new ClassesEntity());
         return "adminPages/addClass";
     }
+
     @PostMapping("/addClass")
     public RedirectView addClass(@ModelAttribute AddClassRequest classRequest, Principal principal) {
         TrainerEntity trainer = trainerService.getTrainerById(classRequest.getTrainerId());
@@ -421,20 +426,23 @@ public class AdminController {
         System.out.println("Password sent via SMS. Message SID: " + message.getSid());
     }
 
+    // =============== Method To Get Admin Information's ==================
     @GetMapping("/adminProfile")
-    private String adminProfile(Principal principal, Model model){
-        if (principal == null) {
-            return "redirect:/login";
+    private String adminProfile(Principal principal, Model model) {
+        if (principal != null) {
+            String username = principal.getName();
+            UserEntity userEntity = adminService.findAdminByUsername(username);
+            if (userEntity == null || userEntity.getRole() == null) {
+                return "redirect:/error";
+            }
+            AdminEntity adminEntity = userEntity.getAdmin();
+            model.addAttribute("admin", adminEntity);
+            return "adminPages/adminProfile.html";
         }
-        String username = principal.getName();
-        UserEntity userEntity= adminService.findAdminByUsername(username);
-        if (userEntity == null || userEntity.getRole() == null) {
-            return "redirect:/error";
-        }
-        AdminEntity adminEntity=userEntity.getAdmin();
-        model.addAttribute("admin",adminEntity);
-        return "adminPages/adminProfile.html";
+        return "redirect:/error";
     }
+
+    // =============== Method To Update Admin Information's ==================
     @GetMapping("/updateAdmin")
     public String getEditAdminProfile(Principal principal, Model model) {
         if (principal != null) {
@@ -446,51 +454,41 @@ public class AdminController {
                 AdminEntity admin = userEntity.getAdmin();
                 model.addAttribute("admin", admin);
                 return "adminPages/updateAdmin.html";
-
             }
         }
-        return "adminPages/adminProfile.html";
+        return "redirect:/error";
     }
+
     @PostMapping("/updateAdmin")
-    public RedirectView updateAdmin(@RequestParam("userId") Long userId,
-                                    @RequestParam("adminId") Long adminId,
-                                    @RequestParam("fullName") String fullName,
-                                    @RequestParam("username") String username,
-                                    @RequestParam("email") String email,
-                                    @RequestParam("phoneNumber") String phoneNumber,
-                                    @RequestParam(value = "password", required = false) String password) {
+    public RedirectView getUpdateAdmin(UserUpdateRequest userUpdateRequest) {
+        UserEntity existingUser = userService.findUserById(userUpdateRequest.getUserId());
 
-        // Check if adminId and userId are not null
-        if (adminId == null || userId == null) {
-            // Handle the error, e.g., by redirecting to an error page
-            return new RedirectView("/error");
-        }
-
-        AdminEntity existingAdmin = adminService.getAdminById(adminId);
-        UserEntity existingUser = userService.findUserById(userId);
-
-        String newPassword = (password != null && !password.isEmpty()) ? passwordEncoder.encode(password) : existingUser.getPassword();
-
-        UserEntity updatedUser = updateUser(existingUser, fullName, username, email, phoneNumber, newPassword);
+        UserEntity updatedUser = updateUser(existingUser, userUpdateRequest);
         userService.saveUser(updatedUser);
 
-        return new RedirectView("/adminPage/updateAdmin");
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UsernamePasswordAuthenticationToken updatedAuthentication = new UsernamePasswordAuthenticationToken(updatedUser.getUsername(), authentication.getCredentials(), authentication.getAuthorities());
+        SecurityContextHolder.getContext().setAuthentication(updatedAuthentication);
+
+        return new RedirectView("adminProfile");
     }
 
-    private UserEntity updateUser(UserEntity existingUser, String fullName, String username, String email, String phoneNumber, String password) {
+    // ============== Helper Method To Update User ==============
+    private UserEntity updateUser(UserEntity existingUser, UserUpdateRequest userUpdateRequest) {
+        String newPassword = (userUpdateRequest.getPassword() != null && !userUpdateRequest.getPassword().isEmpty())
+                ? passwordEncoder.encode(userUpdateRequest.getPassword())
+                : existingUser.getPassword();
+
         return UserEntity.builder()
                 .id(existingUser.getId())
-                .fullName(fullName)
-                .username(username)
-                .email(email)
-                .phoneNumber(phoneNumber)
-                .password(password)
+                .fullName(userUpdateRequest.getFullName())
+                .username(userUpdateRequest.getUsername())
+                .email(userUpdateRequest.getEmail())
+                .phoneNumber(userUpdateRequest.getPhoneNumber())
+                .password(newPassword)
                 .role(existingUser.getRole())
                 .image(existingUser.getImage())
                 .build();
     }
-
-
-
 
 }
