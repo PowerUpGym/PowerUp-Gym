@@ -11,7 +11,6 @@
     <label for="playerId">Select Player:</label>
     <input type="text" id="playerId" name="playerId" list="playerList" required>
     <datalist id="playerList">
-        <!-- Add options dynamically using Thymeleaf -->
         <th:block th:each="player : ${players}">
             <option th:value="${player.id}" th:text="${player.user.username + ' - ' + player.user.phoneNumber}"></option>
         </th:block>
@@ -20,7 +19,6 @@
     <label for="classId">Select Class:</label>
     <input type="text" id="classId" name="classId" list="classList" required>
     <datalist id="classList">
-        <!-- Add options dynamically using Thymeleaf -->
         <th:block th:each="class : ${classes}">
             <option th:value="${class.id}" th:text="${class.className}"></option>
         </th:block>

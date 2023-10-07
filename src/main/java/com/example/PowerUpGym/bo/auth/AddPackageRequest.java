@@ -10,12 +10,9 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class PlayerRegistrationRequest {
-
-    private String address;
-    private int age;
-    private int height;
-    private int weight;
-    private Long packageId;
-
+public class AddPackageRequest {
+    private String packageName;
+    private int price;
+    private int duration;
+    private String description;
 }
