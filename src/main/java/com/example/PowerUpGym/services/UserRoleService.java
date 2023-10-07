@@ -21,4 +21,8 @@ public class UserRoleService {
         return userRoleRepository.save(userRole);
     }
 
+    public UserRoleEntity findRoleByRole(Role role) {
+        return userRoleRepository.findByRole(role);
+    }
+
 }
