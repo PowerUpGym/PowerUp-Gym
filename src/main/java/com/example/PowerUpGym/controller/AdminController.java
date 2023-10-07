@@ -460,9 +460,7 @@ public class AdminController {
                                     @RequestParam("phoneNumber") String phoneNumber,
                                     @RequestParam(value = "password", required = false) String password) {
 
-        // Check if adminId and userId are not null
         if (adminId == null || userId == null) {
-            // Handle the error, e.g., by redirecting to an error page
             return new RedirectView("/error");
         }
 
