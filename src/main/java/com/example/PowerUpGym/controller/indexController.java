@@ -45,4 +45,9 @@ public class indexController {
         model.addAttribute("classes", classes);
         return "/nonLoggedUsers/homeClasses";
     }
+
+    @GetMapping("/aboutUs")
+    public String getAboutUs(){
+        return "/nonLoggedUsers/aboutUs";
+    }
 }

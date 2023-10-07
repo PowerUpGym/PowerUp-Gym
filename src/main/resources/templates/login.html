@@ -2,21 +2,73 @@
 <html xmlns:th="http://www.w3.org/1999/xhtml">
 <head>
     <title>Login</title>
+
+    <link rel="stylesheet" href="/Css/nonLogged/login.css">
+    <title>Power Up Gym</title>
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.9.0/slick.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.9.0/slick-theme.min.css" />
+
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.9.0/slick.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.9.0/slick-theme.min.css" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
+    <script src="https://kit.fontawesome.com/95dc93da07.js"></script>
+
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.9.0/slick.min.js"></script>
+
+
 </head>
 <body>
-<section class="wrapper">
-    <div class="form login">
-        <header>Login</header>
-        <form action="/login" method="post">
-            <input type="text" name="username" placeholder="Username">
-            <input type="password" name="password" placeholder="Password">
-            <input type="submit" value="Login">
+<!--        <p class="signup-text">don't have an account ?  <a href="/signup" class="creative-button">Sign Up</a></p>-->
+
+<div class="form-structor">
+    <div class="signup">
+        <form action="/login" method="post" class="form-holder">
+            <input type="text" name="username" class="input" placeholder="User Name" />
+            <input type="password" name="password" class="input" placeholder="Password" />
+
+            <input class="submit-btn" type="submit" value="Login">
 
             <input type="hidden" name="successHandler" value="customAuthenticationSuccessHandler">
         </form>
 
-        <p class="signup-text">don't have an account ?  <a href="/signup" class="creative-button">Sign Up</a></p>
+        <a class="back-home" href="/" style="font-size: 17px;">Back To Home</a>
     </div>
-</section>
+</div>
+
+<script>
+console.clear();
+
+const loginBtn = document.getElementById('login');
+const signupBtn = document.getElementById('signup');
+
+loginBtn.addEventListener('click', (e) => {
+	let parent = e.target.parentNode.parentNode;
+	Array.from(e.target.parentNode.parentNode.classList).find((element) => {
+		if(element !== "slide-up") {
+			parent.classList.add('slide-up')
+		}else{
+			signupBtn.parentNode.classList.add('slide-up')
+			parent.classList.remove('slide-up')
+		}
+	});
+});
+
+signupBtn.addEventListener('click', (e) => {
+	let parent = e.target.parentNode;
+	Array.from(e.target.parentNode.classList).find((element) => {
+		if(element !== "slide-up") {
+			parent.classList.add('slide-up')
+		}else{
+			loginBtn.parentNode.parentNode.classList.add('slide-up')
+			parent.classList.remove('slide-up')
+		}
+	});
+});
+</script>
 </body>
 </html>
