@@ -58,7 +58,6 @@ public class AdminController {
     UserRoleService userRoleService;
     @Autowired
     PaymentService paymentService;
-
     @Autowired
     NotificationsService notificationService;
 
@@ -66,6 +65,82 @@ public class AdminController {
     @GetMapping("")
     public String getAdminPage() {
         return "adminPages/adminPage.html";
+    }
+
+    // ================== Add new Admin (Only SUPER_ADMIN Can Do This) ===================
+    @GetMapping("signupAdmin")
+    public String getSignUpAdminPage() {
+        return "adminPages/signupAdmin.html";
+    }
+
+    @PostMapping("/signupAdmin")
+    public RedirectView postSignupAdmin(@ModelAttribute UserRegistrationRequest userRequest) {
+        UserRoleEntity userRole = userRoleService.findRoleByRole(Role.ADMIN);
+
+        if (userRole == null) {
+            throw new RuntimeException("Role not found: " + userRequest.getRole());
+        }
+
+        UserEntity user = createUserFromRequest(userRequest, userRole.getRole());
+        user.setPassword(passwordEncoder.encode(userRequest.getPassword()));
+        user.setImage("/assets/profileImg.png");
+
+        userService.signupUser(user);
+
+        AdminEntity admin = AdminEntity.builder().user(user).build();
+        adminService.signupAdmin(admin);
+
+        return new RedirectView("/adminPage");
+    }
+
+    // =============== Method To Update Admin Information's ==================
+    @GetMapping("/updateAdmin")
+    public String getEditAdminProfile(Principal principal, Model model) {
+        if (principal != null) {
+            String username = principal.getName();
+            UserEntity userEntity = adminService.findAdminByUsername(username);
+
+            if (userEntity != null) {
+                model.addAttribute("user", userEntity);
+                AdminEntity admin = userEntity.getAdmin();
+                model.addAttribute("admin", admin);
+                return "adminPages/updateAdmin.html";
+            }
+        }
+        return "redirect:/error";
+    }
+
+    @PostMapping("/updateAdmin")
+    public RedirectView getUpdateAdmin(UserUpdateRequest userUpdateRequest) {
+
+        UserEntity existingUser = userService.findUserById(userUpdateRequest.getUserId());
+
+        UserEntity updatedUser = updateUser(existingUser, userUpdateRequest);
+        userService.saveUser(updatedUser);
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UsernamePasswordAuthenticationToken updatedAuthentication = new UsernamePasswordAuthenticationToken(updatedUser.getUsername(), authentication.getCredentials(), authentication.getAuthorities());
+        SecurityContextHolder.getContext().setAuthentication(updatedAuthentication);
+
+        return new RedirectView("adminProfile");
+    }
+
+    // ============== Helper Method To Update User ==============
+    private UserEntity updateUser(UserEntity existingUser, UserUpdateRequest userUpdateRequest) {
+        String newPassword = (userUpdateRequest.getPassword() != null && !userUpdateRequest.getPassword().isEmpty())
+                ? passwordEncoder.encode(userUpdateRequest.getPassword())
+                : existingUser.getPassword();
+
+        return UserEntity.builder()
+                .id(existingUser.getId())
+                .fullName(userUpdateRequest.getFullName())
+                .username(userUpdateRequest.getUsername())
+                .email(userUpdateRequest.getEmail())
+                .phoneNumber(userUpdateRequest.getPhoneNumber())
+                .password(newPassword)
+                .role(existingUser.getRole())
+                .image(existingUser.getImage())
+                .build();
     }
 
     // ============== Helper Method To Create User From UserRegistrationRequest ==============
@@ -240,8 +315,7 @@ public class AdminController {
             @RequestParam(name = "accountStatus") String accountStatus) {
         PlayersEntity player = playerService.getPlayerById(playerId);
 
-        if (player != null) {
-            // Update the player's account status based on the selected option
+        if (player != null) { // Update the player's account status based on the selected option
             if ("ENABLED".equals(accountStatus)) {
                 player.setAccountEnabled(true);
             } else if ("DISABLED".equals(accountStatus)) {
@@ -445,54 +519,5 @@ public class AdminController {
         return "redirect:/error";
     }
 
-    // =============== Method To Update Admin Information's ==================
-    @GetMapping("/updateAdmin")
-    public String getEditAdminProfile(Principal principal, Model model) {
-        if (principal != null) {
-            String username = principal.getName();
-            UserEntity userEntity = adminService.findAdminByUsername(username);
-
-            if (userEntity != null) {
-                model.addAttribute("user", userEntity);
-                AdminEntity admin = userEntity.getAdmin();
-                model.addAttribute("admin", admin);
-                return "adminPages/updateAdmin.html";
-            }
-        }
-        return "redirect:/error";
-    }
-
-    @PostMapping("/updateAdmin")
-    public RedirectView getUpdateAdmin(UserUpdateRequest userUpdateRequest) {
-
-        UserEntity existingUser = userService.findUserById(userUpdateRequest.getUserId());
-
-        UserEntity updatedUser = updateUser(existingUser, userUpdateRequest);
-        userService.saveUser(updatedUser);
-
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        UsernamePasswordAuthenticationToken updatedAuthentication = new UsernamePasswordAuthenticationToken(updatedUser.getUsername(), authentication.getCredentials(), authentication.getAuthorities());
-        SecurityContextHolder.getContext().setAuthentication(updatedAuthentication);
-
-        return new RedirectView("adminProfile");
-    }
-
-    // ============== Helper Method To Update User ==============
-    private UserEntity updateUser(UserEntity existingUser, UserUpdateRequest userUpdateRequest) {
-        String newPassword = (userUpdateRequest.getPassword() != null && !userUpdateRequest.getPassword().isEmpty())
-                ? passwordEncoder.encode(userUpdateRequest.getPassword())
-                : existingUser.getPassword();
-
-        return UserEntity.builder()
-                .id(existingUser.getId())
-                .fullName(userUpdateRequest.getFullName())
-                .username(userUpdateRequest.getUsername())
-                .email(userUpdateRequest.getEmail())
-                .phoneNumber(userUpdateRequest.getPhoneNumber())
-                .password(newPassword)
-                .role(existingUser.getRole())
-                .image(existingUser.getImage())
-                .build();
-    }
 
 }

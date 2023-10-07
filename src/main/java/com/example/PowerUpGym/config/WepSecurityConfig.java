@@ -35,10 +35,10 @@ public class WepSecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 .antMatchers("/homeTrainers", "/homePackages", "/homeClasses", "/aboutUs").permitAll()
                 .antMatchers("/" , "/index" , "/login", "/signupAdmin").permitAll()
-                // "/signup" ,"/signupTrainer", "/loginTrainer","/signupAdmin","/loginAdmin"
                 .antMatchers("/Css/**", "/Js/**").permitAll()
-                .antMatchers("/adminPage/**").hasAuthority("ADMIN")
-                .antMatchers("/trainerPage/**").hasAuthority("TRAINER") // hasRole("TRAINER")
+                .antMatchers("/adminPage/signupAdmin").hasAuthority("SUPER_ADMIN")
+                .antMatchers("/adminPage/**").hasAnyAuthority("ADMIN", "SUPER_ADMIN")
+                .antMatchers("/trainerPage/**").hasAuthority("TRAINER")
                 .antMatchers("/playerPage/**").hasAuthority("PLAYER")
                 .anyRequest().authenticated()
                 .and()
@@ -50,12 +50,8 @@ public class WepSecurityConfig extends WebSecurityConfigurerAdapter {
                 .failureUrl("/login?error=true")
                 .and()
                 .logout()
-//                    .logoutUrl("/perform_logout")
                 .logoutSuccessUrl("/login")
                 .deleteCookies("JSESSIONID");
-//                .and()
-//                .sessionManagement()
-//                    .invalidSessionUrl("/sessionTimeout");
     }
 
     @Override
