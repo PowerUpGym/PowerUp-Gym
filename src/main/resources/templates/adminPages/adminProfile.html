@@ -3,17 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+
+    <link rel="stylesheet" type="text/css" href="/Css/admin/adminProfile.css">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300&display=swap" rel="stylesheet">
+
 </head>
 <body>
-<h1>Player Information</h1>
 
-<div th:if="${admin != null}">
-  <p><strong>Full Name:</strong> <span th:text="${admin.user.fullName}"></span></p>
-  <p><strong>Username:</strong> <span th:text="${admin.user.username}"></span></p>
-  <p><strong>Email:</strong> <span th:text="${admin.user.email}"></span></p>
-  <p><strong>Phone Number:</strong> <span th:text="${admin.user.phoneNumber}"></span></p>
-  <img th:src="${admin.user.image}" alt="Player Image" width="150" height="150">
-  <a th:href="@{/adminPage/updateAdmin}">Edit Profile</a>
+    <div class="container">
+        <div th:if="${admin != null}" class="service-details">
+            <img src="https://i.pinimg.com/236x/5a/54/cf/5a54cfdb6320b05029b8fafb6fdb5f4e.jpg" alt="realm">
+            <div class="service-hover-text">
+                <strong>Name: </strong><h3 th:text="${admin.user.fullName}"></h3> <br>
+                <strong>Username: </strong><h4 th:text="${admin.user.username}"></h4>
+                <p th:text="${admin.user.email}"></p>
+                <p th:text="${admin.user.phoneNumber}"></p>
+            </div>
+
+            <div class="service-white service-text">
+                <p>Admin Information Card</p>
+            </div>
+
+        </div>
+
+        <div style="text-align: center; margin-top: 20px;">
+            <a th:href="@{/adminPage/updateAdmin}">Edit Profile</a>
+        </div>
+
 </div>
 </body>
 </html>
