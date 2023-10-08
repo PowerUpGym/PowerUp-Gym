@@ -4,29 +4,34 @@
     <meta charset="UTF-8">
     <title>Admin Dashboard</title>
     <link rel="stylesheet" type="text/css" href="/Css/admin/adminPage.css">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300&display=swap" rel="stylesheet">
 </head>
 <body>
 <div class="container">
-    <table>
-        <tr>
-            <td colspan="3">
+    <table class="table">
+        <tr class="table-tr">
+            <td colspan="3" class="table-td">
                 <h1>Welcome to the Admin Dashboard</h1>
+                <a href="/adminPage/adminProfile" class="profile"> Your Profile</a>
             </td>
         </tr>
-        <tr>
-            <td> <a href="/adminPage/signupPlayer">Add Player</a> </td>
-            <td> <a href="/adminPage/signupTrainer">Add Trainer</a> </td>
-            <td> <a href="/adminPage/addPackage">Add Package</a> </td>
+        <tr class="table-tr">
+            <td class="table-td"> <a href="/adminPage/signupPlayer">Add Player</a> </td>
+            <td class="table-td"> <a href="/adminPage/signupTrainer">Add Trainer</a> </td>
+            <td class="table-td"> <a href="/adminPage/addPackage">Add Package</a> </td>
         </tr>
-        <tr>
-            <td> <a href="/adminPage/addClass">Add Class</a> </td>
-            <td> <a href="/adminPage/addPlayerToClass">Add User To Class</a> </td>
-            <td> <a href="/adminPage/allClasses">Get All Class</a> </td>
+        <tr class="table-tr">
+            <td class="table-td"> <a href="/adminPage/addClass">Add Class</a> </td>
+            <td class="table-td"> <a href="/adminPage/addPlayerToClass">Add Player To Class</a> </td>
+            <td class="table-td"> <a href="/adminPage/allClasses">All Class</a> </td>
         </tr>
-        <tr>
-            <td> <a href="/adminPage/allplayers">All Player</a> </td>
-            <td> <a href="/adminPage/renewSubscription">Renew Subscription</a> </td>
-            <td> <a href="/adminPage/updateAccountStatus">Update Account Status</a> </td>
+        <tr class="table-tr">
+            <td class="table-td"> <a href="/adminPage/allplayers">All Players</a> </td>
+            <td class="table-td"> <a href="/adminPage/renewSubscription">Renew Subscription</a> </td>
+            <td class="table-td"> <a href="/adminPage/updateAccountStatus">Update Account Status</a> </td>
         </tr>
     </table>
 

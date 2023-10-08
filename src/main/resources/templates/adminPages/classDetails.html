@@ -3,8 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <title>Class Details</title>
+
+    <link rel="stylesheet" type="text/css" href="/Css/admin/classesDetails.css">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300&display=swap" rel="stylesheet">
+
 </head>
 <body>
+<div class="container">
 <h1>Class Details</h1>
 <div th:object="${classEntity}">
     <p><strong>Class Name:</strong> <span th:text="*{className}"></span></p>
@@ -19,6 +27,7 @@
     </li>
 </ul>
 
-<a href="/adminPage/allClasses">Back to All Classes</a>
+<a href="/adminPage/allClasses" style="color: rgb(207, 117, 0);">Back to All Classes</a>
+</div>
 </body>
 </html>

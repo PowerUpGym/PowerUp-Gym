@@ -1,0 +1,42 @@
+body {
+    font-family: 'Oswald', sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    margin: 0;
+}
+
+.container {
+    width: 800px;
+    max-width: 100%;
+    margin: 0 auto;
+    padding: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.8);
+    border-radius: 8px;
+    background-color: #fff;
+    display: flex; /* Add flex display to center vertically */
+    flex-direction: column; /* Stack children vertically */
+    align-items: center; /* Center children horizontally */
+}
+
+h1, h2 {
+    text-align: center;
+}
+
+ul {
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+a {
+    display: block;
+    text-align: center;
+    margin-top: 20px;
+    text-decoration: none;
+    color: #3498db;
+}
+
+a:hover {
+    text-decoration: underline;
+}
