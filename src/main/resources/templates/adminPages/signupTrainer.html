@@ -1,48 +1,71 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>User Registration</title>
+    <title>Trainer Registration</title>
     <link rel="stylesheet" type="text/css" href="/Css/admin/signupTrainer.css">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300&display=swap" rel="stylesheet">
 
 </head>
 <body>
-<h1>User Registration</h1>
-<form action="/adminPage/signupTrainer" method="post">
-    <label for="fullName">Full Name:</label>
-    <input type="text" id="fullName" name="fullName" required>
-    <br>
 
-    <label for="username">Username:</label>
-    <input type="text" id="username" name="username" required>
-    <br>
+<div class="center-container">
+    <div class="form-container">
+        <h1>Trainer Registration</h1>
+        <form action="/adminPage/signupTrainer" method="post">
+            <div class="form-group">
+                <label for="fullName">Full Name:</label>
+                <input type="text" id="fullName" name="fullName" required>
+            </div>
 
-    <label for="email">Email:</label>
-    <input type="email" id="email" name="email" required>
-    <br>
+            <div class="form-group">
+                <label for="username">Username:</label>
+                <input type="text" id="username" name="username" required>
+            </div>
 
-    <label for="phoneNumber">Phone Number:</label>
-    <input type="text" id="phoneNumber" name="phoneNumber">
-    <br>
+            <div class="form-group">
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" required>
+            </div>
 
-    <label for="password">Password:</label>
-    <input type="password" id="password" name="password" required>
-    <br>
+            <div class="form-group">
+                <label for="phoneNumber">Phone Number:</label>
+                <input type="text" id="phoneNumber" name="phoneNumber">
+            </div>
 
-    <label for="age">Age:</label>
-    <input type="text" id="age" name="age" required>
-    <br>
+            <div class="form-group">
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="password" required>
+            </div>
 
-    <label for="experience">Experience:</label>
-    <input type="text" id="experience" name="experience" required>
-    <br>
+            <div class="form-group">
+                <label for="address">Address:</label>
+                <input type="text" id="address" name="address" required>
+            </div>
 
-    <label for="image">Image URL:</label>
-    <input type="text" id="image" name="image" hidden="hidden">
-    <br>
+            <div class="form-group">
+                <label for="age">Age:</label>
+                <input type="text" id="age" name="age" required>
+            </div>
 
-    <input type="submit" value="Register">
-</form>
+            <div class="form-group">
+                <label for="experience">Experience:</label>
+                <input type="text" id="experience" name="experience" required>
+            </div>
+
+            <input type="hidden" id="image" name="image" value="">
+
+            <div class="form-group">
+                <input type="submit" value="Register">
+            </div>
+
+        </form>
+    </div>
+</div>
+
 </body>
 </html>

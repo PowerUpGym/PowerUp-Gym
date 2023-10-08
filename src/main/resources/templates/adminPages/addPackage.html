@@ -5,23 +5,46 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Add Package</title>
     <link rel="stylesheet" type="text/css" href="/Css/admin/addPackage.css">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300&display=swap" rel="stylesheet">
+
 </head>
 <body>
-<h1>Add a New Package</h1>
-<form action="/adminPage/addPackage" method="POST">
-    <label for="packageName">Package Name:</label>
-    <input type="text" id="packageName" name="packageName" required><br>
 
-    <label for="price">Price:</label>
-    <input type="number" id="price" name="price" required><br>
 
-    <label for="duration">Duration (in months):</label>
-    <input type="number" id="duration" name="duration" required><br> <!-- Add duration input -->
+<div class="center-container">
+    <div class="form-container">
+        <h1>Add New Package</h1>
+        <form action="/adminPage/addPackage" method="post">
 
-    <label for="description">Description:</label>
-    <textarea id="description" name="description" rows="4" required></textarea><br>
+            <div class="form-group">
+                <label for="packageName">Package Name:</label>
+                <input type="text" id="packageName" name="packageName" required>
+            </div>
 
-    <input type="submit" value="Add Package">
-</form>
+            <div class="form-group">
+                <label for="price">Price:</label>
+                <input type="number" id="price" name="price" required>
+            </div>
+
+            <div class="form-group">
+                <label for="duration">Duration (in months):</label>
+                <input type="number" id="duration" name="duration" required>
+            </div>
+
+            <div class="form-group">
+                <label for="description">Description:</label>
+                <textarea id="description" name="description" rows="4" required></textarea>
+            </div>
+
+            <div class="form-group">
+                <input type="submit" value="Add Package">
+            </div>
+        </form>
+    </div>
+</div>
+
 </body>
 </html>
