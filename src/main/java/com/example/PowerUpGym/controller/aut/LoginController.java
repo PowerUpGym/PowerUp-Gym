@@ -59,7 +59,7 @@ public String getLoginPage() {
 
             if (userRole.getRole() == Role.PLAYER) {
                 if (!authenticatedUser.getPlayer().isAccountEnabled()) { // Check if the account is enabled
-                    return new RedirectView("/error");
+                    return new RedirectView("/logout");
                 }
                 return new RedirectView("/playerPage"); // Redirect to the player page
             } else if (userRole.getRole() == Role.TRAINER) {

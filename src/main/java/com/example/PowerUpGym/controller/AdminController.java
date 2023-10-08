@@ -14,7 +14,15 @@ import com.example.PowerUpGym.entity.packagesGym.PackagesEntity;
 import com.example.PowerUpGym.entity.payments.PaymentsEntity;
 import com.example.PowerUpGym.entity.users.*;
 import com.example.PowerUpGym.enums.Role;
-import com.example.PowerUpGym.services.*;
+import com.example.PowerUpGym.services.admin.AdminService;
+import com.example.PowerUpGym.services.classes.ClassService;
+import com.example.PowerUpGym.services.notification.NotificationsService;
+import com.example.PowerUpGym.services.packagee.PackageService;
+import com.example.PowerUpGym.services.payment.PaymentService;
+import com.example.PowerUpGym.services.player.PlayerService;
+import com.example.PowerUpGym.services.roles.UserRoleService;
+import com.example.PowerUpGym.services.trainer.TrainerService;
+import com.example.PowerUpGym.services.users.UserService;
 import com.twilio.Twilio;
 import com.twilio.rest.api.v2010.account.Message;
 import com.twilio.type.PhoneNumber;
@@ -98,7 +106,7 @@ public class AdminController {
     public String getEditAdminProfile(Principal principal, Model model) {
         if (principal != null) {
             String username = principal.getName();
-            UserEntity userEntity = adminService.findAdminByUsername(username);
+            UserEntity userEntity = userService.findUserByUsername(username);
 
             if (userEntity != null) {
                 model.addAttribute("user", userEntity);
@@ -508,7 +516,7 @@ public class AdminController {
     private String adminProfile(Principal principal, Model model) {
         if (principal != null) {
             String username = principal.getName();
-            UserEntity userEntity = adminService.findAdminByUsername(username);
+            UserEntity userEntity = userService.findUserByUsername(username);
             if (userEntity == null || userEntity.getRole() == null) {
                 return "redirect:/error";
             }

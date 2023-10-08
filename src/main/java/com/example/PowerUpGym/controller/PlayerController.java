@@ -6,9 +6,9 @@ import com.example.PowerUpGym.entity.classesGym.ClassesEntity;
 import com.example.PowerUpGym.entity.notifications.NotificationsEntity;
 import com.example.PowerUpGym.entity.users.PlayersEntity;
 import com.example.PowerUpGym.entity.users.UserEntity;
-import com.example.PowerUpGym.services.NotificationsService;
-import com.example.PowerUpGym.services.PlayerService;
-import com.example.PowerUpGym.services.UserService;
+import com.example.PowerUpGym.services.notification.NotificationsService;
+import com.example.PowerUpGym.services.player.PlayerService;
+import com.example.PowerUpGym.services.users.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -147,7 +147,7 @@ public class PlayerController {
             UserEntity userEntity = playerService.findUserByUsername(userName);
             if (userEntity != null && userEntity.getRole() != null) {
                 PlayersEntity player = userEntity.getPlayer();
-                List<ClassesEntity> enrollments = playerService.getPlayerEnrolment(player);
+                List<ClassesEntity> enrollments = playerService.getPlayerEnrollment(player);
                 model.addAttribute("enrollments", enrollments);
                 return "playerPages/enrollments.html";
             }
