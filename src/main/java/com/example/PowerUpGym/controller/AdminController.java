@@ -118,7 +118,8 @@ public class AdminController {
         UserEntity updatedUser = updateUser(existingUser, userUpdateRequest);
         userService.saveUser(updatedUser);
 
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        // Update the username in the principal
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication(); // retrieves the current authentication information from the security context using SecurityContextHolder. It provides access to the current user's authentication details
         UsernamePasswordAuthenticationToken updatedAuthentication = new UsernamePasswordAuthenticationToken(updatedUser.getUsername(), authentication.getCredentials(), authentication.getAuthorities());
         SecurityContextHolder.getContext().setAuthentication(updatedAuthentication);
 
@@ -148,7 +149,6 @@ public class AdminController {
         UserRoleEntity userRole = userRoleService.findRoleByRole(role);
 
         if (userRole == null) {
-            // Handle the case where the role doesn't exist in the database
             throw new RuntimeException("Role not found: " + role);
         }
 
