@@ -74,7 +74,7 @@ public class AdminController {
     }
 
     @PostMapping("/signupAdmin")
-    public RedirectView postSignupAdmin(@ModelAttribute UserRegistrationRequest userRequest) {
+    public RedirectView postSignupAdmin( UserRegistrationRequest userRequest) {
         UserRoleEntity userRole = userRoleService.findRoleByRole(Role.ADMIN);
 
         if (userRole == null) {
@@ -181,7 +181,7 @@ public class AdminController {
     }
 
     @PostMapping("/signupTrainer")
-    public RedirectView signupTrainer(@ModelAttribute UserRegistrationRequest userRequest, @ModelAttribute TrainerRegistrationRequest trainerRequest, Principal principal) {
+    public RedirectView signupTrainer( UserRegistrationRequest userRequest,  TrainerRegistrationRequest trainerRequest, Principal principal) {
 
         if (userRequest.getImage().isEmpty()) {
             userRequest.setImage("/assets/profileImg.png");
@@ -241,8 +241,8 @@ public class AdminController {
 
     @PostMapping("/signupPlayer")
     public RedirectView signupPlayer(
-            @ModelAttribute PlayerRegistrationRequest playerRequest,
-            @ModelAttribute UserRegistrationRequest userRequest,
+             PlayerRegistrationRequest playerRequest,
+             UserRegistrationRequest userRequest,
             Principal principal) {
 
         if (userRequest.getImage().isEmpty()) {
@@ -337,7 +337,7 @@ public class AdminController {
     }
 
     @PostMapping("/addPackage")
-    public RedirectView addPackage(@ModelAttribute AddPackageRequest packageRequest, Principal principal) {
+    public RedirectView addPackage( AddPackageRequest packageRequest, Principal principal) {
         AdminEntity admin = adminService.getAdminByUsername(principal.getName());
         PackagesEntity packageEntity = createPackage(packageRequest, admin);
         packageService.addPackage(packageEntity);
@@ -365,7 +365,7 @@ public class AdminController {
     }
 
     @PostMapping("/addClass")
-    public RedirectView addClass(@ModelAttribute AddClassRequest classRequest, Principal principal) {
+    public RedirectView addClass( AddClassRequest classRequest, Principal principal) {
         TrainerEntity trainer = trainerService.getTrainerById(classRequest.getTrainerId());
         AdminEntity admin = adminService.getAdminByUsername(principal.getName());
         ClassesEntity classEntity = createClass(classRequest, trainer, admin);
@@ -397,7 +397,7 @@ public class AdminController {
     }
 
     @PostMapping("/addPlayerToClass")
-    public RedirectView addPlayerToClass(@ModelAttribute AddPlayerToClassRequest request) {
+    public RedirectView addPlayerToClass(AddPlayerToClassRequest request) {
         Long selectedPlayerId = Long.parseLong(request.getPlayerId());
 
         PlayersEntity player = playerService.getPlayerById(selectedPlayerId);
