@@ -3,12 +3,14 @@ package com.example.PowerUpGym.bo.auth.users;
 import com.example.PowerUpGym.enums.Role;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
+import org.springframework.validation.annotation.Validated;
 
 @Getter
 @Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Validated
 public class PlayerRegistrationRequest {
     private String fullName;
     private String username;
