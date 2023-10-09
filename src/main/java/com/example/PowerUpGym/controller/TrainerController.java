@@ -1,5 +1,6 @@
 package com.example.PowerUpGym.controller;
 
+import com.example.PowerUpGym.bo.auth.users.UserRegistrationRequest;
 import com.example.PowerUpGym.entity.classesGym.ClassesEntity;
 import com.example.PowerUpGym.entity.classesGym.PlayerClassEnrollment;
 import com.example.PowerUpGym.entity.notifications.NotificationsEntity;
@@ -18,6 +19,7 @@ import org.springframework.web.servlet.view.RedirectView;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 import java.security.Principal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -124,7 +126,8 @@ public class TrainerController {
     }
 
     @PostMapping("/updateTrainerProfile")
-    public RedirectView updateTrainerProfile(@RequestParam("userId") Long userId,
+    public RedirectView updateTrainerProfile(
+                                             @RequestParam("userId") Long userId,
                                              @RequestParam("fullName") String fullName,
                                              @RequestParam("username") String username,
                                              @RequestParam("email") String email,
@@ -221,7 +224,7 @@ public class TrainerController {
         LocalDateTime now = LocalDateTime.now();
 
         enrolledPlayers.stream()
-                .map(enrollment -> enrollment.getPlayer().getUser()) // Use lambda expression here
+                .map(enrollment -> enrollment.getPlayer().getUser())
                 .map(receiver -> {
                     NotificationsEntity notification = new NotificationsEntity();
                     notification.setMessage(message);
@@ -234,5 +237,6 @@ public class TrainerController {
 
         return new RedirectView("/trainerPage/trainerClasses");
     }
+
 
 }
