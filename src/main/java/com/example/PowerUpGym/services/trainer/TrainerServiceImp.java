@@ -16,6 +16,7 @@ import com.example.PowerUpGym.services.notification.NotificationsService;
 import com.example.PowerUpGym.services.users.UserService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.view.RedirectView;
 import java.security.Principal;
