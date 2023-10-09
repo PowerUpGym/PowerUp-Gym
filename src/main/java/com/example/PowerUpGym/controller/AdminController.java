@@ -86,8 +86,8 @@ public class AdminController {
     }
 
     @PostMapping("/signupAdmin")
-    public RedirectView postSignupAdmin(@Valid UserRegistrationRequest userRequest, BindingResult bindingResult) {
-       return adminService.postSignupAdmin(userRequest, bindingResult);
+    public String postSignupAdmin(@Valid UserRegistrationRequest userRequest, BindingResult bindingResult,Model model) {
+       return adminService.postSignupAdmin(userRequest, bindingResult,model);
     }
 
     // =============== Method To Update Admin Information's ==================

@@ -26,7 +26,7 @@ public interface AdminService {
 
     AdminEntity getAdminByUsername(String username);
 
-    RedirectView postSignupAdmin(@Valid UserRegistrationRequest userRequest, BindingResult bindingResult);
+    String postSignupAdmin(@Valid UserRegistrationRequest userRequest, BindingResult bindingResult,Model model);
 
     String getEditAdminProfile(Principal principal, Model model);
     RedirectView getUpdateAdmin(@Valid UserUpdateRequest userUpdateRequest,BindingResult bindingResult);

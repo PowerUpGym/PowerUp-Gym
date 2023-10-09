@@ -32,6 +32,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.view.RedirectView;
 
@@ -78,33 +79,52 @@ public class AdminServiceImp implements AdminService{
         return adminEntityRepository.findByUserUsername(username);
     }
 
-    @Override
-    public RedirectView postSignupAdmin(@Valid UserRegistrationRequest userRequest, BindingResult bindingResult) {
-        UserRoleEntity userRole = userRoleService.findRoleByRole(Role.ADMIN);
-        if (bindingResult.hasErrors()) {
 
-            return new RedirectView("updateAdmin?error=true");
+
+    public String getEditAdminProfile(Principal principal, Model model) {
+        if (principal != null) {
+            String username = principal.getName();
+            UserEntity userEntity = userService.findUserByUsername(username);
+
+            if (userEntity != null) {
+                model.addAttribute("user", userEntity);
+                AdminEntity admin = userEntity.getAdmin();
+                model.addAttribute("admin", admin);
+                return "adminPages/updateAdmin.html";
+            }
         }
-        try {
-
-        if (userRole == null) {
-            throw new RuntimeException("Role not found: " + userRequest.getRole());
-        }
-
-        UserEntity user = createUserFromRequest(userRequest, userRole.getRole());
-        user.setPassword(passwordEncoder.encode(userRequest.getPassword()));
-        user.setImage("/assets/profileImg.png");
-
-        userService.signupUser(user);
-
-        AdminEntity admin = AdminEntity.builder().user(user).build();
-        signupAdmin(admin);
-        return new RedirectView("/adminPage");}
-        catch (Exception e) {
-            return new RedirectView("updateAdmin?error=true");}
-
-
+        return "redirect:/error";
     }
+
+    @PostMapping("/signupAdmin")
+    public String postSignupAdmin(@Valid UserRegistrationRequest userRequest, BindingResult bindingResult, Model model) {
+        UserRoleEntity userRole = userRoleService.findRoleByRole(Role.ADMIN);
+
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("errors", bindingResult.getAllErrors());
+            return "adminPages/signupAdmin";
+        }
+
+        try {
+            if (userRole == null) {
+                throw new RuntimeException("Role not found: " + userRequest.getRole());
+            }
+
+            UserEntity user = createUserFromRequest(userRequest, userRole.getRole());
+            user.setPassword(passwordEncoder.encode(userRequest.getPassword()));
+            user.setImage("/assets/profileImg.png");
+
+            userService.signupUser(user);
+
+            AdminEntity admin = AdminEntity.builder().user(user).build();
+            signupAdmin(admin);
+
+            return "redirect:/adminPage"; // Redirect to the admin page after successful registration
+        } catch (Exception e) {
+            return "updateAdmin?error=true"; // Handle the exception appropriately
+        }
+    }
+
 
     // ============== Helper Method To Create User From UserRegistrationRequest ==============
     private UserEntity createUserFromRequest(UserRegistrationRequest userRequest, Role role) {
@@ -123,21 +143,6 @@ public class AdminServiceImp implements AdminService{
                 .role(userRole)
                 .image(userRequest.getImage())
                 .build();
-    }
-
-    public String getEditAdminProfile(Principal principal, Model model) {
-        if (principal != null) {
-            String username = principal.getName();
-            UserEntity userEntity = userService.findUserByUsername(username);
-
-            if (userEntity != null) {
-                model.addAttribute("user", userEntity);
-                AdminEntity admin = userEntity.getAdmin();
-                model.addAttribute("admin", admin);
-                return "adminPages/updateAdmin.html";
-            }
-        }
-        return "redirect:/error";
     }
 
 
