@@ -11,9 +11,11 @@ import com.example.PowerUpGym.bo.auth.users.UserRegistrationRequest;
 import com.example.PowerUpGym.entity.users.AdminEntity;
 import com.example.PowerUpGym.entity.users.UserEntity;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.view.RedirectView;
 
+import javax.validation.Valid;
 import java.security.Principal;
 
 public interface AdminService {
@@ -24,10 +26,10 @@ public interface AdminService {
 
     AdminEntity getAdminByUsername(String username);
 
-    RedirectView postSignupAdmin(UserRegistrationRequest userRequest);
+    RedirectView postSignupAdmin(@Valid UserRegistrationRequest userRequest, BindingResult bindingResult);
 
     String getEditAdminProfile(Principal principal, Model model);
-    RedirectView getUpdateAdmin(UserUpdateRequest userUpdateRequest);
+    RedirectView getUpdateAdmin(@Valid UserUpdateRequest userUpdateRequest,BindingResult bindingResult);
 
     RedirectView signupTrainer(UserRegistrationRequest userRequest, TrainerRegistrationRequest trainerRequest, Principal principal);
 
