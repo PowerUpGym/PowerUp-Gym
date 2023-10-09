@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit Class Details</title>
+</head>
+<body>
+<div class="container">
+    <h1>Edit Class Details</h1>
+    <form method="post" th:object="${classEntity}" th:action="@{/adminPage/editClassDetails/{id}(id=${classEntity.id})}">
+        <div class="form-group">
+            <label for="className">Class Name:</label>
+            <input type="text" class="form-control" id="className" th:field="*{className}" required>
+        </div>
+        <div class="form-group">
+            <label for="scheduleDescription">Schedule:</label>
+            <input type="text" class="form-control" id="scheduleDescription" th:field="*{scheduleDescription}" required>
+        </div>
+        <div class="form-group">
+            <label for="description">Description:</label>
+            <textarea class="form-control" id="description" th:field="*{description}" required></textarea>
+        </div>
+        <div class="form-group">
+            <label for="trainer.id">Select Trainer:</label>
+            <select id="trainer.id" name="trainerId" required>
+                <option th:each="trainer : ${trainers}" th:value="${trainer.id}" th:text="${trainer.user.fullName}"></option>
+            </select>
+        </div>
+        <button type="submit" class="btn btn-primary">Save</button>
+    </form>
+    <a href="/adminPage/allClasses" style="color: rgb(207, 117, 0);">Back to All Classes</a>
+</div>
+</body>
+</html>
