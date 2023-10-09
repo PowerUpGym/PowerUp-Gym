@@ -31,9 +31,11 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.view.RedirectView;
 
+import javax.validation.Valid;
 import java.security.Principal;
 import java.time.LocalDate;
 
@@ -77,8 +79,13 @@ public class AdminServiceImp implements AdminService{
     }
 
     @Override
-    public RedirectView postSignupAdmin(UserRegistrationRequest userRequest) {
+    public RedirectView postSignupAdmin(@Valid UserRegistrationRequest userRequest, BindingResult bindingResult) {
         UserRoleEntity userRole = userRoleService.findRoleByRole(Role.ADMIN);
+        if (bindingResult.hasErrors()) {
+
+            return new RedirectView("updateAdmin?error=true");
+        }
+        try {
 
         if (userRole == null) {
             throw new RuntimeException("Role not found: " + userRequest.getRole());
@@ -92,7 +99,10 @@ public class AdminServiceImp implements AdminService{
 
         AdminEntity admin = AdminEntity.builder().user(user).build();
         signupAdmin(admin);
-        return new RedirectView("/adminPage");
+        return new RedirectView("/adminPage");}
+        catch (Exception e) {
+            return new RedirectView("updateAdmin?error=true");}
+
 
     }
 
@@ -131,8 +141,14 @@ public class AdminServiceImp implements AdminService{
     }
 
 
-    public RedirectView getUpdateAdmin(UserUpdateRequest userUpdateRequest) {
 
+
+    public RedirectView getUpdateAdmin(@Valid UserUpdateRequest userUpdateRequest, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+
+            return new RedirectView("updateAdmin?error=true");
+        }
+        try {
         UserEntity existingUser = userService.findUserById(userUpdateRequest.getUserId());
 
         UserEntity updatedUser = updateUser(existingUser, userUpdateRequest);
@@ -143,7 +159,9 @@ public class AdminServiceImp implements AdminService{
         UsernamePasswordAuthenticationToken updatedAuthentication = new UsernamePasswordAuthenticationToken(updatedUser.getUsername(), authentication.getCredentials(), authentication.getAuthorities());
         SecurityContextHolder.getContext().setAuthentication(updatedAuthentication);
 
-        return new RedirectView("adminProfile");
+        return new RedirectView("adminProfile");}
+        catch (Exception e) {
+            return new RedirectView("updateAdmin?error=true");}
     }
 
     // ============== Helper Method To Update User ==============

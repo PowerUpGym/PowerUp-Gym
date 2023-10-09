@@ -35,8 +35,11 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.view.RedirectView;
+
+import javax.validation.Valid;
 import java.security.Principal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -83,8 +86,8 @@ public class AdminController {
     }
 
     @PostMapping("/signupAdmin")
-    public RedirectView postSignupAdmin( UserRegistrationRequest userRequest) {
-       return adminService.postSignupAdmin(userRequest);
+    public RedirectView postSignupAdmin(@Valid UserRegistrationRequest userRequest, BindingResult bindingResult) {
+       return adminService.postSignupAdmin(userRequest, bindingResult);
     }
 
     // =============== Method To Update Admin Information's ==================
@@ -94,8 +97,8 @@ public class AdminController {
     }
 
     @PostMapping("/updateAdmin")
-    public RedirectView getUpdateAdmin(UserUpdateRequest userUpdateRequest) {
-        return adminService.getUpdateAdmin(userUpdateRequest);
+    public RedirectView getUpdateAdmin(@Valid UserUpdateRequest userUpdateRequest,BindingResult bindingResult) {
+        return adminService.getUpdateAdmin(userUpdateRequest, bindingResult);
     }
 
 
