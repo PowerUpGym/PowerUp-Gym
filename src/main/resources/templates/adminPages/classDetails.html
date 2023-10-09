@@ -13,21 +13,23 @@
 </head>
 <body>
 <div class="container">
-<h1>Class Details</h1>
-<div th:object="${classEntity}">
-    <p><strong>Class Name:</strong> <span th:text="*{className}"></span></p>
-    <p><strong>Schedule:</strong> <span th:text="*{scheduleDescription}"></span></p>
-    <p><strong>Description:</strong> <span th:text="*{description}"></span></p>
-</div>
+    <h1>Class Details</h1>
+    <div th:object="${classEntity}">
+        <p><strong>Class Name:</strong> <span th:text="*{className}"></span></p>
+        <p><strong>Schedule:</strong> <span th:text="*{scheduleDescription}"></span></p>
+        <p><strong>Description:</strong> <span th:text="*{description}"></span></p>
+        <a th:href="@{/adminPage/editClassDetails/{id}(id=${classEntity.id})}" class="edit-button">Edit Class</a>
 
-<h2>Enrolled Players:</h2>
-<ul>
-    <li th:each="player : ${enrolledPlayers}">
-        <span th:text="${player.user.fullName}"></span>
-    </li>
-</ul>
+    </div>
 
-<a href="/adminPage/allClasses" style="color: rgb(207, 117, 0);">Back to All Classes</a>
+    <h2>Enrolled Players:</h2>
+    <ul>
+        <li th:each="player : ${enrolledPlayers}">
+            <span th:text="${player.user.fullName}"></span>
+        </li>
+    </ul>
+
+    <a href="/adminPage/allClasses" style="color: rgb(207, 117, 0);">Back to All Classes</a>
 </div>
 </body>
 </html>
