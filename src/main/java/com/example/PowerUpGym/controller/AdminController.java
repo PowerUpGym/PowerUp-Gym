@@ -109,8 +109,8 @@ public class AdminController {
     }
 
     @PostMapping("/signupTrainer")
-    public RedirectView signupTrainer( UserRegistrationRequest userRequest,  TrainerRegistrationRequest trainerRequest, Principal principal) {
-        return adminService.signupTrainer(userRequest,trainerRequest,principal);
+    public RedirectView signupTrainer(@Valid UserRegistrationRequest userRequest,  TrainerRegistrationRequest trainerRequest, Principal principal,BindingResult bindingResult) {
+        return adminService.signupTrainer(userRequest,trainerRequest,principal,bindingResult);
     }
 
     // ============== Add Player To The Database  ==============
@@ -124,9 +124,9 @@ public class AdminController {
 
     @PostMapping("/signupPlayer")
     public RedirectView signupPlayer(PlayerRegistrationRequest playerRequest,
-                                    UserRegistrationRequest userRequest,
-                                    Principal principal) {
-      return adminService.signupPlayer(playerRequest, userRequest, principal);
+                                    @Valid UserRegistrationRequest userRequest,
+                                    Principal principal,BindingResult bindingResult) {
+      return adminService.signupPlayer(playerRequest, userRequest, principal,bindingResult);
     }
 
 

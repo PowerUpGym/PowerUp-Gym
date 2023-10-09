@@ -192,7 +192,7 @@ public class AdminServiceImp implements AdminService{
                 .build();
     }
 
-    public RedirectView signupTrainer( UserRegistrationRequest userRequest,  TrainerRegistrationRequest trainerRequest, Principal principal) {
+    public RedirectView signupTrainer(@Valid UserRegistrationRequest userRequest,  TrainerRegistrationRequest trainerRequest, Principal principal,BindingResult bindingResult) {
 
         if (userRequest.getImage().isEmpty()) {
             userRequest.setImage("/assets/profileImg.png");
@@ -241,8 +241,12 @@ public class AdminServiceImp implements AdminService{
                 .build();
     }
 
-    public RedirectView signupPlayer(PlayerRegistrationRequest playerRequest, UserRegistrationRequest userRequest, Principal principal) {
+    public RedirectView signupPlayer(PlayerRegistrationRequest playerRequest,@Valid UserRegistrationRequest userRequest, Principal principal,BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
 
+            return new RedirectView("updateAdmin?error=true");
+        }
+        try {
         if (userRequest.getImage().isEmpty()) {
             userRequest.setImage("/assets/profileImg.png");
         }
@@ -257,7 +261,9 @@ public class AdminServiceImp implements AdminService{
         paymentService.savePayment(payment);
         //    sendPasswordViaSMS(playerRequest.getPhoneNumber(), playerRequest.getPassword());
 
-        return new RedirectView("/adminPage");
+        return new RedirectView("/adminPage");}
+        catch (Exception e) {
+            return new RedirectView("updateAdmin?error=true");}
     }
 
     public RedirectView renewSubscription(@RequestParam(name = "playerId") Long playerId,

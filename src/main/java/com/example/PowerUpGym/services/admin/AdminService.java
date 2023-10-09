@@ -31,9 +31,9 @@ public interface AdminService {
     String getEditAdminProfile(Principal principal, Model model);
     RedirectView getUpdateAdmin(@Valid UserUpdateRequest userUpdateRequest,BindingResult bindingResult);
 
-    RedirectView signupTrainer(UserRegistrationRequest userRequest, TrainerRegistrationRequest trainerRequest, Principal principal);
+    RedirectView signupTrainer(UserRegistrationRequest userRequest, TrainerRegistrationRequest trainerRequest, Principal principal,BindingResult bindingResult);
 
-    RedirectView signupPlayer(PlayerRegistrationRequest playerRequest, UserRegistrationRequest userRequest, Principal principal);
+    RedirectView signupPlayer(PlayerRegistrationRequest playerRequest,@Valid UserRegistrationRequest userRequest, Principal principal,BindingResult bindingResult);
 
     RedirectView renewSubscription(@RequestParam(name = "playerId") Long playerId,
                                    @RequestParam(name = "newPackageId") Long newPackageId);
