@@ -6,11 +6,14 @@ import com.example.PowerUpGym.entity.users.UserRoleEntity;
 import com.example.PowerUpGym.enums.Role;
 import com.example.PowerUpGym.repositories.UserEntityRepositories;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.view.RedirectView;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -48,9 +51,15 @@ public String getLoginPage() {
 }
 
     @PostMapping("/login")
-    public RedirectView login(LoginRequest loginRequest) {
+    public RedirectView login(LoginRequest loginRequest , RedirectAttributes redir) {
 
         authWithHttpServletRequest(loginRequest.getUsername() , loginRequest.getPassword());
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated()) {
+            // Authentication failed, show an error message
+            redir.addFlashAttribute("errorMessage", "Invalid Username or Password");
+            return new RedirectView("/login?error=Invalid%20Credentials");
+        }
 
         UserEntity authenticatedUser = userEntityRepositories.findByUsername(loginRequest.getUsername());
 
@@ -67,10 +76,11 @@ public String getLoginPage() {
             } else if (userRole.getRole() == Role.ADMIN || userRole.getRole() == Role.SUPER_ADMIN ) {
                 return new RedirectView("/adminPage"); // Redirect to the trainer page
             }
-        }
 
-        return new RedirectView("/login?error=Invalid Role");
-    }
+        }
+        redir.addFlashAttribute("errorMessage", "Something wrong happened");
+        return new RedirectView("/login?error=Invalid%20Credentials");
+}
 
     @GetMapping("/logout")
     public String getLogoutPage() {
@@ -85,5 +95,13 @@ public String getLoginPage() {
         }
     }
 
+    @ResponseStatus(value = HttpStatus.NOT_FOUND)
+    public class ResourceNotFoundException extends RuntimeException
+    {
+        ResourceNotFoundException(String message)
+        {
+            super(message);
+        }
+    }
 
 }
