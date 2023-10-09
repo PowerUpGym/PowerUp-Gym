@@ -18,6 +18,8 @@
     <p><strong>Class Name:</strong> <span th:text="*{className}"></span></p>
     <p><strong>Schedule:</strong> <span th:text="*{scheduleDescription}"></span></p>
     <p><strong>Description:</strong> <span th:text="*{description}"></span></p>
+    <a th:href="@{/adminPage/editClassDetails/{id}(id=${classEntity.id})}" class="edit-button">Edit Class</a>
+
 </div>
 
 <h2>Enrolled Players:</h2>

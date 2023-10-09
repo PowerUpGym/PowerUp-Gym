@@ -3,14 +3,43 @@
 <head>
     <meta charset="UTF-8">
     <title>Send Message</title>
+
+    <link rel="stylesheet" type="text/css" href="/Css/admin/message.css">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300&display=swap" rel="stylesheet">
+
 </head>
 <body>
-<h1>Send Message</h1>
-<form th:action="@{/adminPage/sendMessage}" method="post">
-    <input type="hidden" name="receiverId" th:value="${receiverId}" />
-    <label for="message">Message:</label>
-    <input type="text" id="message" name="message" required />
-    <button type="submit">Send</button>
-</form>
+
+
+<div class="center-container">
+    <div class="form-container">
+        <h1>Send Message</h1>
+        <form th:action="@{/adminPage/sendMessage}" method="post">
+
+            <div class="form-group">
+                <input type="hidden" name="receiverId" th:value="${receiverId}" />
+                <label for="message">Message:</label>
+                <input type="text" id="message" name="message" required />
+            </div>
+
+            <div class="form-group">
+                <input type="submit" value="Send">
+            </div>
+
+        </form>
+    </div>
+</div>
+
+
+<!--<h1>Send Message</h1>-->
+<!--<form th:action="@{/adminPage/sendMessage}" method="post">-->
+<!--    <input type="hidden" name="receiverId" th:value="${receiverId}" />-->
+<!--    <label for="message">Message:</label>-->
+<!--    <input type="text" id="message" name="message" required />-->
+<!--    <button type="submit">Send</button>-->
+<!--</form>-->
 </body>
 </html>
