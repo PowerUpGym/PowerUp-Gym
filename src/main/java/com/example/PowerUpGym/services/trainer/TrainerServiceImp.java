@@ -30,19 +30,19 @@ public class TrainerServiceImp implements TrainerService {
     private final TrainerEntityRepository trainerEntityRepository;
     private final UserEntityRepositories userEntityRepositories;
     private final ClassesEntityRepository classesEntityRepository;
-    private final UserService userService;
-    private final NotificationsService notificationsService;
-    private final AdminService adminService;
-    private final PasswordEncoder passwordEncoder;
+//    private final UserService userService;
+//    private final NotificationsService notificationsService;
+//    private final AdminService adminService;
+//    private final PasswordEncoder passwordEncoder;
 
-    public TrainerServiceImp(TrainerEntityRepository trainerEntityRepository, UserEntityRepositories userEntityRepositories, ClassesEntityRepository classesEntityRepository, UserService userService, NotificationsService notificationsService, AdminService adminService, PasswordEncoder passwordEncoder) {
+    public TrainerServiceImp(TrainerEntityRepository trainerEntityRepository, UserEntityRepositories userEntityRepositories, ClassesEntityRepository classesEntityRepository/*, UserService userService, NotificationsService notificationsService, AdminService adminService, PasswordEncoder passwordEncoder*/) {
         this.trainerEntityRepository = trainerEntityRepository;
         this.userEntityRepositories = userEntityRepositories;
         this.classesEntityRepository = classesEntityRepository;
-        this.userService = userService;
-        this.notificationsService = notificationsService;
-        this.adminService = adminService;
-        this.passwordEncoder = passwordEncoder;
+//        this.userService = userService;
+//        this.notificationsService = notificationsService;
+//        this.adminService = adminService;
+//        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
@@ -94,91 +94,91 @@ public class TrainerServiceImp implements TrainerService {
         }
     }
 
-    public RedirectView updateTrainerProfile(TrainerUpdateRequest updateRequest) {
-        UserEntity userEntity = userService.getUserById(updateRequest.getUserId());
-        UserEntity updateUser = UpdateTrainer(updateRequest, userEntity);
-        userService.saveUser(updateUser);
-        return new RedirectView("/trainerPage/trainerProfile");
-    }
-
-    private UserEntity UpdateTrainer(TrainerUpdateRequest updateRequest, UserEntity userEntity) {
-        AdminEntity admin = adminService.getAdminById(updateRequest.getAdminId());
-        TrainerEntity trainer = TrainerEntity.builder()
-                .id(userEntity.getTrainer().getId())
-                .age(updateRequest.getAge())
-                .experience(updateRequest.getExperience())
-                .user(userEntity)
-                .admin(admin)
-                .build();
-
-        userEntity.setTrainer(trainer);
-
-        return UserEntity.builder()
-                .id(updateRequest.getUserId())
-                .fullName(updateRequest.getFullName())
-                .username(updateRequest.getUsername())
-                .email(updateRequest.getEmail())
-                .phoneNumber(updateRequest.getPhoneNumber())
-                .password(updateRequest.getPassword().isEmpty() ? userEntity.getPassword() : passwordEncoder.encode(updateRequest.getPassword()))
-                .role(userEntity.getRole())
-                .player(userEntity.getPlayer())
-                .trainer(userEntity.getTrainer())
-                .image(updateRequest.getImage())
-                .build();
-    }
-
-    public RedirectView sendMessage(NotificationRequest notificationRequest, Principal principal) {
-        String senderUsername = principal.getName();
-        UserEntity sender = userService.findUserByUsername(senderUsername);
-
-        UserEntity receiver = userService.findUserById(notificationRequest.getReceiverId());
-
-        NotificationsEntity notification = createNotification(notificationRequest, sender, receiver);
-        notificationsService.saveNotification(notification);
-
-        return new RedirectView("trainerClasses");
-    }
-    private NotificationsEntity createNotification(NotificationRequest notificationRequest, UserEntity sender, UserEntity receiver) {
-        return NotificationsEntity.builder()
-                .message(notificationRequest.getMessage())
-                .sender(sender)
-                .receiver(receiver)
-                .timeStamp(LocalDateTime.now())
-                .build();
-    }
-
-
-    public RedirectView sendMessageToAllPlayers(@RequestParam("classId") Long classId, NotificationRequest notificationRequest, Principal principal) {
-        ClassesEntity classDetails = getClassDetails(classId);
-        Set<PlayerClassEnrollment> enrolledPlayers = classDetails.getRegistrations();
-
-        String senderUsername = principal.getName();
-        UserEntity sender = userService.findUserByUsername(senderUsername);
-
-        LocalDateTime now = LocalDateTime.now();
-
-        enrolledPlayers.stream()
-                .map(enrollment -> {
-                    NotificationRequest request = new NotificationRequest();
-                    request.setMessage(notificationRequest.getMessage());
-                    request.setSenderId(sender.getId());
-                    request.setReceiverId(enrollment.getPlayer().getUser().getId());
-                    return request;
-                })
-                .forEach(request -> {
-                    UserEntity receiver = userService.findUserById(request.getReceiverId());
-                    NotificationsEntity notification = createNotificationForAllUsers(request, sender, receiver, now);
-                    notificationsService.saveNotification(notification);
-                });
-
-        return new RedirectView("/trainerPage/trainerClasses");
-    }
-    private NotificationsEntity createNotificationForAllUsers(NotificationRequest notificationRequest, UserEntity sender, UserEntity receiver, LocalDateTime timeStamp) {
-        return NotificationsEntity.builder()
-                .message(notificationRequest.getMessage())
-                .sender(sender)
-                .receiver(receiver)
-                .timeStamp(timeStamp)
-                .build();
-    }
+//    public RedirectView updateTrainerProfile(TrainerUpdateRequest updateRequest) {
+//        UserEntity userEntity = userService.getUserById(updateRequest.getUserId());
+//        UserEntity updateUser = UpdateTrainer(updateRequest, userEntity);
+//        userService.saveUser(updateUser);
+//        return new RedirectView("/trainerPage/trainerProfile");
+//    }
+//
+//    private UserEntity UpdateTrainer(TrainerUpdateRequest updateRequest, UserEntity userEntity) {
+//        AdminEntity admin = adminService.getAdminById(updateRequest.getAdminId());
+//        TrainerEntity trainer = TrainerEntity.builder()
+//                .id(userEntity.getTrainer().getId())
+//                .age(updateRequest.getAge())
+//                .experience(updateRequest.getExperience())
+//                .user(userEntity)
+//                .admin(admin)
+//                .build();
+//
+//        userEntity.setTrainer(trainer);
+//
+//        return UserEntity.builder()
+//                .id(updateRequest.getUserId())
+//                .fullName(updateRequest.getFullName())
+//                .username(updateRequest.getUsername())
+//                .email(updateRequest.getEmail())
+//                .phoneNumber(updateRequest.getPhoneNumber())
+//                .password(updateRequest.getPassword().isEmpty() ? userEntity.getPassword() : passwordEncoder.encode(updateRequest.getPassword()))
+//                .role(userEntity.getRole())
+//                .player(userEntity.getPlayer())
+//                .trainer(userEntity.getTrainer())
+//                .image(updateRequest.getImage())
+//                .build();
+//    }
+//
+//    public RedirectView sendMessage(NotificationRequest notificationRequest, Principal principal) {
+//        String senderUsername = principal.getName();
+//        UserEntity sender = userService.findUserByUsername(senderUsername);
+//
+//        UserEntity receiver = userService.findUserById(notificationRequest.getReceiverId());
+//
+//        NotificationsEntity notification = createNotification(notificationRequest, sender, receiver);
+//        notificationsService.saveNotification(notification);
+//
+//        return new RedirectView("trainerClasses");
+//    }
+//    private NotificationsEntity createNotification(NotificationRequest notificationRequest, UserEntity sender, UserEntity receiver) {
+//        return NotificationsEntity.builder()
+//                .message(notificationRequest.getMessage())
+//                .sender(sender)
+//                .receiver(receiver)
+//                .timeStamp(LocalDateTime.now())
+//                .build();
+//    }
+//
+//
+//    public RedirectView sendMessageToAllPlayers(@RequestParam("classId") Long classId, NotificationRequest notificationRequest, Principal principal) {
+//        ClassesEntity classDetails = getClassDetails(classId);
+//        Set<PlayerClassEnrollment> enrolledPlayers = classDetails.getRegistrations();
+//
+//        String senderUsername = principal.getName();
+//        UserEntity sender = userService.findUserByUsername(senderUsername);
+//
+//        LocalDateTime now = LocalDateTime.now();
+//
+//        enrolledPlayers.stream()
+//                .map(enrollment -> {
+//                    NotificationRequest request = new NotificationRequest();
+//                    request.setMessage(notificationRequest.getMessage());
+//                    request.setSenderId(sender.getId());
+//                    request.setReceiverId(enrollment.getPlayer().getUser().getId());
+//                    return request;
+//                })
+//                .forEach(request -> {
+//                    UserEntity receiver = userService.findUserById(request.getReceiverId());
+//                    NotificationsEntity notification = createNotificationForAllUsers(request, sender, receiver, now);
+//                    notificationsService.saveNotification(notification);
+//                });
+//
+//        return new RedirectView("/trainerPage/trainerClasses");
+//    }
+//    private NotificationsEntity createNotificationForAllUsers(NotificationRequest notificationRequest, UserEntity sender, UserEntity receiver, LocalDateTime timeStamp) {
+//        return NotificationsEntity.builder()
+//                .message(notificationRequest.getMessage())
+//                .sender(sender)
+//                .receiver(receiver)
+//                .timeStamp(timeStamp)
+//                .build();
+//    }
 }

@@ -20,7 +20,8 @@ public interface TrainerService{
     ClassesEntity getClassDetails(Long classId);
     TrainerEntity getTrainerById(Long id);
     void updateTrainerInfo(UserEntity userEntity);
-    RedirectView updateTrainerProfile(TrainerUpdateRequest updateRequest);
-    RedirectView sendMessage(NotificationRequest notificationRequest, Principal principal);
-    RedirectView sendMessageToAllPlayers(@RequestParam("classId") Long classId, NotificationRequest notificationRequest, Principal principal);
+//    RedirectView updateTrainerProfile(TrainerUpdateRequest updateRequest);
+//    RedirectView sendMessage(NotificationRequest notificationRequest, Principal principal);
+//    RedirectView sendMessageToAllPlayers(@RequestParam("classId") Long classId, NotificationRequest notificationRequest, Principal principal);
+
 }
