@@ -17,10 +17,14 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.view.RedirectView;
+
+import javax.naming.Binding;
+import javax.validation.Valid;
 import java.security.Principal;
 import java.util.List;
 
@@ -120,8 +124,12 @@ public class PlayerController {
     }
 
     @PostMapping("/updatePlayer")
-    public RedirectView updatePlayer(PlayerUpdateRequest playerUpdateRequest, UserUpdateRequest userUpdateRequest) {
+    public RedirectView updatePlayer(@Valid PlayerUpdateRequest playerUpdateRequest,@Valid UserUpdateRequest userUpdateRequest, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
 
+            return new RedirectView("login?error=true");
+        }
+        try {
         PlayersEntity existingPlayer = playerService.getPlayerById(playerUpdateRequest.getPlayerId());
         UserEntity existingUser = userService.findUserById(userUpdateRequest.getUserId());
 
@@ -137,6 +145,9 @@ public class PlayerController {
         playerService.signupPlayer(updatedPlayer);
 
         return new RedirectView("playerInfo");
+    }
+        catch (Exception e) {
+            return new RedirectView("/login");}
     }
 
     // ========== Method To Get Classes(With Details) That The Player Enrolment In ====================

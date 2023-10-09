@@ -3,6 +3,7 @@ package com.example.PowerUpGym.controller;
 import com.example.PowerUpGym.bo.auth.AddClassRequest;
 import com.example.PowerUpGym.bo.auth.AddPackageRequest;
 import com.example.PowerUpGym.bo.auth.AddPlayerToClassRequest;
+import com.example.PowerUpGym.bo.auth.update.ClassUpdateRequest;
 import com.example.PowerUpGym.bo.auth.update.UserUpdateRequest;
 import com.example.PowerUpGym.bo.auth.users.PlayerRegistrationRequest;
 import com.example.PowerUpGym.bo.auth.users.TrainerRegistrationRequest;
@@ -26,8 +27,12 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.view.RedirectView;
+
+import javax.validation.Valid;
 import java.security.Principal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -74,7 +79,12 @@ public class AdminController {
     }
 
     @PostMapping("/signupAdmin")
-    public RedirectView postSignupAdmin( UserRegistrationRequest userRequest) {
+    public RedirectView postSignupAdmin(@Valid UserRegistrationRequest userRequest, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+
+            return new RedirectView("updateAdmin?error=true");
+        }
+        try {
         UserRoleEntity userRole = userRoleService.findRoleByRole(Role.ADMIN);
 
         if (userRole == null) {
@@ -90,7 +100,9 @@ public class AdminController {
         AdminEntity admin = AdminEntity.builder().user(user).build();
         adminService.signupAdmin(admin);
 
-        return new RedirectView("/adminPage");
+        return new RedirectView("/adminPage");}
+        catch (Exception e) {
+            return new RedirectView("updateAdmin?error=true");}
     }
 
     // =============== Method To Update Admin Information's ==================
@@ -111,8 +123,12 @@ public class AdminController {
     }
 
     @PostMapping("/updateAdmin")
-    public RedirectView getUpdateAdmin(UserUpdateRequest userUpdateRequest) {
+    public RedirectView getUpdateAdmin(@Valid UserUpdateRequest userUpdateRequest, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
 
+            return new RedirectView("updateAdmin?error=true");
+        }
+        try {
         UserEntity existingUser = userService.findUserById(userUpdateRequest.getUserId());
 
         UserEntity updatedUser = updateUser(existingUser, userUpdateRequest);
@@ -122,8 +138,10 @@ public class AdminController {
         UsernamePasswordAuthenticationToken updatedAuthentication = new UsernamePasswordAuthenticationToken(updatedUser.getUsername(), authentication.getCredentials(), authentication.getAuthorities());
         SecurityContextHolder.getContext().setAuthentication(updatedAuthentication);
 
-        return new RedirectView("adminProfile");
-    }
+        return new RedirectView("adminProfile");}
+        catch (Exception e) {
+            return new RedirectView("updateAdmin?error=true");
+    }}
 
     // ============== Helper Method To Update User ==============
     private UserEntity updateUser(UserEntity existingUser, UserUpdateRequest userUpdateRequest) {
@@ -181,9 +199,14 @@ public class AdminController {
     }
 
     @PostMapping("/signupTrainer")
-    public RedirectView signupTrainer( UserRegistrationRequest userRequest,  TrainerRegistrationRequest trainerRequest, Principal principal) {
+    public RedirectView signupTrainer(@Valid UserRegistrationRequest userRequest, TrainerRegistrationRequest trainerRequest, Principal principal,BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
 
-        if (userRequest.getImage().isEmpty()) {
+            return new RedirectView("updateAdmin?error=true");
+        }
+        try {
+
+            if (userRequest.getImage().isEmpty()) {
             userRequest.setImage("/assets/profileImg.png");
         }
 
@@ -196,7 +219,9 @@ public class AdminController {
 
         trainerService.signupTrainer(trainerEntity);
 
-        return new RedirectView("/adminPage");
+        return new RedirectView("/adminPage");}
+        catch (Exception e) {
+            return new RedirectView("updateAdmin?error=true");}
     }
 
     // ============== Helper Method To Create Player From PlayerRegistrationRequest ==============
@@ -242,10 +267,17 @@ public class AdminController {
     @PostMapping("/signupPlayer")
     public RedirectView signupPlayer(
              PlayerRegistrationRequest playerRequest,
-             UserRegistrationRequest userRequest,
-            Principal principal) {
+            @Valid UserRegistrationRequest userRequest,
+            Principal principal,
+             BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
 
-        if (userRequest.getImage().isEmpty()) {
+            return new RedirectView("updateAdmin?error=true");
+        }
+        try {
+
+
+            if (userRequest.getImage().isEmpty()) {
             userRequest.setImage("/assets/profileImg.png");
         }
 
@@ -259,7 +291,9 @@ public class AdminController {
         paymentService.savePayment(payment);
         //    sendPasswordViaSMS(playerRequest.getPhoneNumber(), playerRequest.getPassword());
 
-        return new RedirectView("/adminPage");
+        return new RedirectView("/adminPage");}
+        catch (Exception e) {
+            return new RedirectView("updateAdmin?error=true");}
     }
 
 
@@ -518,6 +552,40 @@ public class AdminController {
         }
         return "redirect:/error";
     }
+    @GetMapping("/editClassDetails/{id}")
+    public String getEditClassDetails(@PathVariable Long id, Model model) {
+        ClassesEntity classEntity = classService.getClassById(id);
+        List<TrainerEntity> trainers = trainerService.getAllTrainer();
+        model.addAttribute("classEntity", classEntity);
+//        model.addAttribute("editedClass", classEntity);
+        model.addAttribute("trainers", trainers);
+        return "adminPages/editClassDetails";
+    }
+    @PostMapping("/editClassDetails/{id}")
+    public RedirectView postEditClassDetails(ClassUpdateRequest classUpdateRequest , Principal principal, @RequestParam Long trainerId) {
 
+        ClassesEntity classEntity = classService.getClassById(classUpdateRequest.getId());
+        AdminEntity admin = adminService.getAdminByUsername(principal.getName());
+        TrainerEntity trainer = trainerService.getTrainerById(trainerId);
+
+        ClassesEntity updateClass=editClasses(classEntity ,classUpdateRequest , admin , trainer);
+
+        classService.addClass(updateClass);
+
+        return new RedirectView("/adminPage/allClasses");
+    }
+    private ClassesEntity editClasses( ClassesEntity existingClass,ClassUpdateRequest classUpdateRequest , AdminEntity admin , TrainerEntity trainer){
+
+       return  ClassesEntity.builder()
+                .id(existingClass.getId())
+                .scheduleDescription(classUpdateRequest.getScheduleDescription())
+                .description(classUpdateRequest.getDescription())
+                .className(classUpdateRequest.getClassName())
+                .trainer(trainer)
+                .admin(admin)
+                .build();
+
+
+    }
 
 }
