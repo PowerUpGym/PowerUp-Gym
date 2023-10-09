@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
     <title>Admin Dashboard</title>
@@ -15,7 +15,8 @@
         <tr class="table-tr">
             <td colspan="3" class="table-td">
                 <h1>Welcome to the Admin Dashboard</h1>
-                <a href="/adminPage/adminProfile" class="profile"> Your Profile</a>
+                <a href="/adminPage/adminProfile" class="profile">Your Profile</a>
+                <a th:if="${#authorization.expression('hasAuthority(''SUPER_ADMIN'')')}" href="/adminPage/signupAdmin" class="profile">Add Admin</a>
             </td>
         </tr>
         <tr class="table-tr">
