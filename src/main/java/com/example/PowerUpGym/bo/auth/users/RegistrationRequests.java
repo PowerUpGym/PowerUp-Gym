@@ -1,5 +1,7 @@
 package com.example.PowerUpGym.bo.auth.users;
 
+import com.example.PowerUpGym.entity.packagesGym.PackagesEntity;
+import com.example.PowerUpGym.entity.users.UserEntity;
 import com.example.PowerUpGym.enums.Role;
 import lombok.*;
 import org.springframework.validation.annotation.Validated;
@@ -40,4 +42,12 @@ public class RegistrationRequests {
     private Long packageId;
 
     private String paymentMethod;
+
+    private PackagesEntity selectedPackage;
+
+    private UserEntity user;
+
+    private int amount;
+
+
 }

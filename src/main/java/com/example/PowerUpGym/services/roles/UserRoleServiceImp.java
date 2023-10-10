@@ -19,4 +19,7 @@ public class UserRoleServiceImp implements UserRoleService{
         return userRoleRepository.findByRole(role);
     }
 
+    public UserRoleEntity saveUserRole(UserRoleEntity userRole) {
+        return userRoleRepository.save(userRole);
+    }
 }
