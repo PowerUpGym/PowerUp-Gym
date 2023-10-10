@@ -17,7 +17,7 @@
     <ul>
         <li><a href="/adminPage">Home</a></li>
         <li><a href="/logout">Log Out</a></li>
-        <a href="/adminPage/allClasses">Back to All Classes</a>
+        <li><a href="/adminPage/allClasses">Back to All Classes</a></li>
     </ul>
 </nav>
 
@@ -27,7 +27,7 @@
         <p><strong>Class Name:</strong> <span th:text="*{className}"></span></p>
         <p><strong>Schedule:</strong> <span th:text="*{scheduleDescription}"></span></p>
         <p><strong>Description:</strong> <span th:text="*{description}"></span></p>
-        <a th:href="@{/adminPage/editClassDetails/{id}(id=${classEntity.id})}" class="edit-button">Edit Class</a>
+        <a style="color:black;" th:href="@{/adminPage/editClassDetails/{id}(id=${classEntity.id})}" class="edit-button">Edit Class</a>
     </div>
 
     <h2>Enrolled Players:</h2>
