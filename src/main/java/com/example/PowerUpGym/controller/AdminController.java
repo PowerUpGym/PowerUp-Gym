@@ -135,7 +135,7 @@ public class AdminController {
     }
 
     @PostMapping("/signupTrainer")
-    public RedirectView signupTrainer(@Valid UserRegistrationRequest userRequest,  @Valid TrainerRegistrationRequest trainerRequest, Principal principal,BindingResult bindingResult) {
+    public RedirectView signupTrainer(UserRegistrationRequest userRequest, TrainerRegistrationRequest trainerRequest, Principal principal,BindingResult bindingResult) {
         return adminService.signupTrainer(userRequest,trainerRequest,principal,bindingResult);
     }
 
@@ -163,6 +163,12 @@ public class AdminController {
             for (String errorMessage : errorMessages) {
                 bindingResult.rejectValue("username", "error.code", errorMessage);
             }
+        }
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("errors", bindingResult.getAllErrors());
+            List<PackagesEntity> availablePackages = packageService.getAllPackages();
+            model.addAttribute("availablePackages", availablePackages);
+            return "adminPages/signupPlayer";
         }
 
        return adminService.signupPlayer(createUserRequest, principal,bindingResult, model);

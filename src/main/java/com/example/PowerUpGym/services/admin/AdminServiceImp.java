@@ -193,7 +193,7 @@ public class AdminServiceImp implements AdminService{
                 .build();
     }
 
-    public RedirectView signupTrainer(@Valid UserRegistrationRequest userRequest,@Valid TrainerRegistrationRequest trainerRequest, Principal principal, BindingResult bindingResult) {
+    public RedirectView signupTrainer( UserRegistrationRequest userRequest, TrainerRegistrationRequest trainerRequest, Principal principal, BindingResult bindingResult) {
 
         if (userRequest.getImage().isEmpty()) {
             userRequest.setImage("/assets/profileImg.png");
@@ -232,39 +232,39 @@ public class AdminServiceImp implements AdminService{
     }
 
 
-    private PlayersEntity createPlayerFromRegistrationRequests(RegistrationRequests registrationRequests,String adminUsername) {
-        PackagesEntity selectedPackage = packageService.getPackageById(registrationRequests.getPackageId());
-        LocalDate startDate = LocalDate.now();
-        LocalDate endDate = startDate.plusMonths(selectedPackage.getDuration());
-        String pass = passwordEncoder.encode(registrationRequests.getPassword());
-        UserRoleEntity playerRole = UserRoleEntity.builder().role(Role.PLAYER).build();
-        return PlayersEntity.builder()
-                .admin(getAdminByUsername(adminUsername))
-                .user(UserEntity.builder()
-                        .admin(getAdminByUsername(adminUsername))
-                        .fullName(registrationRequests.getFullName())
-                        .username(registrationRequests.getUsername())
-                        .email(registrationRequests.getEmail())
-                        .phoneNumber(registrationRequests.getPhoneNumber())
-                        .password(pass)
-                        .image("/assets/profileImg.png")
-                        .role(playerRole).build())
-                .address(registrationRequests.getAddress())
-                .age(registrationRequests.getAge())
-                .height(registrationRequests.getHeight())
-                .weight(registrationRequests.getWeight())
-                .start_date(startDate)
-                .end_date(endDate)
-                .selectedPackage(selectedPackage)
-                .accountEnabled(true)
-                .build();
-    }
+//    private PlayersEntity createPlayerFromRegistrationRequests(RegistrationRequests registrationRequests,String adminUsername) {
+//        PackagesEntity selectedPackage = packageService.getPackageById(registrationRequests.getPackageId());
+//        LocalDate startDate = LocalDate.now();
+//        LocalDate endDate = startDate.plusMonths(selectedPackage.getDuration());
+//        String pass = passwordEncoder.encode(registrationRequests.getPassword());
+//        UserRoleEntity playerRole = UserRoleEntity.builder().role(Role.PLAYER).build();
+//        return PlayersEntity.builder()
+//                .admin(getAdminByUsername(adminUsername))
+//                .user(UserEntity.builder()
+//                        .admin(getAdminByUsername(adminUsername))
+//                        .fullName(registrationRequests.getFullName())
+//                        .username(registrationRequests.getUsername())
+//                        .email(registrationRequests.getEmail())
+//                        .phoneNumber(registrationRequests.getPhoneNumber())
+//                        .password(pass)
+//                        .image("/assets/profileImg.png")
+//                        .role(playerRole).build())
+//                .address(registrationRequests.getAddress())
+//                .age(registrationRequests.getAge())
+//                .height(registrationRequests.getHeight())
+//                .weight(registrationRequests.getWeight())
+//                .start_date(startDate)
+//                .end_date(endDate)
+//                .selectedPackage(selectedPackage)
+//                .accountEnabled(true)
+//                .build();
+//    }
     // ============== Helper Method To Create Payment ==============
-    private PaymentsEntity createPaymentForPlayer(PlayersEntity player, String paymentMethod) {
+    private PaymentsEntity createPaymentForPlayer(PackagesEntity selectedPackage,PlayersEntity player, String paymentMethod) {
         return PaymentsEntity.builder()
                 .userEntity(player.getUser())
-                .amount(player.getSelectedPackage().getPrice())
-                .paymentMethod(paymentMethod) // Use the parameter
+                .amount(selectedPackage.getPrice())
+                .paymentMethod(paymentMethod)
                 .paymentDate(LocalDate.now())
                 .paymentStatus(true)
                 .build();
@@ -273,32 +273,58 @@ public class AdminServiceImp implements AdminService{
     public String signupPlayer(RegistrationRequests registrationRequests, Principal principal, BindingResult bindingResult, Model model) {
         UserRoleEntity userRole = userRoleService.findRoleByRole(Role.ADMIN);
 
-        if (bindingResult.hasErrors()) {
-            model.addAttribute("errors", bindingResult.getAllErrors());
-            return "adminPages/signupPlayer";
-        }
-
         try {
             if (userRole == null) {
                 throw new RuntimeException("Role not found: " + registrationRequests.getRole());
             }
 
-        if (registrationRequests.getImage().isEmpty()) {
-            registrationRequests.setImage("/assets/profileImg.png");
-        }
+            if (registrationRequests.getImage().isEmpty()) {
+                registrationRequests.setImage("/assets/profileImg.png");
+            }
 
-//        UserRoleEntity playerRole = UserRoleEntity.builder().role(Role.PLAYER).build();
-//        UserEntity user = createUserFromRequest(registrationRequests, playerRole.getRole());
-        PlayersEntity player = createPlayerFromRegistrationRequests(registrationRequests, principal.getName());
-        PaymentsEntity payment = createPaymentForPlayer(player, registrationRequests.getPaymentMethod());
+            String pass = passwordEncoder.encode(registrationRequests.getPassword());
+            UserEntity user = UserEntity.builder()
+                    .fullName(registrationRequests.getFullName())
+                    .username(registrationRequests.getUsername())
+                    .email(registrationRequests.getEmail())
+                    .phoneNumber(registrationRequests.getPhoneNumber())
+                    .password(pass)
+                    .image("/assets/profileImg.png")
+                    .role(userRoleService.findRoleByRole(Role.PLAYER))
+                    .build();
+            userService.signupUser(user);
 
-        playerService.signupPlayer(player);
-        paymentService.savePayment(payment);
-        //    sendPasswordViaSMS(playerRequest.getPhoneNumber(), playerRequest.getPassword());
+            PackagesEntity selectedPackage = packageService.getPackageById(registrationRequests.getPackageId());
+            LocalDate startDate = LocalDate.now();
+            LocalDate endDate = startDate.plusMonths(selectedPackage.getDuration());
+            PlayersEntity player = PlayersEntity.builder()
+                    .admin(getAdminByUsername(principal.getName()))
+                    .user(user)
+                    .address(registrationRequests.getAddress())
+                    .age(registrationRequests.getAge())
+                    .height(registrationRequests.getHeight())
+                    .weight(registrationRequests.getWeight())
+                    .start_date(startDate)
+                    .end_date(endDate)
+                    .accountEnabled(true)
+                    .selectedPackage(selectedPackage)
+                    .build();
+            playerService.signupPlayer(player);
+
+            PaymentsEntity payment = createPaymentForPlayer(selectedPackage , player, registrationRequests.getPaymentMethod());
+            paymentService.savePayment(payment);
+
+//          sendPasswordViaSMS(user.getPhoneNumber(), registrationRequests.getPassword());
             return "adminPages/adminProfile";
-        }
-        catch (Exception e) {
-            return "adminPages/adminProfile";
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            System.out.println("================");
+            e.printStackTrace();
+            System.out.println("================");
+            e.getMessage();
+            System.out.println("================");
+            e.getCause();
+            return "adminPages/signupPlayer";
         }
     }
 

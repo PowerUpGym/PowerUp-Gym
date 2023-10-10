@@ -5,4 +5,5 @@ import com.example.PowerUpGym.enums.Role;
 
 public interface UserRoleService {
     UserRoleEntity findRoleByRole(Role role);
+    UserRoleEntity saveUserRole(UserRoleEntity userRole);
 }
