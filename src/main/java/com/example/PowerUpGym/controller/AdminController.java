@@ -146,8 +146,8 @@ public class AdminController {
         model.addAttribute("availablePackages", availablePackages);
         model.addAttribute("paymentMethods", Arrays.asList("Cash", "Visa"));
 
-        model.addAttribute("createUserRequest", new UserRegistrationRequest());
-        model.addAttribute("createPlayerRequest", new PlayerRegistrationRequest());
+        model.addAttribute("createUserRequest", new RegistrationRequests());
+
 
         return "adminPages/signupPlayer.html";
     }
