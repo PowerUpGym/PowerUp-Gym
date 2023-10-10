@@ -123,10 +123,10 @@ public class AdminController {
     }
 
     @PostMapping("/signupPlayer")
-    public RedirectView signupPlayer(PlayerRegistrationRequest playerRequest,
-                                    @Valid UserRegistrationRequest userRequest,
-                                    Principal principal,BindingResult bindingResult) {
-      return adminService.signupPlayer(playerRequest, userRequest, principal,bindingResult);
+    public String signupPlayer(@Valid PlayerRegistrationRequest playerRequest,
+                                    UserRegistrationRequest userRequest,
+                                    Principal principal,BindingResult bindingResult,Model model) {
+       return adminService.signupPlayer(playerRequest, userRequest, principal,bindingResult, model);
     }
 
 

@@ -33,7 +33,7 @@ public interface AdminService {
 
     RedirectView signupTrainer(UserRegistrationRequest userRequest, TrainerRegistrationRequest trainerRequest, Principal principal,BindingResult bindingResult);
 
-    RedirectView signupPlayer(PlayerRegistrationRequest playerRequest,@Valid UserRegistrationRequest userRequest, Principal principal,BindingResult bindingResult);
+    String signupPlayer(PlayerRegistrationRequest playerRequest,@Valid UserRegistrationRequest userRequest, Principal principal,BindingResult bindingResult, Model model);
 
     RedirectView renewSubscription(@RequestParam(name = "playerId") Long playerId,
                                    @RequestParam(name = "newPackageId") Long newPackageId);

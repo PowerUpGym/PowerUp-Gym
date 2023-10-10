@@ -16,6 +16,16 @@
 <div class="center-container">
     <div class="form-container">
         <h1>Player Registration</h1>
+        <div th:if="${errors}">
+            <div class="alert alert-danger">
+                <p>Please correct the following errors:</p>
+                <ul>
+                    <li th:each="error : ${errors}">
+                        <span th:text="${error.defaultMessage}"></span>
+                    </li>
+                </ul>
+            </div>
+        </div>
         <form action="/adminPage/signupPlayer" method="post">
             <div class="form-group">
                 <label for="fullName">Full Name:</label>
