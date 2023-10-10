@@ -23,25 +23,29 @@
 <div class="center-container">
     <div class="form-container">
         <h1>Player Registration</h1>
-        <form action="/adminPage/signupPlayer" method="post">
+        <form action="/adminPage/signupPlayer" method="post" th:object="${createUserRequest}">
             <div class="form-group">
                 <label for="fullName">Full Name:</label>
                 <input type="text" id="fullName" name="fullName" required>
+              <span th:if="${#fields.hasErrors('fullName')}" th:errors="*{fullName}"></span>
             </div>
 
             <div class="form-group">
                 <label for="username">Username:</label>
                 <input type="text" id="username" name="username" required>
+              <span th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></span>
             </div>
 
             <div class="form-group">
                 <label for="email">Email:</label>
                 <input type="email" id="email" name="email" required>
+              <span th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></span>
             </div>
 
             <div class="form-group">
                 <label for="phoneNumber">Phone Number:</label>
                 <input type="text" id="phoneNumber" name="phoneNumber">
+              <span th:if="${#fields.hasErrors('phoneNumber')}" th:errors="*{phoneNumber}"></span>
             </div>
 
             <div class="form-group">
@@ -62,11 +66,13 @@
             <div class="form-group">
                 <label for="height">Height (cm):</label>
                 <input type="number" id="height" name="height" required>
+              <span th:if="${#fields.hasErrors('height')}" th:errors="*{height}"></span>
             </div>
 
             <div class="form-group">
                 <label for="weight">Weight (kg):</label>
                 <input type="number" id="weight" name="weight" required>
+              <span th:if="${#fields.hasErrors('weight')}" th:errors="*{weight}"></span>
             </div>
 
             <input type="hidden" id="image" name="image" value="">

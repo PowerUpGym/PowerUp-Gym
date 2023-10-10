@@ -6,6 +6,7 @@ import com.example.PowerUpGym.bo.auth.AddPlayerToClassRequest;
 import com.example.PowerUpGym.bo.auth.update.ClassUpdateRequest;
 import com.example.PowerUpGym.bo.auth.update.UserUpdateRequest;
 import com.example.PowerUpGym.bo.auth.users.PlayerRegistrationRequest;
+import com.example.PowerUpGym.bo.auth.users.RegistrationRequests;
 import com.example.PowerUpGym.bo.auth.users.TrainerRegistrationRequest;
 import com.example.PowerUpGym.bo.auth.users.UserRegistrationRequest;
 import com.example.PowerUpGym.entity.classesGym.ClassesEntity;
@@ -15,6 +16,7 @@ import com.example.PowerUpGym.entity.packagesGym.PackagesEntity;
 import com.example.PowerUpGym.entity.payments.PaymentsEntity;
 import com.example.PowerUpGym.entity.users.*;
 import com.example.PowerUpGym.enums.Role;
+import com.example.PowerUpGym.repositories.UserEntityRepositories;
 import com.example.PowerUpGym.services.admin.AdminService;
 import com.example.PowerUpGym.services.classes.ClassService;
 import com.example.PowerUpGym.services.notification.NotificationsService;
@@ -24,10 +26,12 @@ import com.example.PowerUpGym.services.player.PlayerService;
 import com.example.PowerUpGym.services.roles.UserRoleService;
 import com.example.PowerUpGym.services.trainer.TrainerService;
 import com.example.PowerUpGym.services.users.UserService;
+import com.example.PowerUpGym.util.exception.BodyGuardException;
 import com.twilio.Twilio;
 import com.twilio.rest.api.v2010.account.Message;
 import com.twilio.type.PhoneNumber;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.web.servlet.WebMvcRegistrations;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -35,8 +39,14 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.view.RedirectView;
+
+import javax.validation.Valid;
 import java.security.Principal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -56,19 +66,20 @@ public class AdminController {
     @Autowired
     PackageService packageService;
     @Autowired
-    PasswordEncoder passwordEncoder;
-    @Autowired
     UserService userService;
     @Autowired
     TrainerService trainerService;
     @Autowired
     PlayerService playerService;
     @Autowired
-    UserRoleService userRoleService;
-    @Autowired
-    PaymentService paymentService;
-    @Autowired
     NotificationsService notificationService;
+    @Autowired
+    UserEntityRepositories userEntityRepositories;
+
+    @Autowired
+    PasswordEncoder passwordEncoder;
+    @Autowired
+    UserRoleService userRoleService;
 
 
     @GetMapping("")
@@ -77,15 +88,33 @@ public class AdminController {
     }
 
     // ================== Add new Admin (Only SUPER_ADMIN Can Do This) ===================
-    @GetMapping("signupAdmin")
-    public String getSignUpAdminPage() {
-        return "adminPages/signupAdmin.html";
+//    @GetMapping("signupAdmin")
+//    public String getSignUpAdminPage() {
+//        return "adminPages/signupAdmin.html";
+//    }
+
+
+    @GetMapping("/signupAdmin")
+    public String showForm(Model model) {
+        model.addAttribute("createUserRequest", new UserRegistrationRequest());
+        return "adminPages/signupAdmin";
     }
 
     @PostMapping("/signupAdmin")
-    public RedirectView postSignupAdmin( UserRegistrationRequest userRequest) {
-       return adminService.postSignupAdmin(userRequest);
+    public String submitForm(@ModelAttribute("createUserRequest") UserRegistrationRequest createUserRequest, BindingResult bindingResult) {
+
+        try {
+            userService.createPreValidation(createUserRequest);
+        } catch (BodyGuardException e) {
+            String[] errorMessages = e.getMessage().split(",");
+            for (String errorMessage : errorMessages) {
+                bindingResult.rejectValue("username", "error.code", errorMessage);
+            }
+        }
+
+        return adminService.postSignupAdmin(createUserRequest, bindingResult);
     }
+
 
     // =============== Method To Update Admin Information's ==================
     @GetMapping("/updateAdmin")
@@ -94,20 +123,20 @@ public class AdminController {
     }
 
     @PostMapping("/updateAdmin")
-    public RedirectView getUpdateAdmin(UserUpdateRequest userUpdateRequest) {
-        return adminService.getUpdateAdmin(userUpdateRequest);
+    public RedirectView getUpdateAdmin(UserUpdateRequest userUpdateRequest,BindingResult bindingResult) {
+        return adminService.getUpdateAdmin(userUpdateRequest, bindingResult);
     }
 
 
     // ============== Add Trainer To The Database  ==============
     @GetMapping("/signupTrainer")
-    public String getSignupTrainer() {
+    public String getSignupTrainer(UserRegistrationRequest userRequest,TrainerRegistrationRequest trainerRequest ) {
         return "adminPages/signupTrainer.html";
     }
 
     @PostMapping("/signupTrainer")
-    public RedirectView signupTrainer( UserRegistrationRequest userRequest,  TrainerRegistrationRequest trainerRequest, Principal principal) {
-        return adminService.signupTrainer(userRequest,trainerRequest,principal);
+    public RedirectView signupTrainer(@Valid UserRegistrationRequest userRequest,  @Valid TrainerRegistrationRequest trainerRequest, Principal principal,BindingResult bindingResult) {
+        return adminService.signupTrainer(userRequest,trainerRequest,principal,bindingResult);
     }
 
     // ============== Add Player To The Database  ==============
@@ -116,14 +145,27 @@ public class AdminController {
         List<PackagesEntity> availablePackages = packageService.getAllPackages();
         model.addAttribute("availablePackages", availablePackages);
         model.addAttribute("paymentMethods", Arrays.asList("Cash", "Visa"));
-        return "adminPages/signupPlayer";
+
+        model.addAttribute("createUserRequest", new RegistrationRequests());
+
+
+        return "adminPages/signupPlayer.html";
     }
 
     @PostMapping("/signupPlayer")
-    public RedirectView signupPlayer(PlayerRegistrationRequest playerRequest,
-                                    UserRegistrationRequest userRequest,
-                                    Principal principal) {
-      return adminService.signupPlayer(playerRequest, userRequest, principal);
+    public String signupPlayer(@ModelAttribute("createUserRequest") RegistrationRequests createUserRequest,
+                               Principal principal,BindingResult bindingResult,Model model) {
+
+        try {
+            userService.createPreValidation(createUserRequest);
+        } catch (BodyGuardException e) {
+            String[] errorMessages = e.getMessage().split(",");
+            for (String errorMessage : errorMessages) {
+                bindingResult.rejectValue("username", "error.code", errorMessage);
+            }
+        }
+
+       return adminService.signupPlayer(createUserRequest, principal,bindingResult, model);
     }
 
 

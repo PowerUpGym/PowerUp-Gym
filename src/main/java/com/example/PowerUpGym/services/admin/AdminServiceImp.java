@@ -6,6 +6,7 @@ import com.example.PowerUpGym.bo.auth.AddPlayerToClassRequest;
 import com.example.PowerUpGym.bo.auth.update.ClassUpdateRequest;
 import com.example.PowerUpGym.bo.auth.update.UserUpdateRequest;
 import com.example.PowerUpGym.bo.auth.users.PlayerRegistrationRequest;
+import com.example.PowerUpGym.bo.auth.users.RegistrationRequests;
 import com.example.PowerUpGym.bo.auth.users.TrainerRegistrationRequest;
 import com.example.PowerUpGym.bo.auth.users.UserRegistrationRequest;
 import com.example.PowerUpGym.entity.classesGym.ClassesEntity;
@@ -31,9 +32,11 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.view.RedirectView;
 
+import javax.validation.Valid;
 import java.security.Principal;
 import java.time.LocalDate;
 
@@ -76,25 +79,51 @@ public class AdminServiceImp implements AdminService{
         return adminEntityRepository.findByUserUsername(username);
     }
 
-    @Override
-    public RedirectView postSignupAdmin(UserRegistrationRequest userRequest) {
+
+
+    public String getEditAdminProfile(Principal principal, Model model) {
+        if (principal != null) {
+            String username = principal.getName();
+            UserEntity userEntity = userService.findUserByUsername(username);
+
+            if (userEntity != null) {
+                model.addAttribute("user", userEntity);
+                AdminEntity admin = userEntity.getAdmin();
+                model.addAttribute("admin", admin);
+                return "adminPages/updateAdmin.html";
+            }
+        }
+        return "redirect:/error";
+    }
+
+
+    public String postSignupAdmin(UserRegistrationRequest userRequest, BindingResult bindingResult) {
         UserRoleEntity userRole = userRoleService.findRoleByRole(Role.ADMIN);
 
-        if (userRole == null) {
-            throw new RuntimeException("Role not found: " + userRequest.getRole());
+        if (bindingResult.hasErrors()) {
+            return "adminPages/signupAdmin";
         }
 
-        UserEntity user = createUserFromRequest(userRequest, userRole.getRole());
-        user.setPassword(passwordEncoder.encode(userRequest.getPassword()));
-        user.setImage("/assets/profileImg.png");
+        try {
+            if (userRole == null) {
+                throw new RuntimeException("Role not found: " + userRequest.getRole());
+            }
 
-        userService.signupUser(user);
+            UserEntity user = createUserFromRequest(userRequest, userRole.getRole());
+            user.setPassword(passwordEncoder.encode(userRequest.getPassword()));
+            user.setImage("/assets/profileImg.png");
 
-        AdminEntity admin = AdminEntity.builder().user(user).build();
-        signupAdmin(admin);
-        return new RedirectView("/adminPage");
+            userService.signupUser(user);
 
+            AdminEntity admin = AdminEntity.builder().user(user).build();
+            signupAdmin(admin);
+
+            return "adminPages/adminProfile"; // Redirect to the admin page after successful registration
+        } catch (Exception e) {
+            return "adminPages/adminProfile"; // Handle the exception appropriately
+        }
     }
+
 
     // ============== Helper Method To Create User From UserRegistrationRequest ==============
     private UserEntity createUserFromRequest(UserRegistrationRequest userRequest, Role role) {
@@ -115,24 +144,12 @@ public class AdminServiceImp implements AdminService{
                 .build();
     }
 
-    public String getEditAdminProfile(Principal principal, Model model) {
-        if (principal != null) {
-            String username = principal.getName();
-            UserEntity userEntity = userService.findUserByUsername(username);
+    public RedirectView getUpdateAdmin(UserUpdateRequest userUpdateRequest, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
 
-            if (userEntity != null) {
-                model.addAttribute("user", userEntity);
-                AdminEntity admin = userEntity.getAdmin();
-                model.addAttribute("admin", admin);
-                return "adminPages/updateAdmin.html";
-            }
+            return new RedirectView("updateAdmin?error=true");
         }
-        return "redirect:/error";
-    }
-
-
-    public RedirectView getUpdateAdmin(UserUpdateRequest userUpdateRequest) {
-
+        try {
         UserEntity existingUser = userService.findUserById(userUpdateRequest.getUserId());
 
         UserEntity updatedUser = updateUser(existingUser, userUpdateRequest);
@@ -143,7 +160,9 @@ public class AdminServiceImp implements AdminService{
         UsernamePasswordAuthenticationToken updatedAuthentication = new UsernamePasswordAuthenticationToken(updatedUser.getUsername(), authentication.getCredentials(), authentication.getAuthorities());
         SecurityContextHolder.getContext().setAuthentication(updatedAuthentication);
 
-        return new RedirectView("adminProfile");
+        return new RedirectView("adminProfile");}
+        catch (Exception e) {
+            return new RedirectView("updateAdmin?error=true");}
     }
 
     // ============== Helper Method To Update User ==============
@@ -174,7 +193,7 @@ public class AdminServiceImp implements AdminService{
                 .build();
     }
 
-    public RedirectView signupTrainer( UserRegistrationRequest userRequest,  TrainerRegistrationRequest trainerRequest, Principal principal) {
+    public RedirectView signupTrainer(@Valid UserRegistrationRequest userRequest,@Valid TrainerRegistrationRequest trainerRequest, Principal principal, BindingResult bindingResult) {
 
         if (userRequest.getImage().isEmpty()) {
             userRequest.setImage("/assets/profileImg.png");
@@ -212,6 +231,34 @@ public class AdminServiceImp implements AdminService{
                 .build();
     }
 
+
+    private PlayersEntity createPlayerFromRegistrationRequests(RegistrationRequests registrationRequests,String adminUsername) {
+        PackagesEntity selectedPackage = packageService.getPackageById(registrationRequests.getPackageId());
+        LocalDate startDate = LocalDate.now();
+        LocalDate endDate = startDate.plusMonths(selectedPackage.getDuration());
+        String pass = passwordEncoder.encode(registrationRequests.getPassword());
+        UserRoleEntity playerRole = UserRoleEntity.builder().role(Role.PLAYER).build();
+        return PlayersEntity.builder()
+                .admin(getAdminByUsername(adminUsername))
+                .user(UserEntity.builder()
+                        .admin(getAdminByUsername(adminUsername))
+                        .fullName(registrationRequests.getFullName())
+                        .username(registrationRequests.getUsername())
+                        .email(registrationRequests.getEmail())
+                        .phoneNumber(registrationRequests.getPhoneNumber())
+                        .password(pass)
+                        .image("/assets/profileImg.png")
+                        .role(playerRole).build())
+                .address(registrationRequests.getAddress())
+                .age(registrationRequests.getAge())
+                .height(registrationRequests.getHeight())
+                .weight(registrationRequests.getWeight())
+                .start_date(startDate)
+                .end_date(endDate)
+                .selectedPackage(selectedPackage)
+                .accountEnabled(true)
+                .build();
+    }
     // ============== Helper Method To Create Payment ==============
     private PaymentsEntity createPaymentForPlayer(PlayersEntity player, String paymentMethod) {
         return PaymentsEntity.builder()
@@ -223,23 +270,36 @@ public class AdminServiceImp implements AdminService{
                 .build();
     }
 
-    public RedirectView signupPlayer(PlayerRegistrationRequest playerRequest, UserRegistrationRequest userRequest, Principal principal) {
+    public String signupPlayer(RegistrationRequests registrationRequests, Principal principal, BindingResult bindingResult, Model model) {
+        UserRoleEntity userRole = userRoleService.findRoleByRole(Role.ADMIN);
 
-        if (userRequest.getImage().isEmpty()) {
-            userRequest.setImage("/assets/profileImg.png");
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("errors", bindingResult.getAllErrors());
+            return "adminPages/signupPlayer";
         }
 
-        UserRoleEntity playerRole = UserRoleEntity.builder().role(Role.PLAYER).build();
-        UserEntity user = createUserFromRequest(userRequest, playerRole.getRole());
-        PlayersEntity player = createPlayerFromRequest(playerRequest, user, principal.getName());
-        PaymentsEntity payment = createPaymentForPlayer(player, playerRequest.getPaymentMethod());
+        try {
+            if (userRole == null) {
+                throw new RuntimeException("Role not found: " + registrationRequests.getRole());
+            }
 
-        userService.signupUser(user);
+        if (registrationRequests.getImage().isEmpty()) {
+            registrationRequests.setImage("/assets/profileImg.png");
+        }
+
+//        UserRoleEntity playerRole = UserRoleEntity.builder().role(Role.PLAYER).build();
+//        UserEntity user = createUserFromRequest(registrationRequests, playerRole.getRole());
+        PlayersEntity player = createPlayerFromRegistrationRequests(registrationRequests, principal.getName());
+        PaymentsEntity payment = createPaymentForPlayer(player, registrationRequests.getPaymentMethod());
+
         playerService.signupPlayer(player);
         paymentService.savePayment(payment);
         //    sendPasswordViaSMS(playerRequest.getPhoneNumber(), playerRequest.getPassword());
-
-        return new RedirectView("/adminPage");
+            return "adminPages/adminProfile";
+        }
+        catch (Exception e) {
+            return "adminPages/adminProfile";
+        }
     }
 
     public RedirectView renewSubscription(@RequestParam(name = "playerId") Long playerId,

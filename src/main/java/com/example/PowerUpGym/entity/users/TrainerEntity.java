@@ -27,6 +27,7 @@ public class TrainerEntity {
     @Column(name = "experience", nullable = false)
     private String experience;
 
+    @Getter
     @OneToOne
     @JoinColumn(name = "user_id")
     private UserEntity user;
@@ -41,18 +42,14 @@ public class TrainerEntity {
     @JoinColumn(name = "admin_id")
     private AdminEntity admin;
 
-    public UserEntity getUser() {
-        return this.user;
-    }
 
-
-    @Builder
-    public TrainerEntity(int age, String experience, UserEntity user, List<ClassesEntity> ownedClasses, List<PlayersEntity> enrolledPlayers, AdminEntity admin) {
-        this.age = age;
-        this.experience = experience;
-        this.user = user;
-        this.ownedClasses = ownedClasses;
-        this.enrolledPlayers = enrolledPlayers;
-        this.admin = admin;
-    }
+//    @Builder
+//    public TrainerEntity(int age, String experience, UserEntity user, List<ClassesEntity> ownedClasses, List<PlayersEntity> enrolledPlayers, AdminEntity admin) {
+//        this.age = age;
+//        this.experience = experience;
+//        this.user = user;
+//        this.ownedClasses = ownedClasses;
+//        this.enrolledPlayers = enrolledPlayers;
+//        this.admin = admin;
+//    }
 }

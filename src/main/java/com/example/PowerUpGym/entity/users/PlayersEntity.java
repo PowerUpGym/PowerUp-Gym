@@ -51,11 +51,12 @@ public class PlayersEntity {
     @JoinColumn(name = "user_id")
     private UserEntity user;
 
+    @ManyToOne
+    @JoinColumn(name = "admin_id")
+    private AdminEntity admin;
+
     @OneToMany(mappedBy = "player")
     private Set<PlayerClassEnrollment> registrations;
 
 
-    @ManyToOne
-    @JoinColumn(name = "admin_id")
-    private AdminEntity admin;
 }

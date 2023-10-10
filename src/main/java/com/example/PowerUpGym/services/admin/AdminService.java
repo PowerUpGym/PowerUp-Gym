@@ -6,14 +6,16 @@ import com.example.PowerUpGym.bo.auth.AddPlayerToClassRequest;
 import com.example.PowerUpGym.bo.auth.update.ClassUpdateRequest;
 import com.example.PowerUpGym.bo.auth.update.UserUpdateRequest;
 import com.example.PowerUpGym.bo.auth.users.PlayerRegistrationRequest;
+import com.example.PowerUpGym.bo.auth.users.RegistrationRequests;
 import com.example.PowerUpGym.bo.auth.users.TrainerRegistrationRequest;
 import com.example.PowerUpGym.bo.auth.users.UserRegistrationRequest;
 import com.example.PowerUpGym.entity.users.AdminEntity;
-import com.example.PowerUpGym.entity.users.UserEntity;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.view.RedirectView;
 
+import javax.validation.Valid;
 import java.security.Principal;
 
 public interface AdminService {
@@ -24,14 +26,14 @@ public interface AdminService {
 
     AdminEntity getAdminByUsername(String username);
 
-    RedirectView postSignupAdmin(UserRegistrationRequest userRequest);
+    String postSignupAdmin(UserRegistrationRequest userRequest, BindingResult bindingResult);
 
     String getEditAdminProfile(Principal principal, Model model);
-    RedirectView getUpdateAdmin(UserUpdateRequest userUpdateRequest);
+    RedirectView getUpdateAdmin( UserUpdateRequest userUpdateRequest,BindingResult bindingResult);
 
-    RedirectView signupTrainer(UserRegistrationRequest userRequest, TrainerRegistrationRequest trainerRequest, Principal principal);
+    RedirectView signupTrainer(UserRegistrationRequest userRequest,TrainerRegistrationRequest trainerRequest, Principal principal,BindingResult bindingResult);
 
-    RedirectView signupPlayer(PlayerRegistrationRequest playerRequest, UserRegistrationRequest userRequest, Principal principal);
+    String signupPlayer(RegistrationRequests registrationRequests,  Principal principal, BindingResult bindingResult, Model model);
 
     RedirectView renewSubscription(@RequestParam(name = "playerId") Long playerId,
                                    @RequestParam(name = "newPackageId") Long newPackageId);
