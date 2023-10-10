@@ -6,6 +6,7 @@ import com.example.PowerUpGym.bo.auth.AddPlayerToClassRequest;
 import com.example.PowerUpGym.bo.auth.update.ClassUpdateRequest;
 import com.example.PowerUpGym.bo.auth.update.UserUpdateRequest;
 import com.example.PowerUpGym.bo.auth.users.PlayerRegistrationRequest;
+import com.example.PowerUpGym.bo.auth.users.RegistrationRequests;
 import com.example.PowerUpGym.bo.auth.users.TrainerRegistrationRequest;
 import com.example.PowerUpGym.bo.auth.users.UserRegistrationRequest;
 import com.example.PowerUpGym.entity.classesGym.ClassesEntity;
@@ -96,11 +97,10 @@ public class AdminServiceImp implements AdminService{
     }
 
 
-    public String postSignupAdmin(@Valid UserRegistrationRequest userRequest, BindingResult bindingResult, Model model) {
+    public String postSignupAdmin(UserRegistrationRequest userRequest, BindingResult bindingResult) {
         UserRoleEntity userRole = userRoleService.findRoleByRole(Role.ADMIN);
 
         if (bindingResult.hasErrors()) {
-            model.addAttribute("errors", bindingResult.getAllErrors());
             return "adminPages/signupAdmin";
         }
 
@@ -118,9 +118,9 @@ public class AdminServiceImp implements AdminService{
             AdminEntity admin = AdminEntity.builder().user(user).build();
             signupAdmin(admin);
 
-            return "redirect:/adminPage"; // Redirect to the admin page after successful registration
+            return "adminPages/adminProfile"; // Redirect to the admin page after successful registration
         } catch (Exception e) {
-            return "updateAdmin?error=true"; // Handle the exception appropriately
+            return "adminPages/adminProfile"; // Handle the exception appropriately
         }
     }
 
@@ -193,7 +193,7 @@ public class AdminServiceImp implements AdminService{
                 .build();
     }
 
-    public RedirectView signupTrainer(@Valid UserRegistrationRequest userRequest, TrainerRegistrationRequest trainerRequest, Principal principal, BindingResult bindingResult) {
+    public RedirectView signupTrainer(@Valid UserRegistrationRequest userRequest,@Valid TrainerRegistrationRequest trainerRequest, Principal principal, BindingResult bindingResult) {
 
         if (userRequest.getImage().isEmpty()) {
             userRequest.setImage("/assets/profileImg.png");
@@ -231,6 +231,34 @@ public class AdminServiceImp implements AdminService{
                 .build();
     }
 
+
+    private PlayersEntity createPlayerFromRegistrationRequests(RegistrationRequests registrationRequests,String adminUsername) {
+        PackagesEntity selectedPackage = packageService.getPackageById(registrationRequests.getPackageId());
+        LocalDate startDate = LocalDate.now();
+        LocalDate endDate = startDate.plusMonths(selectedPackage.getDuration());
+        String pass = passwordEncoder.encode(registrationRequests.getPassword());
+        UserRoleEntity playerRole = UserRoleEntity.builder().role(Role.PLAYER).build();
+        return PlayersEntity.builder()
+                .admin(getAdminByUsername(adminUsername))
+                .user(UserEntity.builder()
+                        .admin(getAdminByUsername(adminUsername))
+                        .fullName(registrationRequests.getFullName())
+                        .username(registrationRequests.getUsername())
+                        .email(registrationRequests.getEmail())
+                        .phoneNumber(registrationRequests.getPhoneNumber())
+                        .password(pass)
+                        .image("/assets/profileImg.png")
+                        .role(playerRole).build())
+                .address(registrationRequests.getAddress())
+                .age(registrationRequests.getAge())
+                .height(registrationRequests.getHeight())
+                .weight(registrationRequests.getWeight())
+                .start_date(startDate)
+                .end_date(endDate)
+                .selectedPackage(selectedPackage)
+                .accountEnabled(true)
+                .build();
+    }
     // ============== Helper Method To Create Payment ==============
     private PaymentsEntity createPaymentForPlayer(PlayersEntity player, String paymentMethod) {
         return PaymentsEntity.builder()
@@ -242,37 +270,35 @@ public class AdminServiceImp implements AdminService{
                 .build();
     }
 
-    public String signupPlayer(@Valid PlayerRegistrationRequest playerRequest,@Valid UserRegistrationRequest userRequest, Principal principal,BindingResult bindingResult,Model model) {
-//        UserRoleEntity userRole = userRoleService.findRoleByRole(Role.ADMIN);
+    public String signupPlayer(RegistrationRequests registrationRequests, Principal principal, BindingResult bindingResult, Model model) {
+        UserRoleEntity userRole = userRoleService.findRoleByRole(Role.ADMIN);
 
         if (bindingResult.hasErrors()) {
-            model.addAttribute("playerErrors", bindingResult.getAllErrors());
+            model.addAttribute("errors", bindingResult.getAllErrors());
             return "adminPages/signupPlayer";
         }
 
         try {
-//            if (userRole == null) {
-//                throw new RuntimeException("Role not found: " + userRequest.getRole());
-//            }
+            if (userRole == null) {
+                throw new RuntimeException("Role not found: " + registrationRequests.getRole());
+            }
 
-        if (userRequest.getImage().isEmpty()) {
-            userRequest.setImage("/assets/profileImg.png");
+        if (registrationRequests.getImage().isEmpty()) {
+            registrationRequests.setImage("/assets/profileImg.png");
         }
 
-        UserRoleEntity playerRole = UserRoleEntity.builder().role(Role.PLAYER).build();
-        UserEntity user = createUserFromRequest(userRequest, playerRole.getRole());
-        PlayersEntity player = createPlayerFromRequest(playerRequest, user, principal.getName());
-        PaymentsEntity payment = createPaymentForPlayer(player, playerRequest.getPaymentMethod());
+//        UserRoleEntity playerRole = UserRoleEntity.builder().role(Role.PLAYER).build();
+//        UserEntity user = createUserFromRequest(registrationRequests, playerRole.getRole());
+        PlayersEntity player = createPlayerFromRegistrationRequests(registrationRequests, principal.getName());
+        PaymentsEntity payment = createPaymentForPlayer(player, registrationRequests.getPaymentMethod());
 
-        userService.signupUser(user);
         playerService.signupPlayer(player);
         paymentService.savePayment(payment);
         //    sendPasswordViaSMS(playerRequest.getPhoneNumber(), playerRequest.getPassword());
-
-            return "redirect:/adminPage";
+            return "adminPages/adminProfile";
         }
         catch (Exception e) {
-            return "redirect:/error";
+            return "adminPages/adminProfile";
         }
     }
 
