@@ -16,11 +16,11 @@
 <div class="center-container">
     <div class="form-container">
         <h1>Player Registration</h1>
-        <div th:if="${errors}">
+        <div th:if="${playerErrors}">
             <div class="alert alert-danger">
                 <p>Please correct the following errors:</p>
                 <ul>
-                    <li th:each="error : ${errors}">
+                    <li th:each="error : ${playerErrors}">
                         <span th:text="${error.defaultMessage}"></span>
                     </li>
                 </ul>

@@ -125,10 +125,6 @@ public class PlayerController {
 
     @PostMapping("/updatePlayer")
     public RedirectView updatePlayer(@Valid PlayerUpdateRequest playerUpdateRequest,@Valid UserUpdateRequest userUpdateRequest, BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-
-            return new RedirectView("login?error=true");
-        }
         try {
         PlayersEntity existingPlayer = playerService.getPlayerById(playerUpdateRequest.getPlayerId());
         UserEntity existingUser = userService.findUserById(userUpdateRequest.getUserId());

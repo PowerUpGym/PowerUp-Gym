@@ -97,7 +97,7 @@ public class AdminController {
     }
 
     @PostMapping("/updateAdmin")
-    public RedirectView getUpdateAdmin(@Valid UserUpdateRequest userUpdateRequest,BindingResult bindingResult) {
+    public RedirectView getUpdateAdmin(UserUpdateRequest userUpdateRequest,BindingResult bindingResult) {
         return adminService.getUpdateAdmin(userUpdateRequest, bindingResult);
     }
 
@@ -119,7 +119,7 @@ public class AdminController {
         List<PackagesEntity> availablePackages = packageService.getAllPackages();
         model.addAttribute("availablePackages", availablePackages);
         model.addAttribute("paymentMethods", Arrays.asList("Cash", "Visa"));
-        return "adminPages/signupPlayer";
+        return "adminPages/signupPlayer.html";
     }
 
     @PostMapping("/signupPlayer")
