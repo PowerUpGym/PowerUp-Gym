@@ -118,9 +118,9 @@ public class AdminServiceImp implements AdminService{
             AdminEntity admin = AdminEntity.builder().user(user).build();
             signupAdmin(admin);
 
-            return "adminPages/adminProfile"; // Redirect to the admin page after successful registration
+            return "redirect:/adminPage";
         } catch (Exception e) {
-            return "adminPages/adminProfile"; // Handle the exception appropriately
+            return "redirect:/error";
         }
     }
 
@@ -279,7 +279,7 @@ public class AdminServiceImp implements AdminService{
             }
 
             if (registrationRequests.getImage().isEmpty()) {
-                registrationRequests.setImage("/assets/profileImg.png");
+                registrationRequests.setImage("https://i.pinimg.com/236x/5a/54/cf/5a54cfdb6320b05029b8fafb6fdb5f4e.jpg");
             }
 
             String pass = passwordEncoder.encode(registrationRequests.getPassword());
@@ -289,7 +289,7 @@ public class AdminServiceImp implements AdminService{
                     .email(registrationRequests.getEmail())
                     .phoneNumber(registrationRequests.getPhoneNumber())
                     .password(pass)
-                    .image("/assets/profileImg.png")
+                    .image("https://i.pinimg.com/236x/5a/54/cf/5a54cfdb6320b05029b8fafb6fdb5f4e.jpg")
                     .role(userRoleService.findRoleByRole(Role.PLAYER))
                     .build();
             userService.signupUser(user);
@@ -315,15 +315,15 @@ public class AdminServiceImp implements AdminService{
             paymentService.savePayment(payment);
 
 //          sendPasswordViaSMS(user.getPhoneNumber(), registrationRequests.getPassword());
-            return "adminPages/adminProfile";
+            return "redirect:/adminPage";
         } catch (Exception e) {
-            System.out.println(e.getMessage());
-            System.out.println("================");
-            e.printStackTrace();
-            System.out.println("================");
-            e.getMessage();
-            System.out.println("================");
-            e.getCause();
+//            System.out.println(e.getMessage());
+//            System.out.println("================");
+//            e.printStackTrace();
+//            System.out.println("================");
+//            e.getMessage();
+//            System.out.println("================");
+//            e.getCause();
             return "adminPages/signupPlayer";
         }
     }
