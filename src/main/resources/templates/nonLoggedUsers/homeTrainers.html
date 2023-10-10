@@ -30,17 +30,25 @@
             </div>
 
             <nav>
-
                 <ul class="flex">
                     <li>
-                        <a href="/aboutUs" style="font-size: 20px;">About Us</a>
+                        <a th:unless="${#authorization.expression('hasAuthority(''PLAYER'')')}" href="/aboutUs" style="font-size: 20px;">About Us</a>
                     </li>
                     <li>
-                        <a href="/login" style="font-size: 20px;">Login</a>
+                        <a th:unless="${#authorization.expression('hasAuthority(''PLAYER'')')}" href="/login" style="font-size: 20px;">Log in</a>
                     </li>
+                    <li>
+                        <a th:if="${#authorization.expression('hasAuthority(''PLAYER'')')}" href="/logout" style="font-size: 20px;">Log Out</a>
+                    </li>
+
+                    <li>
+                        <a th:if="${#authorization.expression('hasAuthority(''PLAYER'')')}" th:href="@{/playerPage/playerInfo}" style="font-size: 20px;">My Profile</a>
+                    </li>
+
                     <li id="header-logo" class="top-gym-logo">
                         <a href="/">Power Up <br/>Gym</a>
                     </li>
+
                     <li>
                         <a href="/homeTrainers" style="font-size: 20px;">Trainers</a>
                     </li>
@@ -50,6 +58,15 @@
                     <li>
                         <a href="/homeClasses" style="font-size: 20px;">Classes</a>
                     </li>
+
+                    <li>
+                        <a th:if="${#authorization.expression('hasAuthority(''PLAYER'')')}" th:href="@{/playerPage/enrollments}" style="font-size: 20px;">Enrollments</a>
+                    </li>
+
+                    <li>
+                        <a th:if="${#authorization.expression('hasAuthority(''PLAYER'')')}" th:href="@{/playerPage/notifications}" style="font-size: 20px;">Notifications</a>
+                    </li>
+
                 </ul>
             </nav>
         </div>
@@ -58,13 +75,12 @@
 </section>
 
 <main class="page-content">
-    <div class="card"  th:each="trainer : ${trainers}">
-        <div class="content" style="margin-top: 20px; ">
+    <div class="card" th:each="trainer : ${trainers}">
+        <div class="content" style="margin-top: 10px; ">
+            <img class="copy" style="border-radius: 100px;" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAJQAAACUCAMAAABC4vDmAAAAMFBMVEXk5ueutLff4uOnrrHn6eqrsbTZ3N25vsHHy82zuLvr7e7c3+DV2NnQ09W8wcPMz9FRQ01gAAADeUlEQVR4nO2b23LjIAxAuYibMfj//3ZxkqZJmtggWyKzw3no9PGMEAJLRIjBYDAYDAaDwWAwGAwGg4EQACBUjFFd/vsGANScXbiS/Sy6awFYH7SRd4zWLqmuXmCdfDC6eRmZ+2kVJf1q9BOvTlog/N8o/WrJ1MEKbPistKIzv1PaNLoGKzI7LR+y6RnLuYTgt5fuHixGK0hVcbrEis1prlUqseJyEnVrd5Xi2oOuQUoaz5FWsLQ4lXrFUturk/yGo1eqrQa/mEQuZRuVVqjXrz1Qa6iorVozaoU4q1q33i1UxCezQzhR16qIcSpMlFIJs3qlgFKuH2SclFkI12/COZVjmVAKMAVhhbIoWGSkZFBkTi23uxfoMh1XOlcIyyfm4LtJ0d3V/zep+RulCCP1lYmOPPokZUkQ8xcWT9y9c4XymJmwUpQH8hRwTqRXT+z2I6wIAn1N0LTfWLgPh0x6RwePChTdIXORipj9F0idcPuPvkWFKOqaWEkgUp2hlwe2NatIz70bU1PLsywe5YfoHdWU6yaQ1qgfGlr7K0wDmqmho6BntkFItRVPF/3GzqzvHidOJ6GqtiBrnFYqVpDdaf8bsMsUGebNxDIu9pi3b43bjVw6GF2YbNbvtIz0PR9xgPLhOVzGyLD0fu8Cwi7ZaK2NWf+GvNjveBlULOycUppjcfwKo6I0PdI3TtenXDYtPjt3uc6E4HL2yxzV+ryrg9Gk5iJTsnzlMc9Lahnpsk8RJkYxEDF5qZ9k/paF4paXqFgiBlP0Tm76PBaskBO1VomRN2/r5YaYzpawlAKkN6/dKrRM8ESVAkqQ0C3PEi6Ce/H2Y7caLZlPfrdUjrjGTHqHdmdqQaq8k+9QonVWboEN2P7rXy1zToXA9ck+a7nj9QHiOSv3YHX4lQmkY3vuvZY/5uRPy6YnK3ekO4R8hrBvJfGJ1diJagJbss5O8ScM7rOQMk4riFgBtZM0zdmOHxfX09rzx0+LGzCuaQFx0452q7ZeEXLY2GzVkOwTQ0JdCfVSzUMFNPULCJnLqVBZF2BmC1T90BQ7UkdaVYUK0M80cFJ1WUV1X/lA1eRNsSqVD6+a2zH+5Q8St5/qE+rlwREqUh24naTc7zJgfi5wjP39x3JneZHa/b0Px+Xulf2iwHnu/bAnpYLmZ3f2rTqw5zQYDAaDwaAD/wANKir9WY4qAQAAAABJRU5ErkJggg==" alt="User Image">
             <h2 class="title" th:if="${trainer.user != null}" th:text="${trainer.user.fullName}" style="text-shadow: 2px 2px 4px #000000;"></h2>
-            <p class="copy" style="color: rgb(219, 219, 219); text-shadow: 2px 2px 4px #000000;"> <strong>Experience: </strong><span th:text="${trainer.experience}"></span> </p>
-            <p class="copy" style="color: rgb(219, 219, 219); text-shadow: 2px 2px 4px #000000;"> <strong>Age: </strong><span th:text="${trainer.age}"></span> </p>
-            <p class="copy" style="color: rgb(219, 219, 219); text-shadow: 2px 2px 4px #000000;"> <strong>Email: </strong><span th:if="${trainer.user != null}" th:text="${trainer.user.email}"></span> </p>
-            <p class="copy" style="color: rgb(219, 219, 219); text-shadow: 2px 2px 4px #000000;"> <strong>Phone Number: </strong><span th:if="${trainer.user != null}" th:text="${trainer.user.phoneNumber}"></span> </p>
+            <p class="copy" style="color: rgb(219, 219, 219); text-shadow: 2px 2px 4px #000000;"> <span><strong>Experience: </strong><span th:text="${trainer.experience}"></span> </span> - <span><strong>Age: </strong><span th:text="${trainer.age}"></span> </span></p>
+            <p class="copy" style="color: rgb(219, 219, 219); text-shadow: 2px 2px 4px #000000;"> <span><strong>Email: </strong><span th:if="${trainer.user != null}" th:text="${trainer.user.email}"></span> </span> -  <span><strong>Phone Number: </strong><span th:if="${trainer.user != null}" th:text="${trainer.user.phoneNumber}"></span> </span></p>
         </div>
     </div>
 </main>
@@ -77,11 +93,15 @@
 
         <nav>
             <ul>
-                <li><a href="aboutUs.html">About Us</a></li>
-                <li><a href="/login">Login</a></li>
+                <li><a th:unless="${#authorization.expression('hasAuthority(''PLAYER'')')}" href="/aboutUs">About Us</a></li>
+                <li><a th:unless="${#authorization.expression('hasAuthority(''PLAYER'')')}" href="/login">Log in</a></li>
+                <li><a th:if="${#authorization.expression('hasAuthority(''PLAYER'')')}" href="/logout">Log Out</a></li>
+                <li><a th:if="${#authorization.expression('hasAuthority(''PLAYER'')')}" th:href="@{/playerPage/playerInfo}">My Profile</a></li>
                 <li><a href="/homeTrainers">Trainers</a></li>
                 <li><a href="/homePackages">Packages</a></li>
                 <li><a href="/homeClasses">Classes</a></li>
+                <li><a th:if="${#authorization.expression('hasAuthority(''PLAYER'')')}" th:href="@{/playerPage/enrollments}">Enrollments</a></li>
+                <li><a th:if="${#authorization.expression('hasAuthority(''PLAYER'')')}" th:href="@{/playerPage/notifications}">Notifications</a></li>
             </ul>
         </nav>
 
@@ -96,10 +116,6 @@
     </div>
 
 </footer>
-
-</div>
-
-
 
 <script>
 

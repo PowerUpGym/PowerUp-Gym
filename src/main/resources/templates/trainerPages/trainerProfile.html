@@ -2,47 +2,44 @@
 <html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
-    <title>Trainer Profile</title>
+    <title>Title</title>
+
+    <link rel="stylesheet" type="text/css" href="/Css/trainer/trainerProfile.css">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300&display=swap" rel="stylesheet">
+
 </head>
 <body>
 
-<nav>
+<nav class="navbar">
     <ul>
-        <li>
-            <a href="/trainerPage">Home</a>
-        </li>
-        <li>
-            <a href="/trainerPage/trainerProfile">My Profile</a>
-        </li>
-        <li>
-            <a href="/trainerPage/trainerClasses">My Classes</a>
-        </li>
+        <li><a href="/logout">Log Out</a></li>
+        <li><a href="/trainerPage">Home</a></li>
     </ul>
 </nav>
 
-<div th:if="${user != null}">
-    <p><strong><span th:text="${user.id}" hidden="hidden"></span></strong></p>
-    <p><strong>Full Name: </strong><span th:text="${user.fullName}"></span></p>
-    <p><strong>Username: </strong><span th:text="${user.username}"></span></p>
-    <p><strong>Email: </strong><span th:text="${user.email}"></span></p>
-    <p><strong>Phone Number: </strong><span th:text="${user.phoneNumber}"></span></p>
-    <p><strong>Image:</strong></p>
-    <img th:src="${user.image}" alt="Trainer Image" width="150" height="150">
-</div>
+<div class="container">
+    <div th:if="${trainer != null}" class="service-details">
+        <img src="https://i.pinimg.com/236x/5a/54/cf/5a54cfdb6320b05029b8fafb6fdb5f4e.jpg" alt="realm">
+        <div class="service-hover-text">
+<!--            <strong>Name: </strong><h3 th:text="${trainer.user.fullName}"></h3> <br>-->
+            <strong>Username: </strong><h3 th:text="${trainer.user.username}"></h3>
+            <p><span th:text="${trainer.user.email}"></span> - <span th:text="${trainer.user.phoneNumber}"></span> </p>
+            <p><strong>Age: </strong> <span th:text="${trainer.age}"></span> - <strong>Experience: </strong><span th:text="${trainer.experience}"></span></p>
+        </div>
 
-<div th:if="${trainer != null}">
-    <p> <strong>Age: </strong> <span th:text="${trainer.age}"></span></p>
-    <p><strong>Experience: </strong><span th:text="${trainer.experience}"></span></p>
+        <div class="service-white service-text">
+            <p th:text="${trainer.user.fullName}"></p>
+        </div>
 
-    <br>
+    </div>
 
-    <form th:action="@{/trainerPage/editTrainerProfile}" method="get">
-        <button type="submit">Edit Profile</button>
-    </form>
-</div>
+    <div style="text-align: center; margin-top: 20px;">
+        <a th:href="@{/trainerPage/editTrainerProfile}">Edit Profile</a>
+    </div>
 
-<div th:if="${trainer == null}">
-    <p>Trainer is null</p>
 </div>
 </body>
 </html>

@@ -44,14 +44,23 @@
             <nav>
                 <ul class="flex">
                     <li>
-                        <a href="/aboutUs" style="font-size: 20px;">About Us</a>
+                        <a th:unless="${#authorization.expression('hasAuthority(''PLAYER'')')}" href="/aboutUs" style="font-size: 20px;">About Us</a>
                     </li>
                     <li>
-                        <a href="/login" style="font-size: 20px;">Login</a>
+                        <a th:unless="${#authorization.expression('hasAuthority(''PLAYER'')')}" href="/login" style="font-size: 20px;">Log in</a>
                     </li>
+                    <li>
+                        <a th:if="${#authorization.expression('hasAuthority(''PLAYER'')')}" href="/logout" style="font-size: 20px;">Log Out</a>
+                    </li>
+
+                    <li>
+                        <a th:if="${#authorization.expression('hasAuthority(''PLAYER'')')}" th:href="@{/playerPage/playerInfo}" style="font-size: 20px;">My Profile</a>
+                    </li>
+
                     <li id="header-logo" class="top-gym-logo">
                         <a href="/">Power Up <br/>Gym</a>
                     </li>
+
                     <li>
                         <a href="/homeTrainers" style="font-size: 20px;">Trainers</a>
                     </li>
@@ -61,6 +70,15 @@
                     <li>
                         <a href="/homeClasses" style="font-size: 20px;">Classes</a>
                     </li>
+
+                    <li>
+                        <a th:if="${#authorization.expression('hasAuthority(''PLAYER'')')}" th:href="@{/playerPage/enrollments}" style="font-size: 20px;">Enrollments</a>
+                    </li>
+
+                    <li>
+                        <a th:if="${#authorization.expression('hasAuthority(''PLAYER'')')}" th:href="@{/playerPage/notifications}" style="font-size: 20px;">Notifications</a>
+                    </li>
+
                 </ul>
             </nav>
         </div>
@@ -108,11 +126,15 @@
 
         <nav>
             <ul>
-                <li><a href="aboutUs.html">About Us</a></li>
-                <li><a href="/login">Login</a></li>
+                <li><a th:unless="${#authorization.expression('hasAuthority(''PLAYER'')')}" href="/aboutUs">About Us</a></li>
+                <li><a th:unless="${#authorization.expression('hasAuthority(''PLAYER'')')}" href="/login">Log in</a></li>
+                <li><a th:if="${#authorization.expression('hasAuthority(''PLAYER'')')}" href="/logout">Log Out</a></li>
+                <li><a th:if="${#authorization.expression('hasAuthority(''PLAYER'')')}" th:href="@{/playerPage/playerInfo}">My Profile</a></li>
                 <li><a href="/homeTrainers">Trainers</a></li>
                 <li><a href="/homePackages">Packages</a></li>
                 <li><a href="/homeClasses">Classes</a></li>
+                <li><a th:if="${#authorization.expression('hasAuthority(''PLAYER'')')}" th:href="@{/playerPage/enrollments}">Enrollments</a></li>
+                <li><a th:if="${#authorization.expression('hasAuthority(''PLAYER'')')}" th:href="@{/playerPage/notifications}">Notifications</a></li>
             </ul>
         </nav>
 

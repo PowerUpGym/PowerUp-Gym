@@ -269,3 +269,13 @@ a {
 a:hover {
     color: #ccc; /* Change the color on hover */
 }
+
+.errorMessage {
+    color: white !important;
+    font-size: 17px !important;
+    background-color: rgba(184, 82, 82, 0.4) !important;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2) !important;
+    border-radius: 5px !important;
+    padding-left: 10px !important;
+    padding-right: -15px !important;
+}

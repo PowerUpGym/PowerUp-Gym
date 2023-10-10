@@ -1,37 +1,48 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <title>Trainer Classes</title>
+    <title>Manage Players</title>
+
+
+    <link rel="stylesheet" type="text/css" href="/Css/trainer/trainerClasses.css">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300&display=swap" rel="stylesheet">
+
 </head>
 <body>
 
-<nav>
+<nav class="navbar">
     <ul>
-        <li>
-            <a href="/trainerPage">Home</a>
-        </li>
-        <li>
-            <a href="/trainerPage/trainerProfile">My Profile</a>
-        </li>
-        <li>
-            <a href="/trainerPage/trainerClasses">My Classes</a>
-        </li>
+        <li><a href="/logout">Log Out</a></li>
+        <li><a href="/trainerPage">Home</a></li>
     </ul>
 </nav>
 
-<div>
-    <ul>
-        <li th:each = "class: ${trainerClasses}">
-<!--            <p><strong>Class Name: </strong><span th:text="${class.className}"></span></p>-->
-            <a th:href="@{/trainerPage/trainerClassDetails(classId=${class.id})}">Class Name: </strong><span th:text="${class.className}"></span></a>
-<!--            <p><strong>Schedule: </strong><span th:text="${class.schedule}"></span></p>-->
-<!--            <p><strong>Description: </strong><span th:text="${class.description}"></span></p>-->
-            <a th:href="@{/trainerPage/sendToAllPlayers/{classId}(classId=${class.id})}">Send to All Players</a>
 
-        </li>
-    </ul>
+<div class="trainer-class-list">
+    <h1>All My Classes</h1>
+    <table>
+        <thead>
+        <tr>
+            <th>Class Name</th>
+            <th>Send to All Players</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each = "class: ${trainerClasses}" >
+            <td>
+                <a th:href="@{/trainerPage/trainerClassDetails(classId=${class.id})}"><strong th:text="${class.className}"></strong></a>
+            </td>
+
+            <td>
+                <a th:href="@{/trainerPage/sendToAllPlayers/{classId}(classId=${class.id})}"><strong>Send</strong></a>
+            </td>
+
+        </tr>
+        </tbody>
+    </table>
 </div>
-
 </body>
 </html>

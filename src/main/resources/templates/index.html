@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
     <link rel="stylesheet" href="/Css/index.css">
@@ -29,16 +29,20 @@
             </div>
 
             <nav>
-
                 <ul class="flex">
                     <li>
-                        <a href="/aboutUs" style="font-size: 20px;">About Us</a>
+                        <a th:unless="${#authorization.expression('hasAuthority(''PLAYER'')')}" href="/aboutUs" style="font-size: 20px;">About Us</a>
+                    </li>
+                    <li>
+                        <a th:unless="${#authorization.expression('hasAuthority(''PLAYER'')')}" href="/login" style="font-size: 20px;">Log in</a>
+                    </li>
+                    <li>
+                        <a th:if="${#authorization.expression('hasAuthority(''PLAYER'')')}" href="/logout" style="font-size: 20px;">Log Out</a>
                     </li>
 
                     <li>
-                        <a href="/login" style="font-size: 20px;">Login</a>
+                        <a th:if="${#authorization.expression('hasAuthority(''PLAYER'')')}" th:href="@{/playerPage/playerInfo}" style="font-size: 20px;">My Profile</a>
                     </li>
-
 
                     <li id="header-logo" class="top-gym-logo">
                         <a href="/">Power Up <br/>Gym</a>
@@ -47,14 +51,21 @@
                     <li>
                         <a href="/homeTrainers" style="font-size: 20px;">Trainers</a>
                     </li>
-
                     <li>
                         <a href="/homePackages" style="font-size: 20px;">Packages</a>
                     </li>
-
                     <li>
                         <a href="/homeClasses" style="font-size: 20px;">Classes</a>
                     </li>
+
+                    <li>
+                        <a th:if="${#authorization.expression('hasAuthority(''PLAYER'')')}" th:href="@{/playerPage/enrollments}" style="font-size: 20px;">Enrollments</a>
+                    </li>
+
+                    <li>
+                        <a th:if="${#authorization.expression('hasAuthority(''PLAYER'')')}" th:href="@{/playerPage/notifications}" style="font-size: 20px;">Notifications</a>
+                    </li>
+
                 </ul>
             </nav>
 
@@ -84,30 +95,6 @@
             </div>
         </div>
     </div>
-<!--    <div id="hero-slider">-->
-<!--        <div class="hero-slide-item" style="background-image:url('https://images.pexels.com/photos/3253501/pexels-photo-3253501.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1');">-->
-<!--            <div class="hero-slider-marketing">-->
-<!--                <h2 style="font-weight: 300; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.9);">Train insane or remain the same</h2>-->
-
-<!--            </div>-->
-<!--        </div>-->
-
-<!--        <div class="hero-slide-item" style="background-image:url('https://i.pinimg.com/236x/c1/ea/34/c1ea34c1eba522b743656e69245a60fa.jpg');">-->
-<!--            <div class="hero-slider-marketing">-->
-<!--                <a href="#" class="youtube-button"><span class="fa fa-play"></span></a>-->
-<!--                <h2>Power Up. Top Trainer</h2>-->
-
-<!--            </div>-->
-<!--        </div>-->
-
-<!--        <div class="hero-slide-item" style="background-image:url('https://onclickwebdesign.com/wp-content/uploads/main-slider-3.jpg');">-->
-<!--            <div class="hero-slider-marketing">-->
-<!--                <a href="#" class="youtube-button"><span class="fa fa-play"></span></a>-->
-<!--                <h2>Power Up. Top Body</h2>-->
-
-<!--            </div>-->
-<!--        </div>-->
-<!--    </div>-->
 
 </section>
 
@@ -175,59 +162,6 @@
 
 <hr>
 
-
-<!--<section id="services">-->
-<!--    <h3>Services</h3>-->
-<!--    <div class="flex container">-->
-<!--        <div class="box">-->
-<!--            <img src="https://onclickwebdesign.com/wp-content/uploads/services-icon-1.png" alt="Basketball Icon" />-->
-<!--            <h4>Pilates</h4>-->
-<!--        </div>-->
-
-<!--        <div class="box">-->
-<!--            <img src="https://onclickwebdesign.com/wp-content/uploads/services-icon-2.png" alt="Bench Press Icon" />-->
-<!--            <h4>Free Lifting</h4>-->
-<!--        </div>-->
-
-<!--        <div class="box">-->
-<!--            <img src="https://onclickwebdesign.com/wp-content/uploads/services-icon-3.png" alt="Stopwatch Icon" />-->
-<!--            <h4>Yoga</h4>-->
-<!--        </div>-->
-
-<!--        <div class="box">-->
-<!--            <img src="https://onclickwebdesign.com/wp-content/uploads/services-icon-4.png" alt="Mp3 Player Icon" />-->
-<!--            <h4>Spinning</h4>-->
-<!--        </div>-->
-
-<!--    </div>-->
-
-<!--</section>-->
-
-
-<!--<section id="schedule-services">-->
-<!--    <div class="flex container">-->
-<!--        <div class="upcoming-classes-box">-->
-<!--            <strong>Working hours</strong>-->
-<!--            <table>-->
-
-<!--                <tr>-->
-<!--                    <td><img src="https://onclickwebdesign.com/wp-content/uploads/stopwatch.png" alt="Stopwatch" /></td>-->
-<!--                    <td>Saturday - Thursday</td>-->
-<!--                    <td> 07:00 - 00:00 </td>-->
-<!--                </tr>-->
-
-<!--                <tr>-->
-<!--                    <td><img src="https://onclickwebdesign.com/wp-content/uploads/stopwatch.png" alt="Stopwatch" /></td>-->
-<!--                    <td>Friday</td>-->
-<!--                    <td> 07:00 - 21:00</td>-->
-<!--                </tr>-->
-
-<!--            </table>-->
-
-<!--        </div>-->
-<!--    </div>-->
-
-<!--</section>-->
 <section id="schedule-services">
     <div class="flex container">
         <!-- Working Hours Box -->
@@ -281,11 +215,15 @@
 
         <nav>
             <ul>
-                <li><a href="aboutUs.html">About Us</a></li>
-                <li><a href="/login">Login</a></li>
+                <li><a th:unless="${#authorization.expression('hasAuthority(''PLAYER'')')}" href="/aboutUs">About Us</a></li>
+                <li><a th:unless="${#authorization.expression('hasAuthority(''PLAYER'')')}" href="/login">Log in</a></li>
+                <li><a th:if="${#authorization.expression('hasAuthority(''PLAYER'')')}" href="/logout">Log Out</a></li>
+                <li><a th:if="${#authorization.expression('hasAuthority(''PLAYER'')')}" th:href="@{/playerPage/playerInfo}">My Profile</a></li>
                 <li><a href="/homeTrainers">Trainers</a></li>
                 <li><a href="/homePackages">Packages</a></li>
                 <li><a href="/homeClasses">Classes</a></li>
+                <li><a th:if="${#authorization.expression('hasAuthority(''PLAYER'')')}" th:href="@{/playerPage/enrollments}">Enrollments</a></li>
+                <li><a th:if="${#authorization.expression('hasAuthority(''PLAYER'')')}" th:href="@{/playerPage/notifications}">Notifications</a></li>
             </ul>
         </nav>
 
@@ -300,10 +238,6 @@
     </div>
 
 </footer>
-
-</div>
-
-
 
 <script>
 

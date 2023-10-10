@@ -12,9 +12,17 @@
 
 </head>
 <body>
+
+<nav class="navbar">
+    <ul>
+        <li class="a"><a href="/adminPage">Home</a></li>
+        <li class="a"><a href="/logout">Log Out</a></li>
+    </ul>
+</nav>
+
 <h1>All Classes</h1>
 <ul>
-    <li th:each="classEntity : ${classes}">
+    <li th:each="classEntity : ${classes}" class="li">
         <a th:href="@{/adminPage/allClasses/classDetails/{id}(id=${classEntity.id})}" th:text="${classEntity.className}"></a>
     </li>
 </ul>

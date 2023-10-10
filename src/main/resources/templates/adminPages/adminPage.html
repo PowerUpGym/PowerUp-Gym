@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>Admin Dashboard</title>
@@ -8,8 +8,17 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300&display=swap" rel="stylesheet">
+
 </head>
 <body>
+
+<nav class="navbar">
+    <ul>
+        <li><a href="/adminPage">Home</a></li>
+        <li><a href="/logout">Log Out</a></li>
+    </ul>
+</nav>
+
 <div class="container">
     <table class="table">
         <tr class="table-tr">
@@ -35,8 +44,6 @@
             <td class="table-td"> <a href="/adminPage/updateAccountStatus">Update Account Status</a> </td>
         </tr>
     </table>
-
-    <a href="/logout" class="logout">Log Out</a>
 </div>
 </body>
 </html>

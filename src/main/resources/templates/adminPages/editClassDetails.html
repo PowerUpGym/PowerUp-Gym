@@ -5,6 +5,14 @@
     <title>Edit Class Details</title>
 </head>
 <body>
+
+<nav class="navbar">
+    <ul>
+        <li><a href="/adminPage">Home</a></li>
+        <li><a href="/logout">Log Out</a></li>
+    </ul>
+</nav>
+
 <div class="container">
     <h1>Edit Class Details</h1>
     <form method="post" th:object="${classEntity}" th:action="@{/adminPage/editClassDetails/{id}(id=${classEntity.id})}">

@@ -3,44 +3,42 @@
 <head>
   <meta charset="UTF-8">
   <title>Classes Details</title>
+
+  <link rel="stylesheet" type="text/css" href="/Css/trainer/trainerClassesDetails.css">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300&display=swap" rel="stylesheet">
+
 </head>
 <body>
 
-<nav>
+<nav class="navbar">
   <ul>
-    <li>
-      <a href="/trainerPage">Home</a>
-    </li>
-    <li>
-      <a href="/trainerPage/trainerProfile">My Profile</a>
-    </li>
-    <li>
-      <a href="/trainerPage/trainerClasses">My Classes</a>
-    </li>
+    <li><a href="/logout">Log Out</a></li>
+    <li><a href="/trainerPage">Home</a></li>
+    <li><a href="/trainerPage/trainerClasses">Back to all classes</a></li>
   </ul>
 </nav>
 
-<h1>Class Details</h1>
-
-<div th:if="${classDetails != null}">
+<div class="container">
+  <h1>Class Details</h1>
+  <div class="div-details" th:if="${classDetails != null}">
   <p><span th:text="${classDetails.id}" hidden="hidden"></span></p>
+  <p><strong>Class Name:</strong> <span th:text="${classDetails.className}"></span></p>
   <p><strong>Schedule:</strong> <span th:text="${classDetails.scheduleDescription}"></span></p>
   <p><strong>Description:</strong> <span th:text="${classDetails.description}"></span></p>
-  <p><strong>Class Name:</strong> <span th:text="${classDetails.className}"></span></p>
+  </div>
 
   <h2>Enrolled Players</h2>
-  <ul>
-    <li th:each="enrollment : ${enrolledPlayers}">
+  <ul class="ul-details">
+    <li class="li-details" th:each="enrollment : ${enrolledPlayers}">
       <p><strong></strong> <span th:text="${enrollment.player.id}" hidden="hidden"></span></p>
       <p><strong>Player Name:</strong> <span th:text="${enrollment.player.user.fullName}"></span></p>
-      <a th:href="@{/trainerPage/allplayersenrollment/{id}(id=${enrollment.player.user.id})}" class="btn btn-primary">Send</a>
+      <a style="color: black;" th:href="@{/trainerPage/allplayersenrollment/{id}(id=${enrollment.player.user.id})}" class="btn btn-primary">Send</a>
     </li>
   </ul>
 
-</div>
-
-<div th:unless="${classDetails != null}">
-  <p>Class not found or invalid ID.</p>
 </div>
 </body>
 </html>
