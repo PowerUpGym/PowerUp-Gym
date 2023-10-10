@@ -13,6 +13,12 @@
 </head>
 <body>
 
+<nav class="navbar">
+    <ul>
+        <li><a href="/adminPage">Home</a></li>
+        <li><a href="/logout">Log Out</a></li>
+    </ul>
+</nav>
 
 <div class="center-container">
     <div class="form-container">
@@ -56,32 +62,5 @@
         </form>
     </div>
 </div>
-
-<!--<form th:action="@{/adminPage/updateAdmin}" method="post">-->
-
-<!--    <input type="hidden" name="userId" th:value="${user.id}" />-->
-<!--    <input type="hidden" name="adminId" th:value="${admin.id}" />-->
-
-<!--    <label for="fullName">Full Name:</label>-->
-<!--    <input type="text" id="fullName" name="fullName" th:value="${admin.user.fullName}" />-->
-
-<!--    <label for="username">Username:</label>-->
-<!--    <input type="text" id="username" name="username" th:value="${admin.user.username}" />-->
-
-<!--    <label for="email">Email:</label>-->
-<!--    <input type="text" id="email" name="email" th:value="${admin.user.email}" />-->
-
-<!--    <label for="phoneNumber">Phone Number:</label>-->
-<!--    <input type="text" id="phoneNumber" name="phoneNumber" th:value="${admin.user.phoneNumber}" />-->
-
-<!--    <label for="password">Password:</label>-->
-<!--    <input type="password" id="password" name="password" />-->
-
-
-<!--    <input type="hidden" name="image" th:value="${admin.user.image}" />-->
-
-<!--    <button type="submit">Update Profile</button>-->
-<!--</form>-->
-
 </body>
 </html>

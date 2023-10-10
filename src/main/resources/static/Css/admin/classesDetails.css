@@ -1,35 +1,86 @@
 body {
     font-family: 'Oswald', sans-serif;
-    display: flex;
     align-items: center;
     justify-content: center;
     height: 100vh;
     margin: 0;
+    background-color: #DBDBDB;
+
+}
+
+.navbar {
+    text-shadow: 6px 6px 8px rgba(0, 0, 0, 0.9);
+    background-color: #333;
+    overflow: hidden;
+    text-align: center;
+}
+
+.navbar ul {
+    list-style-type: none;
+    overflow: hidden;
+    display: inline-block;
+    margin: 0;
+    padding-inline-start: 0;
+}
+
+.navbar li {
+    display: inline;
+    text-decoration: none;
+}
+
+.navbar a {
+    display: inline-block;
+    color: white;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+    border-radius: 0;
+}
+
+.navbar a:not(:last-child) {
+    margin-right: 10px;
+}
+
+.navbar a:hover {
+    background-color: rgba(207, 117, 0, 0.7);
+    border-radius: 10px;
+}
+
+a {
+    text-decoration: none;
+    padding: 10px 20px;
+    color: #fff;
+    border-radius: 5px;
+    transition: background-color 0.5s ease;
+    margin: 10px;
+    display: inline-block;
+    font-weight: bold;
 }
 
 .container {
     width: 800px;
     max-width: 100%;
     margin: 0 auto;
+    margin-top: 20px;
     padding: 20px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.8);
     border-radius: 8px;
     background-color: #fff;
-    display: flex; /* Add flex display to center vertically */
-    flex-direction: column; /* Stack children vertically */
-    align-items: center; /* Center children horizontally */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 h1, h2 {
     text-align: center;
 }
 
-ul {
+.ul-details ul {
     max-height: 200px;
     overflow-y: auto;
 }
 
-a {
+.edit-button a {
     display: block;
     text-align: center;
     margin-top: 20px;
@@ -37,6 +88,10 @@ a {
     color: #3498db;
 }
 
-a:hover {
+.edit-button a:hover {
     text-decoration: underline;
+}
+
+.div-details{
+margin-bottom: -50px;
 }

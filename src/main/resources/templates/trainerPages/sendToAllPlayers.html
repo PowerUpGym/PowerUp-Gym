@@ -3,15 +3,47 @@
 <head>
     <meta charset="UTF-8">
     <title>Send Message to All Players</title>
+    <link rel="stylesheet" type="text/css" href="/Css/trainer/sendToAllPlayers.css">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300&display=swap" rel="stylesheet">
+
 </head>
 <body>
-<h1>Send Message to All Players</h1>
-<form action="/trainerPage/sendMessageToAllPlayers" method="post">
-    <input type="hidden" name="classId" th:value="${classId}" />
-    <label for="message">Message:</label>
-    <textarea id="message" name="message" rows="4" cols="50"></textarea>
-    <br />
-    <input type="submit" value="Send Message" />
-</form>
+
+<nav class="navbar">
+    <ul>
+        <li><a href="/logout">Log Out</a></li>
+        <li><a href="/trainerPage">Home</a></li>
+    </ul>
+</nav>
+<div class="center-container">
+    <div class="form-container">
+        <h1>Send Message to All Players</h1>
+        <form action="/trainerPage/sendMessageToAllPlayers" method="post">
+
+            <div class="form-group">
+                <input type="hidden" name="classId" th:value="${classId}" />
+                <label for="message">Message:</label>
+                <textarea id="message" name="message" rows="4" cols="50"></textarea>
+            </div>
+
+            <div class="form-group">
+                <input type="submit" value="Send">
+            </div>
+
+        </form>
+    </div>
+</div>
+
+<!--<h1>Send Message to All Players</h1>-->
+<!--<form action="/trainerPage/sendMessageToAllPlayers" method="post">-->
+<!--    <input type="hidden" name="classId" th:value="${classId}" />-->
+<!--    <label for="message">Message:</label>-->
+<!--    <textarea id="message" name="message" rows="4" cols="50"></textarea>-->
+<!--    <br />-->
+<!--    <input type="submit" value="Send Message" />-->
+<!--</form>-->
 </body>
 </html>

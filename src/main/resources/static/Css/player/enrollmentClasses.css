@@ -434,6 +434,15 @@ header nav ul li a {
     }
 
 
+
+#no-classes {
+    background-color: rgba(207, 117, 0, 0.2);
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+    text-align: center;
+    padding: 20px;
+    margin: 20px;
+    font-size: 24px;
+}
 /* start: footer section styles */
 
 footer {

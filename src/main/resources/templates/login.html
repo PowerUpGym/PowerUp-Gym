@@ -24,10 +24,6 @@
 </head>
 <body>
 
-
-<div th:replace="/fragments/error-fragment :: login-error"></div>
-
-
 <div class="form-structor">
     <div class="signup">
         <form action="/login" method="post" class="form-holder">
@@ -40,6 +36,8 @@
         </form>
 
         <a class="back-home" href="/" style="font-size: 17px;">Back To Home</a>
+
+        <div class="errorMessage" th:replace="/fragments/error-fragment :: login-error"></div>
     </div>
 </div>
 

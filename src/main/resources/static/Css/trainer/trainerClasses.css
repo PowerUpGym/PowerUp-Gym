@@ -46,7 +46,7 @@ body {
 a {
     text-decoration: none;
     padding: 10px 20px;
-    color: #fff;
+    color: black;
     border-radius: 5px;
     transition: background-color 0.5s ease;
     margin: 10px;
@@ -57,7 +57,7 @@ a {
 h1 {
     text-align: center;
     color: #333;
-    margin-top: 50px;
+    margin-top: 20px;
 }
 
 form {
@@ -85,13 +85,13 @@ button:hover {
     background-color: rgba(207, 117, 0, 0.5);
 }
 
-.player-list-container {
+.trainer-class-list {
     max-height: 500px;
     overflow-y: auto;
-    margin: 20px auto;
+    margin: 40px;
     background-color: #fff;
     border-radius: 8px;
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.6);
     padding: 15px;
 }
 
