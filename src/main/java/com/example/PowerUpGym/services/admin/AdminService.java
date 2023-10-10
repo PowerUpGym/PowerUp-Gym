@@ -6,6 +6,7 @@ import com.example.PowerUpGym.bo.auth.AddPlayerToClassRequest;
 import com.example.PowerUpGym.bo.auth.update.ClassUpdateRequest;
 import com.example.PowerUpGym.bo.auth.update.UserUpdateRequest;
 import com.example.PowerUpGym.bo.auth.users.PlayerRegistrationRequest;
+import com.example.PowerUpGym.bo.auth.users.RegistrationRequests;
 import com.example.PowerUpGym.bo.auth.users.TrainerRegistrationRequest;
 import com.example.PowerUpGym.bo.auth.users.UserRegistrationRequest;
 import com.example.PowerUpGym.entity.users.AdminEntity;
@@ -25,14 +26,14 @@ public interface AdminService {
 
     AdminEntity getAdminByUsername(String username);
 
-    String postSignupAdmin(@Valid UserRegistrationRequest userRequest, BindingResult bindingResult,Model model);
+    String postSignupAdmin(UserRegistrationRequest userRequest, BindingResult bindingResult);
 
     String getEditAdminProfile(Principal principal, Model model);
     RedirectView getUpdateAdmin( UserUpdateRequest userUpdateRequest,BindingResult bindingResult);
 
-    RedirectView signupTrainer(@Valid UserRegistrationRequest userRequest, TrainerRegistrationRequest trainerRequest, Principal principal,BindingResult bindingResult);
+    RedirectView signupTrainer(UserRegistrationRequest userRequest,TrainerRegistrationRequest trainerRequest, Principal principal,BindingResult bindingResult);
 
-    String signupPlayer(@Valid PlayerRegistrationRequest playerRequest, UserRegistrationRequest userRequest, Principal principal,BindingResult bindingResult, Model model);
+    String signupPlayer(RegistrationRequests registrationRequests,  Principal principal, BindingResult bindingResult, Model model);
 
     RedirectView renewSubscription(@RequestParam(name = "playerId") Long playerId,
                                    @RequestParam(name = "newPackageId") Long newPackageId);

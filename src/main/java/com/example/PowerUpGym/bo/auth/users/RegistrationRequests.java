@@ -3,7 +3,10 @@ package com.example.PowerUpGym.bo.auth.users;
 import com.example.PowerUpGym.enums.Role;
 import lombok.*;
 import org.springframework.validation.annotation.Validated;
-import javax.validation.constraints.*;
+
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Positive;
 
 @Getter
 @Setter
@@ -11,9 +14,22 @@ import javax.validation.constraints.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Validated
-public class PlayerRegistrationRequest {
-
+public class RegistrationRequests {
     private String address;
+
+    private String fullName;
+
+    private String username;
+
+    private String email;
+
+    private String phoneNumber;
+
+    private String password;
+
+    private String image;
+
+    private Role role;
 
     private int age;
 
