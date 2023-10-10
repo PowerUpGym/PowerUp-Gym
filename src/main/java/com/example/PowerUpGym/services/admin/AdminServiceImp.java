@@ -96,7 +96,7 @@ public class AdminServiceImp implements AdminService{
         return "redirect:/error";
     }
 
-    @PostMapping("/signupAdmin")
+
     public String postSignupAdmin(@Valid UserRegistrationRequest userRequest, BindingResult bindingResult, Model model) {
         UserRoleEntity userRole = userRoleService.findRoleByRole(Role.ADMIN);
 
@@ -144,9 +144,6 @@ public class AdminServiceImp implements AdminService{
                 .image(userRequest.getImage())
                 .build();
     }
-
-
-
 
     public RedirectView getUpdateAdmin(@Valid UserUpdateRequest userUpdateRequest, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
@@ -246,10 +243,10 @@ public class AdminServiceImp implements AdminService{
                 .build();
     }
 
-    public RedirectView signupPlayer(PlayerRegistrationRequest playerRequest,@Valid UserRegistrationRequest userRequest, Principal principal,BindingResult bindingResult) {
+    public String signupPlayer(@Valid PlayerRegistrationRequest playerRequest, UserRegistrationRequest userRequest, Principal principal,BindingResult bindingResult ,Model model) {
         if (bindingResult.hasErrors()) {
-
-            return new RedirectView("updateAdmin?error=true");
+            model.addAttribute("errors", bindingResult.getAllErrors());
+            return "adminPages/signupPlayer";
         }
         try {
         if (userRequest.getImage().isEmpty()) {
@@ -266,9 +263,11 @@ public class AdminServiceImp implements AdminService{
         paymentService.savePayment(payment);
         //    sendPasswordViaSMS(playerRequest.getPhoneNumber(), playerRequest.getPassword());
 
-        return new RedirectView("/adminPage");}
+            return "redirect:/adminPage";
+        }
         catch (Exception e) {
-            return new RedirectView("updateAdmin?error=true");}
+            return "redirect:/error";
+        }
     }
 
     public RedirectView renewSubscription(@RequestParam(name = "playerId") Long playerId,
