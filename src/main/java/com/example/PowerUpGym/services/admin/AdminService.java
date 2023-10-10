@@ -9,7 +9,6 @@ import com.example.PowerUpGym.bo.auth.users.PlayerRegistrationRequest;
 import com.example.PowerUpGym.bo.auth.users.TrainerRegistrationRequest;
 import com.example.PowerUpGym.bo.auth.users.UserRegistrationRequest;
 import com.example.PowerUpGym.entity.users.AdminEntity;
-import com.example.PowerUpGym.entity.users.UserEntity;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -29,11 +28,11 @@ public interface AdminService {
     String postSignupAdmin(@Valid UserRegistrationRequest userRequest, BindingResult bindingResult,Model model);
 
     String getEditAdminProfile(Principal principal, Model model);
-    RedirectView getUpdateAdmin(@Valid UserUpdateRequest userUpdateRequest,BindingResult bindingResult);
+    RedirectView getUpdateAdmin( UserUpdateRequest userUpdateRequest,BindingResult bindingResult);
 
-    RedirectView signupTrainer(UserRegistrationRequest userRequest, TrainerRegistrationRequest trainerRequest, Principal principal,BindingResult bindingResult);
+    RedirectView signupTrainer(@Valid UserRegistrationRequest userRequest, TrainerRegistrationRequest trainerRequest, Principal principal,BindingResult bindingResult);
 
-    String signupPlayer(PlayerRegistrationRequest playerRequest,@Valid UserRegistrationRequest userRequest, Principal principal,BindingResult bindingResult, Model model);
+    String signupPlayer(@Valid PlayerRegistrationRequest playerRequest, UserRegistrationRequest userRequest, Principal principal,BindingResult bindingResult, Model model);
 
     RedirectView renewSubscription(@RequestParam(name = "playerId") Long playerId,
                                    @RequestParam(name = "newPackageId") Long newPackageId);
