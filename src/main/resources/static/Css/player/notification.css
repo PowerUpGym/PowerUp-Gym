@@ -323,6 +323,7 @@ header nav ul li a {
     }
 
     .rb-container ul.rb li {
+      width : 300px;
       list-style: none;
       margin: auto;
       margin-left: 10em;
