@@ -89,9 +89,10 @@ p {
 }
 
 section, footer {
-  padding: 6rem 0;
+  padding: 1rem 0;
   text-align: center;
 }
+
 
 .container {
   max-width: 1100px;
@@ -461,7 +462,7 @@ header {
 
 footer {
 background-color: #212122;
-  padding-bottom: 2rem;
+  padding-bottom: 1rem;
 }
 
 .footer-container {

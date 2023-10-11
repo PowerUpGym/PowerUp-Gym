@@ -85,7 +85,7 @@ p {
 }
 
 section, footer {
-  padding: 6rem 0;
+  padding: 1rem 0;
   text-align: center;
 }
 
@@ -310,7 +310,7 @@ background-color: #212122;
   background: url('https://onclickwebdesign.com/wp-content/uploads/footer-bg.jpg') top center no-repeat;
   background-size: cover;
   */
-  padding-bottom: 2rem;
+  padding-bottom: 1rem;
       margin-top: 50px;
 
 }
