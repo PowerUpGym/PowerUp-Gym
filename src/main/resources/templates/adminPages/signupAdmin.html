@@ -26,32 +26,33 @@
         <form action="/adminPage/signupAdmin" method="post" th:object="${createUserRequest}">
             <div class="form-group">
                 <label for="fullName">Full Name:</label>
-                <input type="text" id="fullName" name="fullName" required>
-                <span th:if="${#fields.hasErrors('fullName')}" th:errors="*{fullName}"></span>
+                <input type="text" id="fullName" name="fullName" th:field="*{fullName}" required>
+                <span th:if="${#fields.hasErrors('fullName')}" th:errors="*{fullName}" class="error-message"></span>
 
             </div>
 
             <div class="form-group">
                 <label for="username">Username:</label>
-                <input type="text" id="username" name="username" required>
-              <span th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></span>
+                <input type="text" id="username" name="username" th:field="*{username}" required>
+              <span th:if="${#fields.hasErrors('username')}" th:errors="*{username}" class="error-message"></span>
             </div>
 
             <div class="form-group">
                 <label for="email">Email:</label>
-                <input type="email" id="email" name="email" required>
+                <input type="email" id="email" name="email" th:field="*{email}"required>
+                <span th:if="${#fields.hasErrors('email')}" th:errors="*{email}" class="error-message"></span>
             </div>
 
             <div class="form-group">
                 <label for="phoneNumber">Phone Number:</label>
-                <input type="text" id="phoneNumber" name="phoneNumber">
-              <span th:if="${#fields.hasErrors('phoneNumber')}" th:errors="*{phoneNumber}"></span>
+                <input type="text" id="phoneNumber" name="phoneNumber" th:field="*{phoneNumber}">
+                <span th:if="${#fields.hasErrors('phoneNumber')}" th:errors="*{phoneNumber}" class="error-message"></span>
             </div>
 
             <div class="form-group">
                 <label for="password">Password:</label>
-                <input type="password" id="password" name="password" required>
-              <span th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></span>
+                <input type="password" id="password" name="password" th:field="*{password}" required>
+                <span th:if="${#fields.hasErrors('password')}" th:errors="*{password}" class="error-message"></span>
             </div>
 
             <div class="form-group">

@@ -108,7 +108,17 @@ public class AdminController {
         } catch (BodyGuardException e) {
             String[] errorMessages = e.getMessage().split(",");
             for (String errorMessage : errorMessages) {
-                bindingResult.rejectValue("username", "error.code", errorMessage);
+                if (errorMessage.contains("Username")) {
+                    bindingResult.rejectValue("username", "error.code", errorMessage);
+                } else if (errorMessage.contains("Email")) {
+                    bindingResult.rejectValue("email", "error.code", errorMessage);
+                }else if (errorMessage.contains("Full Name")) {
+                    bindingResult.rejectValue("fullName", "error.code", errorMessage);
+                }else if (errorMessage.contains("Phone Number")) {
+                    bindingResult.rejectValue("phoneNumber", "error.code", errorMessage);
+                }else if (errorMessage.contains("Password")) {
+                    bindingResult.rejectValue("password", "error.code", errorMessage);
+                }
             }
         }
 
@@ -161,9 +171,28 @@ public class AdminController {
         } catch (BodyGuardException e) {
             String[] errorMessages = e.getMessage().split(",");
             for (String errorMessage : errorMessages) {
-                bindingResult.rejectValue("username", "error.code", errorMessage);
-               }
+                if (errorMessage.contains("Username")) {
+                    bindingResult.rejectValue("username", "error.code", errorMessage);
+                } else if (errorMessage.contains("Email")) {
+                    bindingResult.rejectValue("email", "error.code", errorMessage);
+                }else if (errorMessage.contains("Full Name")) {
+                    bindingResult.rejectValue("fullName", "error.code", errorMessage);
+                }else if (errorMessage.contains("Phone Number")) {
+                    bindingResult.rejectValue("phoneNumber", "error.code", errorMessage);
+                }else if (errorMessage.contains("Address")) {
+                    bindingResult.rejectValue("address", "error.code", errorMessage);
+                }else if (errorMessage.contains("Password")) {
+                    bindingResult.rejectValue("password", "error.code", errorMessage);
+                }else if (errorMessage.contains("Age")) {
+                    bindingResult.rejectValue("age", "error.code", errorMessage);
+                }else if (errorMessage.contains("Height")) {
+                    bindingResult.rejectValue("height", "error.code", errorMessage);
+                }else if (errorMessage.contains("Weight")) {
+                    bindingResult.rejectValue("weight", "error.code", errorMessage);
+                }
+            }
         }
+
         if (bindingResult.hasErrors()) {
             model.addAttribute("errors", bindingResult.getAllErrors());
             List<PackagesEntity> availablePackages = packageService.getAllPackages();

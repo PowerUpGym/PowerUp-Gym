@@ -8,6 +8,6 @@
     <title>Document</title>
 </head>
 <body>
-<nav th:if="${InvalidUsernameOrPassword}" class="errorMessage" th:fragment="login-error" th:text="'Error: ' + ${InvalidUsernameOrPassword}"></nav>
+<nav th:if="${disabledAccount}" class="errorMessage" th:fragment="disable-error" th:text="'Error: ' + ${disabledAccount}"></nav>
 </body>
 </html>
