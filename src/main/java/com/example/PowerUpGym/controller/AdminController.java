@@ -162,7 +162,7 @@ public class AdminController {
             String[] errorMessages = e.getMessage().split(",");
             for (String errorMessage : errorMessages) {
                 bindingResult.rejectValue("username", "error.code", errorMessage);
-            }
+               }
         }
         if (bindingResult.hasErrors()) {
             model.addAttribute("errors", bindingResult.getAllErrors());

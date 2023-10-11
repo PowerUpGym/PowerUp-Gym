@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
     <title>SignUp Admin</title>
@@ -22,7 +22,7 @@
 
 <div class="center-container">
     <div class="form-container">
-        <h1>Player Registration</h1>
+        <h1>Admin Registration</h1>
         <form action="/adminPage/signupAdmin" method="post" th:object="${createUserRequest}">
             <div class="form-group">
                 <label for="fullName">Full Name:</label>
