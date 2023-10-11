@@ -56,8 +56,7 @@ public String getLoginPage() {
         authWithHttpServletRequest(loginRequest.getUsername() , loginRequest.getPassword());
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null || !authentication.isAuthenticated()) {
-            // Authentication failed, show an error message
-            redir.addFlashAttribute("errorMessage", "Invalid Username or Password");
+            redir.addFlashAttribute("InvalidUsernameOrPassword", "Invalid Username or Password");
             return new RedirectView("/login?error=Invalid%20Credentials");
         }
 
@@ -68,7 +67,8 @@ public String getLoginPage() {
 
             if (userRole.getRole() == Role.PLAYER) {
                 if (!authenticatedUser.getPlayer().isAccountEnabled()) { // Check if the account is enabled
-                    return new RedirectView("/logout");
+                    redir.addFlashAttribute("disabledAccount", "Your account is disabled, please renew your subscription");
+                    return new RedirectView("/login?error=disabled%account");
                 }
                 return new RedirectView("/playerPage"); // Redirect to the player page
             } else if (userRole.getRole() == Role.TRAINER) {

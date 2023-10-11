@@ -111,7 +111,7 @@ public class AdminServiceImp implements AdminService{
 
             UserEntity user = createUserFromRequest(userRequest, userRole.getRole());
             user.setPassword(passwordEncoder.encode(userRequest.getPassword()));
-            user.setImage("/assets/profileImg.png");
+            user.setImage("https://i.pinimg.com/236x/5a/54/cf/5a54cfdb6320b05029b8fafb6fdb5f4e.jpg");
 
             userService.signupUser(user);
 
@@ -196,7 +196,7 @@ public class AdminServiceImp implements AdminService{
     public RedirectView signupTrainer( UserRegistrationRequest userRequest, TrainerRegistrationRequest trainerRequest, Principal principal, BindingResult bindingResult) {
 
         if (userRequest.getImage().isEmpty()) {
-            userRequest.setImage("/assets/profileImg.png");
+            userRequest.setImage("https://i.pinimg.com/236x/5a/54/cf/5a54cfdb6320b05029b8fafb6fdb5f4e.jpg");
         }
 
         UserRoleEntity trainerRole = userRoleService.findRoleByRole(Role.TRAINER);

@@ -37,8 +37,9 @@ public class UserServiceImp implements UserService {
     @Override
     public void createPreValidation(UserRegistrationRequest createDto) {
         List<String> violation = new CompositeValidator<UserRegistrationRequest, String>()
-                .addValidator(r -> hasValue(r.getUsername()), "User Name Cannot Be Empty")
-                .addValidator(r -> hasValue(r.getEmail()), "Email Cannot Be Empty")
+                .addValidator(r -> r.getFullName() != null && r.getFullName().length() >= 3, "Full Name should have at least 3 characters")
+                .addValidator(r -> r.getUsername() != null && r.getUsername().length() >= 3, "Username should have at least 3 characters")
+                .addValidator(r -> hasValue(r.getPhoneNumber()) && r.getPhoneNumber().length() >= 10, "Phone Number must be at least 10 characters")
                 .addValidator(r -> nonNull(r.getPassword()), "Password Cannot Be Empty")
                 .addValidator(r -> r.getEmail() == null || Pattern.compile("^(.+)@(.+)\\.(.+)$").matcher(r.getEmail()).matches(), "Enter a valid email")
                 .addValidator(r -> r.getEmail() == null || !userEntityRepositories.findByEmail(r.getEmail().toLowerCase()).isPresent(), "Email already exists")
@@ -50,18 +51,18 @@ public class UserServiceImp implements UserService {
     @Override
     public void createPreValidation(RegistrationRequests createDto) {
         List<String> violation = new CompositeValidator<RegistrationRequests, String>()
+                .addValidator(r -> hasValue(r.getFullName()), "Full Name Cannot Be Empty")
+                .addValidator(r -> hasValue(r.getUsername()), "Username Cannot Be Empty")
+                .addValidator(r -> hasValue(r.getEmail()), "Email Cannot Be Empty")
+                .addValidator(r -> hasValue(r.getPhoneNumber()) && r.getPhoneNumber().length() >= 10, "Phone Number must be at least 10 characters")
                 .addValidator(r -> hasValue(r.getAddress()), "Address Cannot Be Empty")
-                .addValidator(r -> hasValue(r.getFullName()), "FullName Cannot Be Empty")
-                .addValidator(r -> r.getEmail() == null || !userEntityRepositories.findByEmail(r.getEmail().toLowerCase()).isPresent(), "Email already exists")
-                .addValidator(r -> r.getEmail() == null || Pattern.compile("^(.+)@(.+)\\.(.+)$").matcher(r.getEmail()).matches(), "Enter a valid email")
-                .addValidator(r -> r.getPhoneNumber().length() > 10, "Phone Cannot Be less than 10")
-                .addValidator(r -> r.getHeight() > 0, "Height must be > 0")
-                .addValidator(r -> r.getWeight() > 0, "Height must be > 0")
-                .addValidator(r -> r.getAge() > 0, "Height must be > 0")
+                .addValidator(r -> r.getAge() > 0, "Age must be greater than 0")
+                .addValidator(r -> r.getHeight() > 0, "Height must be greater than 0")
+                .addValidator(r -> r.getWeight() > 0, "Weight must be greater than 0")
                 .addValidator(r -> nonNull(r.getPassword()), "Password Cannot Be Empty")
-                .addValidator(r -> hasValue(r.getAddress()), "Address Cannot Be Empty")
-                .addValidator(r -> hasValue(r.getAddress()), "Address Cannot Be Empty")
-                .addValidator(r -> Pattern.compile("^(?=.*[A-Z]).{8,20}$").matcher(r.getPassword()).matches(), "Password should be minimum 8 characters with 1 upper case letter")
+                .addValidator(r -> Pattern.compile("^(?=.*[A-Z]).{8,20}$").matcher(r.getPassword()).matches(), "Password should be minimum 8 characters with 1 uppercase letter")
+                .addValidator(r -> r.getEmail() == null || !userEntityRepositories.findByEmail(r.getEmail().toLowerCase()).isPresent(), "Email already exists")
+                .addValidator(r -> r.getEmail() == null || r.getEmail().matches("^(.+)@(.+)\\.(.+)$"), "Enter a valid email")
                 .validate(createDto);
         validate(violation);
     }

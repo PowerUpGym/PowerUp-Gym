@@ -34,10 +34,9 @@
 
             <input type="hidden" name="successHandler" value="customAuthenticationSuccessHandler">
         </form>
-
         <a class="back-home" href="/" style="font-size: 17px;">Back To Home</a>
-
         <div class="errorMessage" th:replace="/fragments/error-fragment :: login-error"></div>
+        <div class="errorMessage" th:replace="/fragments/disableAccount :: disable-error"></div>
 
     </div>
 </div>
