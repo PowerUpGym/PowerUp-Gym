@@ -135,22 +135,19 @@
 
         <!-- BMI Calculator Box -->
         <div class="bmi-calculator-box">
-            <form id="bmiCalculator">
-                <h4>Calculate BMI</h4>
+            <form id="bmi-form" onsubmit="event.preventDefault();">
+                <label for="weight">Weight (kg):</label>
+                <input type="number" id="weight" name="weight" step="0.01" required><br>
 
-                <div class="input-group">
-                    <label for="weight">Weight (kg):</label>
-                    <input type="number" id="weight" name="weight" required>
-                </div>
+                <label for="height">Height (m):</label>
+                <input type="number" id="height" name="height" step="0.01" required><br>
 
-                <div class="input-group">
-                    <label for="height">Height (cm):</label>
-                    <input type="number" id="height" name="height" required>
-                </div>
-
-                <button type="submit" style="text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.9);">Calculate</button>
-
+                <button type="button" id="calculate-bmi-button">Calculate BMI</button>
             </form>
+
+            <div id="bmi-result">
+                <!-- BMI result will be displayed here -->
+            </div>
         </div>
     </div>
 </section>
@@ -184,6 +181,44 @@
     </div>
 
 </footer>
+<script>
+    $(function () {
+        // ... (existing code)
+
+        // Handle the BMI calculation when the button is clicked
+       $('#calculate-bmi-button').on('click', function () {
+        var weight = parseFloat($('#weight').val());
+        var height = parseFloat($('#height').val());
+
+        // Check if the weight or height is 0
+        if (weight === 0 || height === 0) {
+            $('#bmi-result').html("Invalid input. Please enter valid values.");
+            return;
+        }
+
+        // Calculate the BMI
+        var bmi = weight / (height * height);
+
+        // Display the BMI result
+        $('#bmi-result').html("Your BMI is: " + bmi.toFixed(2));
+
+        // Generate the explanation based on the BMI
+        var explanation = "";
+        if (bmi < 18.5) {
+            explanation = "You are underweight.";
+        } else if (bmi >= 18.5 && bmi < 24.9) {
+            explanation = "You have a normal weight.";
+        } else if (bmi >= 25 && bmi < 29.9) {
+            explanation = "You are overweight.";
+        } else {
+            explanation = "You are obese.";
+        }
+
+        // Display the explanation
+        $('#bmi-result').append("<br>" + explanation);
+    });
+});
+</script>
 
 <script>
 

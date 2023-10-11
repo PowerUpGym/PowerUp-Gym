@@ -232,6 +232,26 @@
     </div>
 
 </footer>
+<script>
+    $(function () {
+        // ... (existing code)
+
+        // Handle the BMI calculation when the button is clicked
+       $('#calculate-bmi-button').on('click', function () {
+        var weight = parseFloat($('#weight').val());
+        var height = parseFloat($('#height').val());
+
+        // Check if the weight or height is 0
+        if (weight === 0 || height === 0) {
+            $('#bmi-result').html("Invalid input. Please enter valid values.");
+            return;
+        }
+
+        // Calculate the BMI
+        var bmi = weight / (height * height);
+
+        // Display the BMI result
+        $('#bmi-result').html("Your BMI is: " + bmi.toFixed(2));
 
 <script>
 
