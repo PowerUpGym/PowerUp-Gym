@@ -305,14 +305,9 @@ input[type="submit"]:hover {
 footer {
 
 background-color: #212122;
-  /*
 
-  background: url('https://onclickwebdesign.com/wp-content/uploads/footer-bg.jpg') top center no-repeat;
-  background-size: cover;
-  */
   padding-bottom: 1rem;
       margin-top: 50px;
-
 }
 
 .footer-container {
