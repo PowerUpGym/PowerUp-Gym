@@ -51,36 +51,39 @@ public String getLoginPage() {
 }
 
     @PostMapping("/login")
-    public RedirectView login(LoginRequest loginRequest , RedirectAttributes redir) {
+    public RedirectView login(LoginRequest loginRequest, RedirectAttributes redir) {
+        UserEntity authenticatedUser = userEntityRepositories.findByUsername(loginRequest.getUsername());
 
-        authWithHttpServletRequest(loginRequest.getUsername() , loginRequest.getPassword());
+        if (authenticatedUser == null || (authenticatedUser.getPlayer() != null && !authenticatedUser.getPlayer().isAccountEnabled())) {
+            // If the user does not exist or the account is not enabled, prevent login (we check user does not exist to avoid null pointer exception)
+            redir.addFlashAttribute("disabledAccount", "Your account is disabled, please renew your subscription");
+            return new RedirectView("/login?error=Account%20Disabled");
+        }
+
+        authWithHttpServletRequest(loginRequest.getUsername(), loginRequest.getPassword());
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
         if (authentication == null || !authentication.isAuthenticated()) {
+            // Handle invalid credentials
             redir.addFlashAttribute("InvalidUsernameOrPassword", "Invalid Username or Password");
             return new RedirectView("/login?error=Invalid%20Credentials");
         }
 
-        UserEntity authenticatedUser = userEntityRepositories.findByUsername(loginRequest.getUsername());
+        UserRoleEntity userRole = authenticatedUser.getRole();
 
-        if (authenticatedUser != null) {
-            UserRoleEntity userRole = authenticatedUser.getRole();
-
-            if (userRole.getRole() == Role.PLAYER) {
-                if (!authenticatedUser.getPlayer().isAccountEnabled()) { // Check if the account is enabled
-                    redir.addFlashAttribute("disabledAccount", "Your account is disabled, please renew your subscription");
-                    return new RedirectView("/login?error=disabled%account");
-                }
-                return new RedirectView("/playerPage"); // Redirect to the player page
-            } else if (userRole.getRole() == Role.TRAINER) {
-                return new RedirectView("/trainerPage"); // Redirect to the trainer page
-            } else if (userRole.getRole() == Role.ADMIN || userRole.getRole() == Role.SUPER_ADMIN ) {
-                return new RedirectView("/adminPage"); // Redirect to the trainer page
-            }
-
+        if (userRole.getRole() == Role.PLAYER) {
+            return new RedirectView("/playerPage"); // Redirect to the player page
+        } else if (userRole.getRole() == Role.TRAINER) {
+            return new RedirectView("/trainerPage"); // Redirect to the trainer page
+        } else if (userRole.getRole() == Role.ADMIN || userRole.getRole() == Role.SUPER_ADMIN) {
+            return new RedirectView("/adminPage"); // Redirect to the admin page
         }
+
+        // Handle other cases
         redir.addFlashAttribute("errorMessage", "Something wrong happened");
         return new RedirectView("/login?error=Invalid%20Credentials");
-}
+    }
+
 
     @GetMapping("/logout")
     public String getLogoutPage() {
