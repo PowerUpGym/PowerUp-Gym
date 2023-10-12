@@ -37,7 +37,12 @@
             </td>
 
             <td>
-                <a th:href="@{/trainerPage/sendToAllPlayers/{classId}(classId=${class.id})}"><strong>Send</strong></a>
+                <a style="color: black; text-decoration: none;"
+                   th:href="@{/trainerPage/sendToAllPlayers/{classId}(classId=${class.id})}"
+                   onmouseover="this.style.color='rgb(207, 117, 0)'"
+                   onmouseout="this.style.color='black'">
+                    Send
+                </a>
             </td>
 
         </tr>

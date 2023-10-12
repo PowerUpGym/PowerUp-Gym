@@ -27,7 +27,13 @@
         <p><strong>Class Name:</strong> <span th:text="*{className}"></span></p>
         <p><strong>Schedule:</strong> <span th:text="*{scheduleDescription}"></span></p>
         <p><strong>Description:</strong> <span th:text="*{description}"></span></p>
-        <a style="color:black;" th:href="@{/adminPage/editClassDetails/{id}(id=${classEntity.id})}" class="edit-button">Edit Class</a>
+        <a style="color: black; text-decoration: none;"
+           class="edit-button"
+           th:href="@{/adminPage/editClassDetails/{id}(id=${classEntity.id})}"
+           onmouseover="this.style.color='rgb(207, 117, 0)'"
+           onmouseout="this.style.color='black'">
+            Edit Class
+        </a>
     </div>
 
     <h2>Enrolled Players:</h2>

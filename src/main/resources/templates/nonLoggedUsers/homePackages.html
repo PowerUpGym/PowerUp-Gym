@@ -44,17 +44,16 @@
             <nav>
                 <ul class="flex">
                     <li>
+                        <a th:if="${#authorization.expression('hasAuthority(''PLAYER'')')}" href="/logout" style="font-size: 20px;">Log Out</a>
+                    </li>
+                    <li>
+                        <a th:if="${#authorization.expression('hasAuthority(''PLAYER'')')}" th:href="@{/playerPage/playerInfo}" style="font-size: 20px;">My Profile</a>
+                    </li>
+                    <li>
                         <a th:unless="${#authorization.expression('hasAuthority(''PLAYER'')')}" href="/aboutUs" style="font-size: 20px;">About Us</a>
                     </li>
                     <li>
                         <a th:unless="${#authorization.expression('hasAuthority(''PLAYER'')')}" href="/login" style="font-size: 20px;">Log in</a>
-                    </li>
-                    <li>
-                        <a th:if="${#authorization.expression('hasAuthority(''PLAYER'')')}" href="/logout" style="font-size: 20px;">Log Out</a>
-                    </li>
-
-                    <li>
-                        <a th:if="${#authorization.expression('hasAuthority(''PLAYER'')')}" th:href="@{/playerPage/playerInfo}" style="font-size: 20px;">My Profile</a>
                     </li>
 
                     <li id="header-logo" class="top-gym-logo">

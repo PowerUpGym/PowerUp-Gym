@@ -34,8 +34,20 @@
   <ul class="ul-details">
     <li class="li-details" th:each="enrollment : ${enrolledPlayers}">
       <p><strong></strong> <span th:text="${enrollment.player.id}" hidden="hidden"></span></p>
-      <p><strong>Player Name:</strong> <span th:text="${enrollment.player.user.fullName}"></span></p>
-      <a style="color: black;" th:href="@{/trainerPage/allplayersenrollment/{id}(id=${enrollment.player.user.id})}" class="btn btn-primary">Send</a>
+      <p>
+        <strong>Player Name:</strong>
+        <span th:text="${enrollment.player.user.fullName}"></span>
+        <span>
+          <a style="color: black; text-decoration: none;"
+             th:href="@{/trainerPage/allplayersenrollment/{id}(id=${enrollment.player.user.id})}"
+             class="btn btn-primary"
+             onmouseover="this.style.color='rgb(207, 117, 0)'"
+             onmouseout="this.style.color='black'">
+            Send
+          </a>
+        </span>
+      </p>
+
     </li>
   </ul>
 
